@@ -1,63 +1,25 @@
-"use client";
-import { useSearchParams } from "next/navigation";
-import "./bookingSuccess.css";
+import React, { Suspense } from "react";
+import BookingSuccessClient from "./BookingSuccessClient";
+import "./bookingSuccess.css"; // We can keep the CSS import here
 
-export default function BookingSuccess() {
-  const params = useSearchParams();
-  const name = params.get("name");
-  const type = params.get("type");
-  const price = params.get("price");
-  const location = params.get("location");
-  const pickup = params.get("pickup");
-  const returndate = params.get("return");
-
+// This is a simple server component that will be shown instantly
+// while the browser loads the client component.
+function LoadingState() {
   return (
     <div className="booking-success-page">
       <div className="success-card">
-        {/* Animated glowing ring + SVG checkmark */}
-        <div className="glow-ring">
-          <svg
-            className="check-svg"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 52 52"
-          >
-            <circle className="check-circle" cx="26" cy="26" r="25" />
-            <path
-              className="check-tick"
-              fill="none"
-              d="M14 27l7 7 17-17"
-            />
-          </svg>
-        </div>
-
-        <h1 className="title">Your Booking is Confirmed!</h1>
-        <p className="subtitle">
-          Sit back and relax — your car will be ready at your chosen location.
-        </p>
-
-        <div className="details">
-          <h2>{name}</h2>
-          <p className="type">{type}</p>
-          <p className="price">{price}</p>
-          <hr />
-          <p>
-            <strong>Pickup:</strong> {pickup}
-          </p>
-          <p>
-            <strong>Return:</strong> {returndate}
-          </p>
-          <p>
-            <strong>Location:</strong> {location}
-          </p>
-        </div>
-
-        <button
-          className="back-btn"
-          onClick={() => (window.location.href = "/")}
-        >
-          Back to Home
-        </button>
+        <h1 className="title">Loading Booking Details...</h1>
+        <p className="subtitle">Finalizing your confirmation.</p>
       </div>
     </div>
+  );
+}
+
+// This is the main page component. It's now a Server Component.
+export default function BookingSuccessPage() {
+  return (
+    <Suspense fallback={<LoadingState />}>
+      <BookingSuccessClient />
+    </Suspense>
   );
 }

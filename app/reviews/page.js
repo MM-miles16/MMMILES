@@ -150,7 +150,7 @@ Truly dependable and premium in every sense.`,
       <div className="testimonialHeader">
         <h2 className="testimonialHeading">Customer Reviews</h2>
         <p className="testimonialSub">
-          Here's what our happy customers say about us!
+          Here&apos;s what our happy customers say about us!
         </p>
       </div>
 

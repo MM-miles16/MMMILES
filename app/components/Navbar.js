@@ -35,7 +35,7 @@ export default function Navbar() {
         <ul className="navLinks">
           <li><Link href="/about">About Us</Link></li>
           <li><Link href="/reviews">Reviews</Link></li>
-          <li><Link href="/faq">FAQ’s</Link></li>
+          <li><Link href="/faq">FAQ&apos;s</Link></li>
           <li><Link href="/contact">Contact Us</Link></li>
         </ul>
 
@@ -66,7 +66,7 @@ export default function Navbar() {
             <ul>
               <li><Link href="/about" onClick={() => setMenuOpen(false)}>About Us</Link></li>
               <li><Link href="/reviews" onClick={() => setMenuOpen(false)}>Reviews</Link></li>
-              <Link href="/faq">FAQ's</Link>
+              <Link href="/faq">FAQ&apos;s</Link>
               <li><Link href="/contact" onClick={() => setMenuOpen(false)}>Contact Us</Link></li>
             </ul>
              <button className="bg-white text-black px-4 py-2 rounded-lg shadow">
