@@ -1,7 +1,8 @@
 // app/api/auth/send-otp/route.ts
-import { NextResponse } from 'next/server';
-import crypto from 'crypto';
-import { createClient } from '@supabase/supabase-js';
+import { NextResponse } from "next/server";
+import crypto from "crypto";
+import { createClient } from "@supabase/supabase-js";
+import { sendWhatsAppOTP } from "../utils/whatsapp";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -9,11 +10,11 @@ const supabase = createClient(
 );
 
 function hashOTP(otp: string) {
-  return crypto.createHash('sha256').update(otp).digest('hex');
+  return crypto.createHash("sha256").update(otp).digest("hex");
 }
 
-function generateOTP(): string {
-  const length = Number(process.env.OTP_LENGTH || 4); // default 4 digits
+function generateOTP() {
+  const length = Number(process.env.OTP_LENGTH || 4);
   const min = Math.pow(10, length - 1);
   const max = Math.pow(10, length) - 1;
   return Math.floor(min + Math.random() * (max - min)).toString();
@@ -22,31 +23,32 @@ function generateOTP(): string {
 export async function POST(req: Request) {
   try {
     const { phone } = await req.json();
-    if (!phone) {
-      return NextResponse.json({ error: 'Phone number is required' }, { status: 400 });
-    }
+    if (!phone) return NextResponse.json({ error: "Phone required" }, { status: 400 });
 
-    // 🔹 generate OTP based on env config
     const otp = generateOTP();
     const otpHash = hashOTP(otp);
-    const expiresAt = new Date(Date.now() + 2 * 60 * 1000).toISOString(); // 2 min expiry
+    const expiresAt = new Date(Date.now() + 2 * 60 * 1000).toISOString();
 
-    // upsert user record (create if not exists)
-    await supabase.from('users').upsert({ phone }, { onConflict: 'phone' });
+    // Create user if not exists
+    await supabase.from("users").upsert({ phone }, { onConflict: "phone" });
 
-    // insert OTP entry
-    await supabase.from('otp_events').insert({
+    // Store OTP
+    await supabase.from("otp_events").insert({
       phone,
       otp_hash: otpHash,
-      expires_at: expiresAt
+      expires_at: expiresAt,
     });
 
-    // (for now) show OTP in console
-    console.log(`🔹 OTP for ${phone}: ${otp}`);
+    // ✅ Send via WhatsApp
+    const sent = await sendWhatsAppOTP(phone, otp);
 
-    return NextResponse.json({ success: true, message: 'OTP generated successfully',otp });
+    if (!sent) {
+      return NextResponse.json({ error: "Failed to send WhatsApp OTP" }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true, message: "OTP sent successfully" });
   } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error("Send OTP error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
