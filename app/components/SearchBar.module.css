@@ -4,7 +4,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 2rem;
+    padding: 2rem ;
     background: #FEF9F5; 
 }
 
@@ -12,12 +12,12 @@
 .box {
     display: flex;
     align-items: center;
-    gap: 15px; 
-    background: #f7f3f1; 
+    gap: 25px; 
+    background: #F9F4EC; 
     border-radius: 20px;
     padding: 15px 20px;
-    width: 95%;
-    max-width: 1400px;
+    width: 90%;
+    max-width: 1150px;
     font-family: "Poppins", sans-serif;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
@@ -29,9 +29,10 @@
     flex-direction: column;
     flex-grow: 1; 
     min-width: 120px;
-    max-width: 250px; 
+    max-width: 290px; 
     position: relative; /* Crucial for positioning the dropdown list */
 }
+
 
 .label {
     font-weight: 600;
@@ -44,8 +45,8 @@
 .inputWrapper {
     display: flex;
     align-items: center;
-    background: #fff; 
-    border: 1px solid #e0c28f; 
+    background: #FEF9F5; 
+     
     border-radius: 12px; 
     padding: 12px 14px; 
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04); 
@@ -78,7 +79,7 @@
 .placeholderText,
 .selectedText {
     flex-grow: 1;
-    font-size: 15px;
+    font-size: 13px;
     padding: 0; 
     width: 100%;
     /* Ensure the text itself is not clickable to allow the wrapper click handler to work */
@@ -99,7 +100,7 @@
     border: none;
     background: transparent;
     outline: none;
-    font-size: 15px;
+    font-size: 13px;
     padding: 0; 
     width: 100%;
     color: #a0a0a0; /* Muted placeholder style */
@@ -135,7 +136,7 @@
     padding: 0;
     margin-top: 5px; 
     background: #fff;
-    border: 1px solid #e0c28f;
+    border: 1px solid #e08f8f;
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     max-height: 200px;
@@ -167,7 +168,7 @@
 }
 
 .searchButton {
-    background: linear-gradient(135deg, #FFC107, #FF9800); 
+    background: linear-gradient(to right, #D8B480 50%, #BF9860 100%);
     border: none;
     color: #fff; 
     border-radius: 50%;
@@ -178,7 +179,7 @@
     align-items: center;
     cursor: pointer;
     transition: transform 0.18s ease, box-shadow 0.18s ease;
-    box-shadow: 0 4px 10px rgba(255, 152, 0, 0.3);
+    box-shadow: 0 4px 10px rgba(197, 136, 46, 0.3);
     font-size: 24px;
     flex-shrink: 0; 
 }
@@ -200,4 +201,70 @@
     .box { flex-direction: column; gap: 15px; padding: 15px; }
     .field { width: 100%; min-width: unset; }
     .searchButton { width: 100%; height: 50px; border-radius: 10px; }
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.modalContent {
+  background: linear-gradient(to right bottom, #f7f5f2, #ffedd7); 
+  color: #333;
+  border-radius: 16px;
+  padding: 2rem;
+  width: 360px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  text-align: center;
+}
+
+.datePickerInput {
+  width: 100%;
+  margin: 10px 0;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #000000;
+  font-size: 0.8rem;
+  font-weight: bold;
+  font-family:'poppins', serif;
+}
+
+.sliderRow {
+  margin-top: 1rem;
+  text-align: left;
+}
+
+.slider {
+  width: 100%;
+  margin-top: 5px;
+  accent-color: var(--primary-color,  #D8B480);
+}
+
+.modalButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+
+.confirmBtn {
+  background: linear-gradient(to right, #D8B480 0%, #BF9860 100%);
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.cancelBtn {
+  background: transparent;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
 }
