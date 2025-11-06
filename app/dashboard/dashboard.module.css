@@ -57,8 +57,10 @@
   text-transform: uppercase;
   letter-spacing: 1.5px;
   margin-bottom: 12px;
+  color: #facc15; /* Fallback for older browsers */
   background: linear-gradient(90deg, #facc15, #f97316);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: fadeDown 1s ease both;
 }
@@ -213,4 +215,49 @@
   .box {
     height: 150px;
   }
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  color: #fff;
+  z-index: 10;
+}
+
+.welcomeText {
+  font-size: 1rem;
+  color: #e0e0e0;
+}
+
+.logoutBtn {
+  background: #e63946;
+  border: none;
+  color: white;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logoutBtn:hover {
+  background: #b71c1c;
+}
+
+.loadingScreen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #0d0d0d;
+  color: white;
 }
