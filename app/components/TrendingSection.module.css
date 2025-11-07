@@ -1,147 +1,233 @@
 
-.trendingSection {
+.trendy-section {
+  background: #fef9f5;
   text-align: center;
-  padding: 80px 100px;
-  background: #FEF9F5;
+  padding: 60px 100px 20px;
+  font-family: "Poppins", sans-serif;
   overflow: hidden;
 }
 
-.heading {
-  font-size: 2rem;
+.trendy-heading {
+    color: #000;
+    margin-bottom: -4px;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.trendy-subheading {
+  margin-top: 8px;
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 0px;
+}
+
+.trendy-slider-track{
+  padding: 50px 75px 30px 30px;
+}
+
+/* --- Card --- */
+.trendy-card {
+  background: #f9f4ec;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 310px;
+  flex-shrink: 0;
+  overflow: hidden;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  text-align: left;
+  transition: all 0.45s ease;
+  border: 1.5px solid #f8eeee;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 28px;
+  margin-left: 5px;
+}
+
+.trendy-card:hover {
+  transform: scale(1.08);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 1px 18px 20px rgba(142, 108, 61, 0.35);
+  z-index: 3;
+}
+
+.trendy-slider-wrapper:hover .trendy-card:not(:hover) {
+  opacity: 0.8;
+  transform: scale(0.97);
+}
+
+
+/* --- Image --- */
+.trendy-image-wrapper {
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+}
+
+.trendy-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.45s ease;
+}
+
+.trendy-card:hover .trendy-image {
+  transform: scale(1.06);
+}
+
+/* --- Content --- */
+.trendy-card-content {
+  padding: 10px 16px;
+}
+
+.trendy-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.trendy-car-type {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #6d6565;
+}
+
+.trendy-deal-tag {
+  font-size: 0.75rem;
+  
+  background:linear-gradient(to right bottom, #f0dec3, rgb(223, 223, 213));
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.trendy-car-name {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #111;
+  margin-top: 6px;
+}
+
+.trendy-line{
+  margin-left: 10px;
+  padding-top: 1px;
+}
+.trendy-features {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: #555;
+  margin: 10px 0 14px 0;
+}
+
+.trendy-feature {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #555;
+}
+
+.trendy-feature svg {
+  color: #777;
+  font-size: 14px;
+}
+
+/* --- Price Row --- */
+.trendy-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 12px;
+  background:linear-gradient(to right bottom, #f0dec3, rgb(223, 223, 213));
+  padding: 8px 12px;
+  border-radius: 12px;
+}
+
+.trendy-price {
+  font-size: 1.2rem;
   font-weight: 700;
   color: #111;
 }
 
-.subheading {
-  margin-top: 8px;
-  font-size: 1.1rem;
-  color: #555;
-  margin-bottom: 50px;
+.trendy-per-day {
+  font-size: 0.85rem;
+  color: #777;
 }
 
-/* Carousel */
-.carouselWrapper {
-  position: relative;
-  width: 100%;
-  
-  height: 400px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  perspective: 1200px;
-  overflow: hidden;
-}
-
-/* Slides */
-.slide {
-  position: absolute;
-  top: 0;
-  width: 60%;
-  height: 100%;
-  border-radius: 16px;
-  transition: all 0.8s ease-in-out;
-  overflow: hidden;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-}
-
-.image {
-  object-fit: cover;
-  border-radius: 16px;
-}
-
-/* Active / Prev / Next */
-.activeSlide {
-  transform: translateX(0) scale(1);
-  opacity: 1;
-  z-index: 3;
-}
-.prevSlide {
-  transform: translateX(-70%) scale(0.8);
-  opacity: 0.6;
-  z-index: 2;
-}
-.nextSlide {
-  transform: translateX(70%) scale(0.8);
-  opacity: 0.6;
-  z-index: 2;
-}
-
-/* Overlay on non-active slides */
-.overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 16px;
-}
-
-/* Dots */
-.dots {
-  margin-top: 30px;
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-.dot {
-  width: 12px;
-  height: 12px;
-  background: #000;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-.activeDot {
-  background: #BF9860;
-}
-
-/* Arrows under dots */
-.arrowsBottom {
-  margin-top: 20px;
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-}
-.arrowBtn {
-  background: #111;
-  color: #BF9860;
+/* --- Button --- */
+.trendy-reserve-btn {
+  width: 40%;
+  background: linear-gradient(to right, #D8B480 50%, #BF9860 100%);
+  color: white;
   border: none;
-  padding: 5px 13px;
-  border-radius: 44px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-.arrowBtn:hover {
-  background: #BF9860;
-  color: #000;
+  margin-left: 20px;
+  border-radius: 8px;
+  padding: 10px 5px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
 }
 
-/* Responsive */
+.trendy-reserve-btn:hover {
+  
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(228, 192, 44, 0.5);
+}
+
+/* --- Responsive --- */
 @media (max-width: 1024px) {
-  .slide {
-    width: 80%;
-  }
-  .prevSlide {
-    transform: translateX(-60%) scale(0.75);
-  }
-  .nextSlide {
-    transform: translateX(60%) scale(0.75);
+  .trendy-card {
+    width: 220px;
   }
 }
-@media (max-width: 600px) {
-  .carouselWrapper {
-    height: 280px;
-  }
-  .slide {
-    width: 90%;
-  }
-  .heading {
-    font-size: 1.5rem;
-  }
-  .subheading {
-    font-size: 1rem;
-  }
-  .arrowBtn {
-    font-size: 0.9rem;
-    padding: 8px 14px;
+
+@media (max-width: 768px) {
+  .trendy-card {
+    width: 200px;
   }
 }
+
+@media (max-width: 480px) {
+  .trendy-card {
+    width: 180px;
+  }
+  .trendy-image-wrapper {
+    height: 130px;
+  }
+}
+
+/* Remove link underline */
+.trendy-card,
+.trendy-card * {
+  text-decoration: none !important;
+  color: inherit !important;
+}
+
+
+
+
+
+
+/* Make track scrollable with arrows */
+.trendy-slider-track {
+  display: flex;
+  gap: 29px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+}
+
+.trendy-slider-track::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+
+/* make slider wrapper a positioning context */
+.trendy-slider-wrapper {
+  position: relative;
+}
+
+
+
+
