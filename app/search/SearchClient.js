@@ -7,9 +7,10 @@ import "./search.css";
 export default function SearchPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const location = searchParams.get("location");
-  const pickup = searchParams.get("pickup");
-  const returndate = searchParams.get("return");
+  const city = searchParams.get("city");
+  const pickup = searchParams.get("pickupTime");
+  const returndate = searchParams.get("returnTime");
+
 
   const [cars, setCars] = useState([]);
   const [selectedCar, setSelectedCar] = useState(null);
@@ -75,7 +76,7 @@ export default function SearchPage() {
 
   return (
     <div className="search-results-page">
-      <h1 className="results-title">Available Cars in {location}</h1>
+      <h1 className="results-title">Available Cars in {city}</h1>
       <p className="results-subtitle">
         Pick-up: {pickup} | Return: {returndate}
       </p>
