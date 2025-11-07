@@ -268,3 +268,183 @@
   border-radius: 8px;
   cursor: pointer;
 }
+
+/* --- Manual Location Search --- */
+.textInput {
+  flex-grow: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  color: #222;
+}
+
+.smallButton {
+  background: #fff;
+  border: 1px solid #d4a762;
+  color: #d4a762;
+  margin-left: 6px;
+  border-radius: 8px;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+  flex-shrink: 0;
+}
+
+.smallButton:hover {
+  background: #fce4b3;
+  transform: scale(1.05);
+}
+
+/* --- Suggestion Dropdown (manual search results) --- */
+.suggestionsList {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e8d1a8;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-height: 220px;
+  overflow-y: auto;
+  z-index: 150;
+  scrollbar-width: thin;
+  scrollbar-color: #d4a762 #fff;
+}
+
+.suggestionsList::-webkit-scrollbar {
+  width: 6px;
+}
+.suggestionsList::-webkit-scrollbar-thumb {
+  background: #d4a762;
+  border-radius: 4px;
+}
+
+/* Suggestion Item */
+.suggestionItem {
+  padding: 12px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #f4e6c8;
+}
+
+.suggestionItem:hover {
+  background-color: #fce4b3;
+}
+
+.suggestionItem:last-child {
+  border-bottom: none;
+}
+
+/* Disabled / Loading Text */
+.suggestionItemDisabled {
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #999;
+  text-align: center;
+}
+
+/* Suggestion Content (title & meta stacked neatly) */
+.suggestionTitle {
+  font-weight: 500;
+  color: #333;
+}
+
+.suggestionMeta {
+  font-size: 12px;
+  color: #777;
+  margin-top: 2px;
+}
+
+/* --- Detected/Selected Address (small info below field) --- */
+.detectedAddress {
+  font-size: 12px;
+  color: #777;
+  margin-top: 4px;
+  padding-left: 4px;
+  max-width: 95%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- Layout Enhancement for Search Input Section --- */
+.field .inputWrapper {
+  flex-wrap: nowrap;
+  padding-right: 8px;
+  gap: 6px;
+}
+
+/* Separate the GPS button visually (segmented look) */
+.field .inputWrapper .smallButton:last-child {
+  margin-left: auto;
+  border-left: 2px solid #f4e6c8;
+  border-radius: 8px;
+  background: #fffaf3;
+}
+
+/* Optional subtle animation for detecting text */
+.loadingText {
+  font-size: 14px;
+  color: #d4a762;
+  font-weight: 500;
+  animation: pulse 1.4s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.3; }
+  50% { opacity: 1; }
+  100% { opacity: 0.3; }
+}
+
+/* --- Progress/Loading Indicator Text --- */
+.progressText {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #d4a762;
+  display: flex;
+  align-items: center;
+  animation: fadeSlide 1.2s ease-in-out infinite;
+}
+
+@keyframes fadeSlide {
+  0% { opacity: 0.3; transform: translateY(0px); }
+  50% { opacity: 1; transform: translateY(1px); }
+  100% { opacity: 0.3; transform: translateY(0px); }
+}
+
+.dateTimeSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 600px) {
+  .dateTimeSection {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+.dateTimeBlock {
+  flex: 1;
+  background: #fffaf3;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.modalLabel {
+  display: block;
+  font-weight: 600;
+  font-size: 14px;
+  color: #444;
+  margin: 6px 0;
+}

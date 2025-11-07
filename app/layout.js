@@ -33,12 +33,28 @@ export const metadata = {
 };
 
 
+import { Toaster } from "react-hot-toast";
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
         <Navbar />
         {children}
+        <Toaster
+          position="top-center"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: "#F9F4EC",
+              color: "#333",
+              borderRadius: "10px",
+              border: "1px solid #d4a762",
+              fontSize: "14px",
+              fontWeight: "500",
+            },
+          }}
+        />
         <Footer />
       </body>
     </html>
