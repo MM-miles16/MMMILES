@@ -1,31 +1,29 @@
-import js from "@eslint/js";
-import globals from "globals";
 import { defineConfig } from "eslint/config";
+import js from "@eslint/js";
 import nextPlugin from "@next/eslint-plugin-next";
+import globals from "globals";
 
 export default defineConfig([
+  js.configs.recommended,
   {
-    files: ["**/*.{js,mjs,cjs,jsx}"],
+    files: ["**/*.{js,jsx,mjs,cjs}"],
     plugins: {
-      js,
       "@next/next": nextPlugin,
     },
-    extends: [
-      "eslint:recommended",
-      "plugin:@next/next/recommended",
-    ],
+    extends: ["plugin:@next/next/recommended"],
     languageOptions: {
-      globals: globals.browser,
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
       parserOptions: {
-        ecmaFeatures: {
-          jsx: true,
-        },
         ecmaVersion: 2020,
         sourceType: "module",
+        ecmaFeatures: { jsx: true },
       },
     },
     rules: {
-      // Add any custom rules here if needed
+      "no-undef": "off", // disable process/env warnings
     },
   },
 ]);
