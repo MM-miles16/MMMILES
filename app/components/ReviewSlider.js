@@ -58,7 +58,7 @@ const reviews = [
     img: "/profile1.jpg",
   },
   {
-    text: "I Booked just an hour before my trip and still got a clean, reliable vehicle. I'm super impressed with MM miles a quick turn around.",
+    text: "I Booked just an hour before my trip and still got a clean, reliable vehicle. I'm super impressed with MM miles a quick turn around and its response.",
     name: "Ananya D.",
     title: "Solo Traveler",
     img: "/profile2.jpg",

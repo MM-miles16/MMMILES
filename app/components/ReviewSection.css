@@ -1,65 +1,64 @@
 /* Dark stripe background */
-.reviewWrapper {
+.userrating-reviewWrapper {
   background: #2c2b2b;
-  padding: 0 60px; 
-  height: 150px;  
-  border-radius: 8px;    
-  margin-top: 60px;         /* Space below navbar */
+  padding: 0 60px;
+  height: 150px;
+  border-radius: 8px;
+  margin-top: 60px;
 }
 
 /* Container for the floating cards */
-.reviewSection {
+.userrating-reviewSection {
   display: flex;
   justify-content: center;
   gap: 2rem;
-  transform: translateY(-40%); /* ✅ Pulls cards up so they float like in screenshot */
+  transform: translateY(-40%);
   max-width: 1400px;
   margin: 0 auto;
 }
 
-.review-body{
-    padding: 0 100px;
-    background-color: #FEF9F5;
+.userrating-review-body {
+  padding: 0 100px;
+  background-color: #FEF9F5;
 }
 
 /* Card styling */
-.reviewCard {
+.userrating-reviewCard {
   flex: 1;
   background: #F9F4EC;
   border-radius: 12px;
   padding: 2rem;
   border: 2px solid #a47c45;
-  box-shadow: 0px 6px 12px rgba(0,0,0,0.15);
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
   transition: transform 0.3s ease;
   display: flex;
   align-items: center;
-  min-height: 181px;         
+  min-height: 181px;
 }
-.reviewCard:hover {
+.userrating-reviewCard:hover {
   transform: translateY(-8px);
 }
 
 /* Inside card: image + text in same line */
-.reviewContent {
+.userrating-reviewContent {
   display: flex;
   align-items: center;
   gap: 1.5rem;
 }
 
-.reviewImg {
+.userrating-reviewImg {
   width: 80px;
   height: 80px;
   object-fit: contain;
 }
 
-.reviewImg1 {
+.userrating-reviewImg1 {
   width: 99px;
   height: 96px;
   object-fit: contain;
 }
 
-
-.reviewText h3 {
+.userrating-reviewText h3 {
   font-size: 1rem;
   font-weight: 600;
   width: 280px;
@@ -67,7 +66,7 @@
   line-height: 1.4;
 }
 
-.reviewBtn {
+.userrating-reviewBtn {
   background: linear-gradient(to right, #D8B480 0%, #BF9860 100%);
   color: black;
   border: none;
@@ -78,155 +77,169 @@
   font-weight: 550;
   transition: background 0.3s ease;
 }
-.reviewBtn:hover {
+.userrating-reviewBtn:hover {
   background: linear-gradient(to right, #BF9860 0%, #D8B480 100%);
   color: #000000;
 }
 
 /* ✅ Responsive */
 @media (max-width: 768px) {
-  .reviewWrapper {
-    padding: 0 20px;         /* Smaller side padding on mobile */
+  .userrating-reviewWrapper {
+    padding: 20px;
+    margin-bottom: 100px;
   }
+  .userrating-review-body {
+    background-color: #fef9f5;
+    padding: 0 20px;
 
-  .reviewSection {
+  .userrating-reviewSection {
     flex-direction: column;
-    transform: translateY(-30%); /* Adjust float for mobile */
+    transform: translateY(-30%);
   }
 
-  .reviewCard {
-    min-height: auto;        /* Allow height to adjust */
-    padding: 1.5rem;
+  .userrating-reviewCard {
+    min-height: auto;
+    padding: 1.2rem;
     margin-bottom: -20px;
   }
-
-  .reviewImg {
-    width: 60px;
-    height: 60px;
+  .userrating-reviewContent {
+      align-items: center;
+      gap: 1rem;
+      display: flex;
   }
 
-  .reviewText h3 {
-    font-size: 0.9rem;
+  .userrating-reviewImg {
+    width: 40px;
+    height: 40px;
+  }
+  .userrating-reviewImg1 {
+      object-fit: contain;
+      width: 50px;
+      height: 50px;
   }
 
-  .reviewBtn {
-    font-size: 0.8rem;
+  .userrating-reviewText h3 {
+    font-size: 13px;
+  }
+  .userrating-reviewText h3 {
+      max-width: 270px;
+      width: 110%;
+      margin-bottom: 0.7rem;
+      margin-left: 8px;
+      font-weight: 600;
+      line-height: 1.4;
+  }
+  #userrating-reviewText2{
+    margin-left: -2px;
+  }
+
+  .userrating-reviewBtn {
+    font-size: 0.7rem;
+    min-width: 160px;
     padding: 0.5rem 1.2rem;
   }
 }
-
-
-
-
-
-
-
-
-
-
+}
 
 /* --- Modal Backdrop (Full Screen Overlay) --- */
-.modalBackdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* Dark, semi-transparent overlay */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000; /* Ensure it's on top of everything */
-    opacity: 1;
-    transition: opacity 0.3s ease;
+.userrating-modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity 0.3s ease;
 }
 
 /* --- Modal Content Container --- */
-.modalContent {
-    background-color: #FEF9F5; /* Light background matching .review-body */
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    width: 90%;
-    max-width: 500px; /* Limit max size for large screens */
-    position: relative;
-    transform: scale(1);
-    transition: transform 0.3s ease;
+.userrating-modalContent {
+  background-color: #FEF9F5;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+  transform: scale(1);
+  transition: transform 0.3s ease;
 }
 
 /* --- Modal Header and Text --- */
-.modalTitle {
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin-bottom: 5px;
-    color: #333;
+.userrating-modalTitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 5px;
+  color: #333;
 }
 
-.modalSubtitle {
-    font-size: 1rem;
-    color: #666;
-    margin-bottom: 25px;
+.userrating-modalSubtitle {
+  font-size: 1rem;
+  color: #666;
+  margin-bottom: 25px;
 }
 
 /* --- Form Fields inside Modal --- */
-.modalForm {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+.userrating-modalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
-.modalInput {
-    padding: 12px 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 1rem;
-    width: 100%;
-    box-sizing: border-box;
+.userrating-modalInput {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.modalInput:focus {
-    border-color: #a47c45;
-    box-shadow: 0 0 0 2px rgba(164, 124, 69, 0.2);
-    outline: none;
+.userrating-modalInput:focus {
+  border-color: #a47c45;
+  box-shadow: 0 0 0 2px rgba(164, 124, 69, 0.2);
+  outline: none;
 }
 
-.modalTextarea {
-    resize: vertical;
+.userrating-modalTextarea {
+  resize: vertical;
 }
 
 /* --- Close Button --- */
-.modalCloseBtn {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    background: none;
-    border: none;
-    font-size: 2rem;
-    cursor: pointer;
-    color: #666;
-    line-height: 1;
-    padding: 5px;
-    transition: color 0.2s;
+.userrating-modalCloseBtn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #666;
+  line-height: 1;
+  padding: 5px;
+  transition: color 0.2s;
 }
 
-.modalCloseBtn:hover {
-    color: #333;
+.userrating-modalCloseBtn:hover {
+  color: #333;
 }
 
-/* --- Submit Button (Reusing existing style) --- */
-.modalSubmitBtn {
-    width: 100%;
-    margin-top: 15px;
-    font-size: 1rem;
-    padding: 0.8rem 1.5rem;
+/* --- Submit Button --- */
+.userrating-modalSubmitBtn {
+  width: 100%;
+  margin-top: 15px;
+  font-size: 1rem;
+  padding: 0.8rem 1.5rem;
 }
 
-
-/* File: ReviewSection.css (NEW STYLE) */
-
-/* Style for the button when submission is successful */
-.modalSubmitBtn.success {
-    background: linear-gradient(to right, #4CAF50 0%, #66BB6A 100%); /* Green success color */
-    color: white; 
-    pointer-events: none; /* Prevent any clicks while showing success */
+/* Style for success state */
+.userrating-modalSubmitBtn.userrating-success {
+  background: linear-gradient(to right, #4CAF50 0%, #66BB6A 100%);
+  color: white;
+  pointer-events: none;
 }

@@ -1,4 +1,3 @@
-// File: ReviewSection.jsx
 "use client";
 import Image from "next/image";
 import { useState } from 'react'; 
@@ -13,7 +12,6 @@ export default function ReviewSection() {
     
     const handleCloseModal = () => setIsModalOpen(false);
 
-    // This function is now just a final notification, the submission happens in the Modal
     const handleSubmit = (formData) => {
         console.log("Review submitted successfully:", formData);
     };
@@ -23,52 +21,52 @@ export default function ReviewSection() {
     };
 
     return (
-        <div className="review-body">
-            <section className="reviewWrapper">
-                <div className="reviewSection">
+        <div className="userrating-review-body">
+            <section className="userrating-reviewWrapper">
+                <div className="userrating-reviewSection">
                     
                     {/* First Card (Review Form Modal) */}
-                    <div className="reviewCard">
-                        <div className="reviewContent">
+                    <div className="userrating-reviewCard">
+                        <div className="userrating-reviewContent">
                             <Image 
                                 src="/people.png" 
                                 alt="Share Experience" 
                                 width={80} 
                                 height={80} 
-                                className="reviewImg"
+                                className="userrating-reviewImg"
                             />
-                            <div className="reviewText">
+                            <div className="userrating-reviewText">
                                 <h3>
-                                    Kindly Drop Your Experience with us <br />
+                                    Kindly Drop Your Experience <br />
                                     & Save Big on Your Next Ride
                                 </h3>
                                 <button 
-                                    className="reviewBtn"
+                                    className="userrating-reviewBtn"
                                     onClick={() => setIsModalOpen(true)} 
                                 >
-                                    Be one of our success story
+                                    Share your success story
                                 </button>
                             </div>
                         </div>
                     </div>
 
                     {/* Second Card (Rating Link) */}
-                    <div className="reviewCard">
-                        <div className="reviewContent">
+                    <div className="userrating-reviewCard">
+                        <div className="userrating-reviewContent">
                             <Image 
                                 src="/star.png" 
                                 alt="Rate Us" 
                                 width={80} 
                                 height={80} 
-                                className="reviewImg1"
+                                className="userrating-reviewImg1"
                             />
-                            <div className="reviewText">
-                                <h3>
+                            <div className="userrating-reviewText">
+                                <h3 id="userrating-reviewText2">
                                     Give Us Your Rating with your <br />
                                     Experience
                                 </h3>
                                 <button 
-                                    className="reviewBtn"
+                                    className="userrating-reviewBtn"
                                     onClick={handleRatingClick}
                                 >
                                     Your One Click Help Many
@@ -79,20 +77,18 @@ export default function ReviewSection() {
                 </div>
             </section>
             
-            {/* Conditionally render the Modal if isModalOpen is true */}
             {isModalOpen && (
                 <ReviewModal 
                     onClose={handleCloseModal} 
                     onSubmit={handleSubmit}
-                    googleScriptUrl={GOOGLE_SCRIPT_URL} // Pass the URL to the modal
+                    googleScriptUrl={GOOGLE_SCRIPT_URL}
                 />
             )}
         </div>
     );
 }
 
-// --- UPDATED MODAL COMPONENT DEFINITION (WITH FETCH LOGIC) ---
-const ReviewModal = ({ onClose, onSubmit, googleScriptUrl }) => { // Accept URL as prop
+const ReviewModal = ({ onClose, onSubmit, googleScriptUrl }) => {
     const [formData, setFormData] = useState({
         name: '',
         month: '', 
@@ -129,26 +125,21 @@ const ReviewModal = ({ onClose, onSubmit, googleScriptUrl }) => { // Accept URL 
         try {
             const response = await fetch(googleScriptUrl, {
                 method: 'POST',
-                // CRITICAL: Apps Script needs a JSON string in the body with this Content-Type
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 },
                 body: JSON.stringify(formData), 
             });
             
-            // Apps Script usually returns a JSON response; parse it.
             const result = await response.json(); 
             
-            // Check for success marker from the Apps Script (assuming script returns {result: 'success'})
             if (response.ok && result.result === 'success') {
                 onSubmit(formData); 
                 setSubmissionStatus('success');
             } else {
-                // Handle network or script error
                 throw new Error(result.message || 'Submission failed on the server.');
             }
 
-            // Wait 1.5 seconds, then close the modal
             setTimeout(() => {
                 onClose(); 
             }, 1500); 
@@ -156,7 +147,7 @@ const ReviewModal = ({ onClose, onSubmit, googleScriptUrl }) => { // Accept URL 
         } catch (error) {
             console.error('Submission failed:', error);
             alert(`Submission failed: ${error.message || 'Network error'}. Check your script deployment.`);
-            setSubmissionStatus('idle'); // Reset to allow re-submission
+            setSubmissionStatus('idle');
         }
     };
     
@@ -169,24 +160,23 @@ const ReviewModal = ({ onClose, onSubmit, googleScriptUrl }) => { // Accept URL 
     const isFormDisabled = submissionStatus !== 'idle';
 
     return (
-        // Modal Backdrop
-        <div className="modalBackdrop" onClick={onClose}>
-            <div className="modalContent" onClick={(e) => e.stopPropagation()}>
+        <div className="userrating-modalBackdrop" onClick={onClose}>
+            <div className="userrating-modalContent" onClick={(e) => e.stopPropagation()}>
                 {submissionStatus !== 'submitting' && (
-                    <button className="modalCloseBtn" onClick={onClose}>&times;</button>
+                    <button className="userrating-modalCloseBtn" onClick={onClose}>&times;</button>
                 )}
                 
-                <h3 className="modalTitle">Share Your Experience</h3>
-                <p className="modalSubtitle">Tell us about your ride and get a discount on your next trip!</p>
+                <h3 className="userrating-modalTitle">Share Your Experience</h3>
+                <p className="userrating-modalSubtitle">Tell us about your ride and get a discount on your next trip!</p>
 
-                <form onSubmit={handleFormSubmit} className="modalForm">
+                <form onSubmit={handleFormSubmit} className="userrating-modalForm">
                     <input
                         type="text"
                         name="name"
                         placeholder="Your Name"
                         value={formData.name}
                         onChange={handleChange}
-                        className="modalInput"
+                        className="userrating-modalInput"
                         required
                         disabled={isFormDisabled} 
                     />
@@ -195,7 +185,7 @@ const ReviewModal = ({ onClose, onSubmit, googleScriptUrl }) => { // Accept URL 
                         name="month"
                         value={formData.month}
                         onChange={handleChange}
-                        className="modalInput"
+                        className="userrating-modalInput"
                         required
                         disabled={isFormDisabled}
                     >
@@ -212,7 +202,7 @@ const ReviewModal = ({ onClose, onSubmit, googleScriptUrl }) => { // Accept URL 
                         placeholder="Your Review (Max 500 characters)"
                         value={formData.review}
                         onChange={handleChange}
-                        className="modalInput modalTextarea"
+                        className="userrating-modalInput userrating-modalTextarea"
                         rows="4"
                         maxLength="500"
                         required
@@ -221,7 +211,7 @@ const ReviewModal = ({ onClose, onSubmit, googleScriptUrl }) => { // Accept URL 
                     
                     <button 
                         type="submit" 
-                        className={`reviewBtn modalSubmitBtn ${submissionStatus === 'success' ? 'success' : ''}`}
+                        className={`userrating-reviewBtn userrating-modalSubmitBtn ${submissionStatus === 'success' ? 'userrating-success' : ''}`}
                         disabled={isFormDisabled}
                     >
                         {getButtonText()}
