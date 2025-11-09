@@ -1,42 +1,46 @@
 .search-results-page {
   padding: 40px;
-  background: #FEF9F5;
+  background-color: #FEF9F5;
   min-height: 100vh;
-  text-align: center;
+  font-family: "Poppins", sans-serif;
 }
 
 .results-title {
-  font-size: 2rem;
-  font-weight: bold;
-  color: #c79a58;
+  text-align: center;
+  color: #333;
+  font-size: 26px;
+  font-weight: 700;
   margin-bottom: 10px;
 }
 
 .results-subtitle {
-  color: #555;
+  text-align: center;
+  font-size: 15px;
+  color: #777;
   margin-bottom: 30px;
 }
 
+/* ==== Car Grid ==== */
 .cars-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 25px;
-  justify-items: center;
+  justify-content: center;
 }
 
+/* ==== Individual Car Card ==== */
 .car-card {
   background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
   overflow: hidden;
-  transition: transform 0.2s, box-shadow 0.3s;
-  width: 100%;
-  max-width: 320px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
 }
 
 .car-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(199, 154, 88, 0.3);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .car-image {
@@ -46,134 +50,117 @@
 }
 
 .car-info {
-  padding: 15px;
+  padding: 15px 18px;
 }
 
 .car-info h3 {
-  margin: 8px 0;
-  color: #333;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #222;
+}
+
+.car-info p {
+  margin: 4px 0;
+  color: #555;
+  font-size: 14px;
 }
 
 .price {
-  color: #c79a58;
-  font-weight: bold;
-  margin: 5px 0;
+  color: #d4a762;
+  font-weight: 700;
+  font-size: 16px;
+  margin-top: 8px;
 }
 
+.distance {
+  color: #999;
+  font-size: 13px;
+}
+
+/* ==== Book Button ==== */
 .book-btn {
-  margin-top: 10px;
-  background-color: #c79a58;
+  display: block;
+  width: 100%;
+  background: linear-gradient(to right, #D8B480, #BF9860);
   color: white;
   border: none;
-  border-radius: 6px;
-  padding: 10px 16px;
-  font-weight: 500;
+  border-radius: 10px;
+  padding: 10px 0;
+  margin-top: 12px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background 0.3s ease;
 }
 
 .book-btn:hover {
-  background-color: #b28442;
+  background: linear-gradient(to right, #cfa86a, #a67a47);
 }
 
-
-
-/* ===== Booking Modal ===== */
-
+/* ==== Modal ==== */
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.55);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2000;
+  z-index: 50;
 }
 
 .booking-modal {
-  background: #fffaf2;
-  border-radius: 20px;
-  padding: 25px;
-  width: 90%;
-  max-width: 500px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   position: relative;
-  box-shadow: 0 5px 25px rgba(199, 154, 88, 0.5);
-  animation: popIn 0.25s ease-in-out;
-  text-align: center;
-}
-
-@keyframes popIn {
-  from {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
 }
 
 .close-btn {
   position: absolute;
   top: 10px;
-  right: 12px;
+  right: 10px;
   background: none;
   border: none;
   font-size: 20px;
   cursor: pointer;
-  color: #333;
-  transition: 0.2s;
-}
-
-.close-btn:hover {
-  color: #c79a58;
 }
 
 .modal-image {
-  border-radius: 14px;
-  margin-bottom: 15px;
+  border-radius: 10px;
+  width: 100%;
+  object-fit: cover;
+  margin-bottom: 10px;
 }
 
-.modal-content h2 {
-  margin: 10px 0 5px;
-  color: #c79a58;
+.modal-content {
+  text-align: center;
 }
 
 .modal-type {
   color: #666;
-  font-size: 15px;
 }
 
 .modal-price {
-  color: #b28442;
-  font-weight: 600;
-  margin: 8px 0;
-}
-
-.modal-summary {
-  text-align: left;
-  margin: 15px 0 20px;
-  background: #fff3e0;
-  border-radius: 12px;
-  padding: 12px 16px;
-  font-size: 14px;
-  color: #333;
+  color: #d4a762;
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 10px;
 }
 
 .confirm-btn {
-  background: #c79a58;
+  background: linear-gradient(to right, #D8B480, #BF9860);
   color: white;
   border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
   cursor: pointer;
   font-weight: 600;
-  transition: background 0.3s ease;
+  width: 100%;
 }
 
 .confirm-btn:hover {
-  background: #b28442;
+  background: linear-gradient(to right, #cfa86a, #a67a47);
 }

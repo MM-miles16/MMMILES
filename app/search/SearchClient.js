@@ -1,4 +1,5 @@
 "use client";
+
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -7,49 +8,82 @@ import "./search.css";
 export default function SearchPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+
   const city = searchParams.get("city");
   const pickup = searchParams.get("pickupTime");
   const returndate = searchParams.get("returnTime");
 
-
   const [cars, setCars] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedCar, setSelectedCar] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [userLocation, setUserLocation] = useState(null);
 
+  // ---- get user location ----
   useEffect(() => {
-    const carData = [
-      {
-        id: 1,
-        name: "Hyundai i20",
-        type: "Hatchback",
-        price: "₹2,000/day",
-        img: "/cars/i20.jpg",
-      },
-      {
-        id: 2,
-        name: "Maruti Suzuki Dzire",
-        type: "Sedan",
-        price: "₹2,200/day",
-        img: "/cars/dzire.jpg",
-      },
-      {
-        id: 3,
-        name: "Toyota Innova Crysta",
-        type: "SUV",
-        price: "₹3,500/day",
-        img: "/cars/innova.jpg",
-      },
-      {
-        id: 4,
-        name: "Mahindra XUV700",
-        type: "SUV",
-        price: "₹4,000/day",
-        img: "/cars/xuv700.jpg",
-      },
-    ];
-    setCars(carData);
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          setUserLocation({
+            lat: pos.coords.latitude,
+            lon: pos.coords.longitude,
+          });
+        },
+        () => setUserLocation(null),
+        { enableHighAccuracy: true }
+      );
+    }
   }, []);
 
+  // ---- fetch cars from API ----
+  useEffect(() => {
+    async function fetchCars() {
+      if (!city) return;
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/cars?city=${encodeURIComponent(city)}`);
+        const data = await res.json();
+
+        const enriched = data.map((car) => {
+          if (userLocation) {
+            car.distance_km = calcDistance(
+              userLocation.lat,
+              userLocation.lon,
+              car.latitude,
+              car.longitude
+            );
+          } else {
+            car.distance_km = null;
+          }
+          return car;
+        });
+        setCars(enriched);
+      } catch (e) {
+        console.error("Error fetching cars:", e);
+        setCars([]);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchCars();
+  }, [city, userLocation]);
+
+  // ---- distance math ----
+  function calcDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return (R * c).toFixed(1);
+  }
+
+  // ---- modal controls ----
   const openBookingModal = (car) => {
     setSelectedCar(car);
     setShowModal(true);
@@ -62,17 +96,24 @@ export default function SearchPage() {
 
   const confirmBooking = () => {
     if (!selectedCar) return;
-    // Redirect to booking success page with all info as query params
     const params = new URLSearchParams({
-      name: selectedCar.name,
-      type: selectedCar.type,
-      price: selectedCar.price,
-      location: location,
-      pickup: pickup,
+      name: `${selectedCar.make} ${selectedCar.model}`,
+      type: selectedCar.vehicle_type,
+      price: selectedCar.hourly_rate,
+      location: city,
+      pickup,
       return: returndate,
     });
     router.push(`/booking-success?${params.toString()}`);
   };
+
+  // ---- UI ----
+  if (loading)
+    return (
+      <div className="search-results-page">
+        <h1 className="results-title">Searching cars in {city}...</h1>
+      </div>
+    );
 
   return (
     <div className="search-results-page">
@@ -82,54 +123,60 @@ export default function SearchPage() {
       </p>
 
       <div className="cars-grid">
-        {cars.map((car) => (
-          <div key={car.id} className="car-card">
-            <Image
-              src={car.img}
-              alt={car.name}
-              width={300}
-              height={180}
-              className="car-image"
-            />
-            <div className="car-info">
-              <h3>{car.name}</h3>
-              <p>{car.type}</p>
-              <p className="price">{car.price}</p>
-              <button
-                className="book-btn"
-                onClick={() => openBookingModal(car)}
-              >
-                Book Now
-              </button>
+        {cars.length === 0 ? (
+          <p>No cars found in {city}.</p>
+        ) : (
+          cars.map((car) => (
+            <div key={car.id} className="car-card">
+              <Image
+                src={"/cars/default.jpg"}
+                alt={`${car.make} ${car.model}`}
+                width={300}
+                height={180}
+                className="car-image"
+              />
+              <div className="car-info">
+                <h3>{car.make + " " + car.model}</h3>
+                <p>{car.vehicle_type}</p>
+                <p className="price">₹{car.hourly_rate}/hr</p>
+                {car.distance_km && (
+                  <p className="distance">📍 {car.distance_km} km away</p>
+                )}
+                <button
+                  className="book-btn"
+                  onClick={() => openBookingModal(car)}
+                >
+                  Book Now
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
-      {/* ===== Booking Modal ===== */}
       {showModal && selectedCar && (
         <div className="modal-overlay" onClick={closeModal}>
-          <div
-            className="booking-modal"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="booking-modal" onClick={(e) => e.stopPropagation()}>
             <button className="close-btn" onClick={closeModal}>
               ✖
             </button>
             <div className="modal-content">
               <Image
-                src={selectedCar.img}
-                alt={selectedCar.name}
+                src={"/cars/default.jpg"}
+                alt={`${selectedCar.make} ${selectedCar.model}`}
                 width={400}
                 height={240}
                 className="modal-image"
               />
-              <h2>{selectedCar.name}</h2>
-              <p className="modal-type">{selectedCar.type}</p>
-              <p className="modal-price">{selectedCar.price}</p>
+              <h2>{selectedCar.make + " " + selectedCar.model}</h2>
+              <p className="modal-type">{selectedCar.vehicle_type}</p>
+              <p className="modal-price">₹{selectedCar.hourly_rate}/hr</p>
+              {selectedCar.distance_km && (
+                <p>Distance: {selectedCar.distance_km} km</p>
+              )}
               <div className="modal-summary">
                 <p>
-                  <strong>Location:</strong> {location}
+                  <strong>Location:</strong> {city}
                 </p>
                 <p>
                   <strong>Pick-up:</strong> {pickup}
