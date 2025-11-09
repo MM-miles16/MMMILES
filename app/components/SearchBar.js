@@ -13,7 +13,7 @@ import {
 import { toast } from "react-hot-toast";
 import styles from "./SearchBar.module.css";
 
-const CITIES = ["Chennai", "Bangalore", "Kochi", "Hyderabad", "Mumbai"];
+const CITIES = ["Chennai", "Bengaluru", "Kochi", "Hyderabad", "Mumbai"];
 const LOCATION_PLACEHOLDER = "Select Your Place";
 
 export default function SearchBar() {
