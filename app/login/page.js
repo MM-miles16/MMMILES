@@ -82,7 +82,11 @@ export default function LoginPage() {
         // 🔔 Notify Navbar instantly
         window.dispatchEvent(new Event("auth-change"));
 
-        router.push("/dashboard");
+        // ✅ After successful login
+        const redirectParam = new URLSearchParams(window.location.search).get("redirect");
+        const redirectTo = redirectParam ? decodeURIComponent(redirectParam) : "/dashboard";
+
+        router.push(redirectTo);
       } else setMessage(data.error || "Invalid OTP");
     } catch (err) {
       console.error(err);
