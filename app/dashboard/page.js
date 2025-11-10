@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { User, Clock, ShoppingCart, LogOut } from "lucide-react";
 import styles from "./dashboard.module.css";
@@ -88,31 +89,34 @@ export default function Dashboard() {
 
         <div className={styles.grid}>
           {/* Profile Box */}
-          <div
+          <Link
+          href="/profile"
             className={`${styles.box} ${styles.profile} ${boxStateClass("profile")}`}
             onClick={() => handleBoxClick("profile")}
           >
             <User className={styles.icon} />
             <span>My Profile</span>
-          </div>
+          </Link>
 
           {/* Booking History Box */}
-          <div
+          <Link
+            href="/history"
             className={`${styles.box} ${styles.history} ${boxStateClass("history")}`}
             onClick={() => handleBoxClick("history")}
           >
             <Clock className={styles.icon} />
             <span>Booking History</span>
-          </div>
+          </Link>
 
           {/* Checkout Box */}
-          <div
+          <Link
+            href="/checkout"
             className={`${styles.box} ${styles.checkout} ${boxStateClass("checkout")}`}
             onClick={() => handleBoxClick("checkout")}
           >
             <ShoppingCart className={styles.icon} />
             <span>Check-Out Cart</span>
-          </div>
+          </Link>
         </div>
       </div>
     </div>

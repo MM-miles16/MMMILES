@@ -1,0 +1,179 @@
+/* ===========================
+   Modern Checkout Page Styles
+   Theme: Dark + Glassmorphism
+=========================== */
+
+.checkoutPage {
+  min-height: 100vh;
+  padding: 3rem;
+  background: radial-gradient(circle at top left, #0f172a, #1e293b, #0f172a);
+  color: #e5e7eb;
+  font-family: "Poppins", sans-serif;
+  transition: opacity 0.6s ease-in-out;
+}
+
+.fadeOut {
+  opacity: 0;
+}
+
+/* ---------- Headings ---------- */
+.title {
+  font-size: 2.2rem;
+  font-weight: 600;
+  text-align: center;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.subtitle {
+  text-align: center;
+  color: #9ca3af;
+  margin-bottom: 2rem;
+  font-weight: 400;
+}
+
+/* ---------- Layout ---------- */
+.container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2.5rem;
+}
+
+/* ---------- Cards ---------- */
+.detailsCard,
+.paymentCard {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1.5rem;
+  padding: 2rem;
+  flex: 1;
+  min-width: 340px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(15px);
+  transition: all 0.4s ease;
+}
+
+.detailsCard:hover,
+.paymentCard:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ---------- Ride Details ---------- */
+.detailsCard h2,
+.paymentCard h2 {
+  margin-bottom: 1.5rem;
+  color: #f3f4f6;
+  font-weight: 600;
+  font-size: 1.4rem;
+}
+
+.detailItem {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  color: #d1d5db;
+}
+
+/* ---------- Promo Section ---------- */
+.promoSection {
+  display: flex;
+  gap: 0.7rem;
+  margin-bottom: 1.5rem;
+}
+
+.promoSection input {
+  flex: 1;
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: #f9fafb;
+  outline: none;
+}
+
+.promoSection input::placeholder {
+  color: #9ca3af;
+}
+
+.promoSection button {
+  background-color: #2563eb;
+  color: #fff;
+  border: none;
+  padding: 0.7rem 1.2rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.promoSection button:hover {
+  background-color: #1d4ed8;
+  box-shadow: 0 0 15px rgba(37, 99, 235, 0.5);
+}
+
+/* ---------- Payment Options ---------- */
+.paymentOptions {
+  margin-bottom: 1.8rem;
+}
+
+.paymentOptions h3 {
+  color: #f3f4f6;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.paymentOptions label {
+  display: block;
+  margin-bottom: 0.8rem;
+  cursor: pointer;
+  color: #d1d5db;
+  transition: color 0.3s ease;
+}
+
+.paymentOptions label:hover {
+  color: #60a5fa;
+}
+
+/* ---------- Summary ---------- */
+.summaryBox {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 1rem;
+  margin-top: 1.5rem;
+}
+
+.summaryBox div {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+  color: #e5e7eb;
+}
+
+.total strong {
+  color: #60a5fa;
+  font-size: 1.3rem;
+}
+
+/* ---------- Checkout Button ---------- */
+.checkoutBtn {
+  width: 100%;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff;
+  border: none;
+  padding: 1rem;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  cursor: pointer;
+  transition: all 0.4s ease;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.3);
+}
+
+.checkoutBtn:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+}
