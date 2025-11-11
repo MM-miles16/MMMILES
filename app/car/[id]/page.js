@@ -1,411 +1,260 @@
 "use client";
 
-import { useParams, useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import styles from "./carDetail.module.css";
+import Link from "next/link";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "../../../lib/supabaseClient";
+import styles from "./carDetail.module.css";
+import Counter from "../../components/Counter";
 
-/**
- * Parse a date-time string.
- * Accepts:
- *  - "DD/MM/YYYY HH:MM"  (e.g. "10/11/2025 09:00")
- *  - ISO strings (e.g. "2025-11-10T09:00:00Z" or "2025-11-10 09:00")
- */
-function parseDateTime(str) {
-  if (!str) return null;
-  // try dd/mm/yyyy HH:MM
-  const ddmmyy = /^(\d{1,2})\/(\d{1,2})\/(\d{4})[ T](\d{1,2}):(\d{2})$/;
-  const m = str.match(ddmmyy);
-  if (m) {
-    const [, dd, mm, yyyy, hh, min] = m;
-    // construct local Date
-    return new Date(
-      Number(yyyy),
-      Number(mm) - 1,
-      Number(dd),
-      Number(hh),
-      Number(min),
-      0,
-      0
-    );
-  }
+// --- Static placeholders for now ---
+const blurCardsData = [
+  { id: 1, title: "Service", subtext: "Showroom record", color: "blue" },
+  { id: 2, title: "Display", subtext: "7-inch Smart Display", color: "green" },
+  { id: 3, title: "Safety", subtext: "6 Airbags", color: "cyan" },
+  { id: 4, title: "Engine", subtext: "TODO: from DB", color: "blue" },
+  { id: 5, title: "Clean", subtext: "Cars sanitized before each trip", color: "green" },
+  { id: 6, title: "Maintenance", subtext: "Serviced regularly", color: "cyan" },
+];
 
-  // Try ISO or other parsable forms
-  const d = new Date(str);
-  if (!isNaN(d.getTime())) return d;
+const faqData = [
+  { id: 1, question: "What documents are required for pickup?", answer: "TODO: Add FAQ data" },
+  { id: 2, question: "How do I cancel my booking?", answer: "TODO: Add cancellation details" },
+  { id: 3, question: "What happens in case of damage?", answer: "TODO: Add insurance details" },
+  { id: 4, question: "Is fuel included in trip price?", answer: "TODO: Add pricing info" },
+];
 
-  return null;
-}
+const exploreCardsData = [
+  { id: 1, image: "/explore-cards/card1.png", tag: "SUV", title: "Explore Premium SUVs", description: "Find reliable SUVs for every trip." },
+  { id: 2, image: "/explore-cards/card2.png", tag: "Sedan", title: "Luxury Sedans", description: "Comfort and style at affordable rates." },
+  { id: 3, image: "/explore-cards/card3.png", tag: "Hatchback", title: "City Drives", description: "Compact and fuel-efficient rides." },
+];
 
-/**
- * Break a continuous time range into per-day ranges with hours per day.
- * Returns array of { date: 'YYYY-MM-DD', start: Date, end: Date, hours: number }
- *
- * Billing rule: we count actual hours in each day, and round up fractional hours for billing.
- */
-function splitIntoDaysWithHours(startDate, endDate) {
-  if (!(startDate instanceof Date) || !(endDate instanceof Date)) return [];
-  if (endDate <= startDate) return [];
+const statsData = [
+  { number: "2025", label: "Model Year" },
+  { number: "12000", label: "Driven (KM)" },
+  { number: "18", label: "KM/L Mileage" },
+  { number: "5", label: "Seats" },
+];
 
-  const dayRanges = [];
-  let cursor = new Date(startDate); // mutable
-  // iterate until cursor >= endDate
-  while (cursor < endDate) {
-    const dayStart = new Date(
-      cursor.getFullYear(),
-      cursor.getMonth(),
-      cursor.getDate(),
-      0,
-      0,
-      0,
-      0
-    );
-
-    // end of this day = next midnight
-    const nextMidnight = new Date(dayStart);
-    nextMidnight.setDate(dayStart.getDate() + 1);
-
-    const segStart = cursor > dayStart ? new Date(cursor) : dayStart;
-    const segEnd = endDate < nextMidnight ? new Date(endDate) : nextMidnight;
-
-    // compute hours (fractional)
-    const hours = (segEnd - segStart) / (1000 * 60 * 60);
-
-    // billing: round up fractional hours to next full hour
-    const billedHours = Math.ceil(hours);
-
-    dayRanges.push({
-      date: dayStart.toISOString().slice(0, 10), // YYYY-MM-DD
-      start: segStart,
-      end: segEnd,
-      hours,
-      billedHours,
-    });
-
-    cursor = nextMidnight;
-  }
-
-  return dayRanges;
-}
-
-export default function CarDetailPage() {
+export default function CarPage() {
   const { id } = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const pickupRaw = searchParams.get("pickup") || searchParams.get("pickupTime");
-  const returnRaw = searchParams.get("return") || searchParams.get("returnTime");
+  const pickup = searchParams.get("pickup") || searchParams.get("pickupTime");
+  const returnTime = searchParams.get("return") || searchParams.get("returnTime");
 
   const [car, setCar] = useState(null);
-  const [images, setImages] = useState([]);
   const [host, setHost] = useState(null);
+  const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeImage, setActiveImage] = useState(0);
-
-  // parsed datetimes
-  const pickupDt = parseDateTime(pickupRaw);
-  const returnDt = parseDateTime(returnRaw);
+  const [activePlan, setActivePlan] = useState("MAX");
+  const [currentMainMedia, setCurrentMainMedia] = useState(null);
 
   useEffect(() => {
-    async function fetchCarDetails() {
+    async function fetchCar() {
       try {
-        // Get vehicle + host data
-        const { data: vehicle, error: vehicleError } = await supabase
+        const { data: vehicle, error } = await supabase
           .from("vehicles")
           .select("*, hosts(*)")
           .eq("id", id)
           .single();
-
-        if (vehicleError) throw vehicleError;
+        if (error) throw error;
 
         setCar(vehicle);
         setHost(vehicle.hosts || null);
 
-        // Fetch vehicle images
-        const { data: imgs, error: imgErr } = await supabase
+        const { data: imgs } = await supabase
           .from("vehicle_images")
           .select("*")
           .eq("vehicle_id", id)
           .order("is_primary", { ascending: false });
 
-        if (imgErr) throw imgErr;
         setImages(imgs?.length ? imgs : []);
-      } catch (err) {
-        console.error("Error loading car details:", err);
+        setCurrentMainMedia(
+          imgs?.length
+            ? { src: imgs[0].image_url, type: "image" }
+            : { src: "/cars/default.jpg", type: "image" }
+        );
+      } catch (e) {
+        console.error("Error fetching car:", e);
       } finally {
         setLoading(false);
       }
     }
-
-    fetchCarDetails();
+    fetchCar();
   }, [id]);
 
-  if (loading)
-    return (
-      <div className={styles.loadingWrapper}>
-        <p>Loading car details...</p>
-      </div>
-    );
-
-  if (!car)
-    return (
-      <div className={styles.errorWrapper}>
-        <p>Car not found.</p>
-      </div>
-    );
-
-  const gallery = images.length > 0 ? images.map((img) => img.image_url) : ["/cars/default.jpg"];
-  const selectedImg = gallery[activeImage] || gallery[0];
-
-  // ----------- Pricing logic ----------
-  // fallback to numeric hourly_rate
-  const hourlyRate = Number(car.hourly_rate) || 0;
-
-  // if pickup/return valid -> compute breakdown otherwise show placeholders
-  let dayRanges = [];
-  let totalBilledHours = 0;
-  let totalActualHours = 0;
-  if (pickupDt && returnDt && returnDt > pickupDt) {
-    dayRanges = splitIntoDaysWithHours(pickupDt, returnDt);
-    totalBilledHours = dayRanges.reduce((s, r) => s + r.billedHours, 0);
-    totalActualHours = dayRanges.reduce((s, r) => s + r.hours, 0);
-  }
-
-  // cost parts (hardcoded fees as you requested)
-  const protectionFee = 4176; // hardcoded for now
-  const convenienceFee = 639; // hardcoded for now
-  const refundableDeposit = 1000; // hardcoded for now
-
-  const tripAmount = totalBilledHours * hourlyRate; // billed hours * rate
-  const totalPrice = tripAmount + protectionFee + convenienceFee;
-  const finalAmount = totalPrice + refundableDeposit;
-
-  const formatINR = (n) =>
-    typeof n === "number" ? `₹${n.toLocaleString("en-IN")}` : "₹0";
-
-  return (
-    <div className={styles.container}>
-      <button onClick={() => router.back()} className={styles.backBtn}>
-        ← Back
-      </button>
-
-      {/* Top image */}
-      <div className={styles.mainImage}>
-        <Image src={selectedImg} alt="Car main" fill className={styles.imageFill} />
-      </div>
-
-      <div className={styles.thumbnails}>
-        {gallery.map((img, i) => (
-          <div
-            key={i}
-            className={`${styles.thumbnail} ${activeImage === i ? styles.activeThumbnail : ""}`}
-            onClick={() => setActiveImage(i)}
-          >
-            <Image src={img} alt={`thumb ${i}`} fill className={styles.imageFill} />
-          </div>
-        ))}
-      </div>
-
-      <div className={styles.detailsWrapper}>
-        <div className={styles.detailsContent}>
-          <h1 className={styles.carName}>
-            {car.make} {car.model} {car.model_year ? `(${car.model_year})` : ""}
-          </h1>
-
-          <p className={styles.description}>
-            <strong>{car.vehicle_type}</strong> • {car.transmission_type} • {car.fuel_type} • {car.seating_capacity} Seats
-          </p>
-
-          <div className={styles.hostBlock}>
-            <p className={styles.hostTitle}>Hosted by</p>
-            <h3 className={styles.hostName}>{host?.full_name || "Host details unavailable"}</h3>
-            <p className={styles.hostDesc}>MMmiles Verified Partner • Reliable & Quality Experience</p>
-          </div>
-
-          <div className={styles.infoSection}>
-            <h3>Car Location</h3>
-            <p><strong>{car.location_name}</strong>, {car.city}</p>
-            <p>📍 Coordinates: {car.latitude}, {car.longitude}</p>
-          </div>
-
-          <div className={styles.infoSection}>
-            <h3>MMmiles Protection</h3>
-            <p>Insurance Status: <strong>{car.insurance_status === "active" ? "Active & Covered" : "Expired"}</strong></p>
-            <p>Last Serviced: {car.last_service || "N/A"}</p>
-          </div>
-
-          <div className={styles.infoSection}>
-            <h3>Features</h3>
-            <ul>
-              <li>ABS + Airbags</li>
-              <li>Reverse Camera</li>
-              <li>Power Windows</li>
-              <li>Power Steering</li>
-            </ul>
-          </div>
-
-          <div className={styles.reviewBlock}>
-            <h3>Ratings & Reviews</h3>
-            <p>⭐ 4.9 — “Smooth drive, well maintained!”</p>
-            <p className={styles.todoText}>TODO: Link with reviews table</p>
-          </div>
-
-          {/* Per-day breakdown (only when pickup/return provided) */}
-          {dayRanges.length > 0 ? (
-            <div className={styles.breakdownSection}>
-              <h3>Trip Breakdown</h3>
-              <p>
-                Pickup: {pickupDt.toLocaleString()} • Return: {returnDt.toLocaleString()}
-              </p>
-
-              <table className={styles.breakdownTable}>
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Actual hrs</th>
-                    <th>Billed hrs</th>
-                    <th>Cost (@ {formatINR(hourlyRate)}/hr)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {dayRanges.map((r) => {
-                    const cost = r.billedHours * hourlyRate;
-                    return (
-                      <tr key={r.date}>
-                        <td>{r.date}</td>
-                        <td>{r.hours.toFixed(2)}</td>
-                        <td>{r.billedHours}</td>
-                        <td>{formatINR(cost)}</td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-
-              <p className={styles.summarySmall}>
-                Total actual hours: {totalActualHours.toFixed(2)} • Billed hours: {totalBilledHours}
-              </p>
-            </div>
-          ) : (
-            <div className={styles.infoSection}>
-              <p className={styles.todoText}>Add pickup and return time to calculate price.</p>
-            </div>
-          )}
-        </div>
-
-        {/* Booking summary sticky card */}
-        <div className={styles.bookingCard}>
-          <h3>Trip Summary</h3>
-
-          <div className={styles.priceRow}>
-            <span>Trip Amount</span>
-            <span>{formatINR(tripAmount)}</span>
-          </div>
-          <p className={styles.note}>(This does not include fuel)</p>
-
-          <div className={styles.priceRow}>
-            <span>Trip Protection Fee</span>
-            <span>+ {formatINR(protectionFee)}</span>
-          </div>
-
-          <div className={styles.priceRow}>
-            <span>Convenience Fee</span>
-            <span>+ {formatINR(convenienceFee)}</span>
-          </div>
-
-          <hr />
-
-          <div className={styles.totalRow}>
-            <span>Total Price</span>
-            <span>{formatINR(totalPrice)}</span>
-          </div>
-
-          <div className={styles.priceRow}>
-            <span>Refundable Security Deposit</span>
-            <span>{formatINR(refundableDeposit)}</span>
-          </div>
-          <p className={styles.refundNote}>Will be refunded post trip completion (2-3 days)</p>
-
-          <hr />
-
-          <div className={styles.finalAmount}>
-            <span>Final Amount</span>
-            <span>{formatINR(finalAmount)}</span>
-          </div>
-
-          {/* =========================
-              LOGIN / BOOK BUTTON LOGIC
-          ========================== */}
-          <BookButton
-            carId={id}
-            pickup={pickupRaw}
-            returnTime={returnRaw}
-            canProceed={pickupDt && returnDt && returnDt > pickupDt}
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ---- Book Button (Login-aware) ----
-function BookButton({ carId, pickup, returnTime, canProceed }) {
-  const router = useRouter();
-  const [loggedIn, setLoggedIn] = useState(false);
-
-  useEffect(() => {
-    // check token once
-    const checkAuth = () => {
-      const token = localStorage.getItem("auth_token");
-      if (!token) return setLoggedIn(false);
-      try {
-        const payload = JSON.parse(
-          atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))
-        );
-        const now = Math.floor(Date.now() / 1000);
-        setLoggedIn(payload?.exp && payload.exp > now);
-      } catch {
-        setLoggedIn(false);
-      }
-    };
-
-    checkAuth();
-
-    // listen for login/logout changes from your existing dispatch
-    const handler = () => checkAuth();
-    window.addEventListener("auth-change", handler);
-    return () => window.removeEventListener("auth-change", handler);
-  }, []);
-
-  const handleClick = () => {
-    if (!loggedIn) {
-      const redirectUrl = encodeURIComponent(
-        `/car/${carId}?pickup=${pickup}&return=${returnTime}`
-      );
+  const handleBookNow = () => {
+    const token = localStorage.getItem("auth_token");
+    if (!token) {
+      const redirectUrl = encodeURIComponent(`/car/${id}?pickup=${pickup}&return=${returnTime}`);
       router.push(`/login?redirect=${redirectUrl}`);
       return;
     }
-    if (canProceed) {
-      router.push(`/checkout?car=${carId}&pickup=${pickup}&return=${returnTime}`);
-    }
+    router.push(`/checkout?car=${id}&pickup=${pickup}&return=${returnTime}`);
   };
 
-  const label = !loggedIn
-    ? "Login to Continue"
-    : canProceed
-    ? "Book Now"
-    : "Select Dates to Book";
+  if (loading) return <p className={styles.loading}>Loading...</p>;
+  if (!car) return <p className={styles.error}>Car not found</p>;
 
-  const disabled = loggedIn && !canProceed;
+  const insurancePlans = [
+    { name: "MAX", price: 629, description: "Only pay Rs.2000 in case of accidental damage." },
+    { name: "PLUS", price: 569, description: "Only pay Rs.7999 in case of accidental damage." },
+    { name: "BASIC", price: 469, description: "Only pay Rs.9999 in case of accidental damage." },
+  ];
 
   return (
-    <button
-      className={styles.bookBtn}
-      onClick={handleClick}
-      disabled={disabled}
-      title={!loggedIn ? "Login required" : !canProceed ? "Select pickup and return times" : ""}
-    >
-      {label}
-    </button>
+    <div className={styles.container}>
+      <div className={styles.contentWrapper}>
+        {/* --- Left Column --- */}
+        <div className={styles.leftColumn}>
+          <div className={styles.mainImage}>
+            <Image
+              src={currentMainMedia?.src || "/cars/default.jpg"}
+              alt="Main Car"
+              fill
+              style={{ objectFit: "cover" }}
+            />
+          </div>
+
+          <div className={styles.thumbnails}>
+            {images.map((img, i) => (
+              <div
+                key={i}
+                className={`${styles.thumbnail} ${
+                  currentMainMedia?.src === img.image_url ? styles.activeThumbnail : ""
+                }`}
+                onClick={() => setCurrentMainMedia({ src: img.image_url, type: "image" })}
+              >
+                <Image src={img.image_url} alt="thumb" fill style={{ objectFit: "cover" }} />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* --- Right Column --- */}
+        <div className={styles.rightColumn}>
+          <h1 className={styles.carName}>
+            {car.make} {car.model} ({car.model_year})
+          </h1>
+          <p className={styles.priceTag}>
+            <span className={styles.startingAt}>STARTING AT</span>
+            <br />
+            <span className={styles.priceValue}>
+              ₹{Number(car.hourly_rate).toLocaleString("en-IN")}
+            </span>
+            <span className={styles.priceUnit}>/hour</span>
+          </p>
+
+          <p className={styles.description}>TODO: Add car description from DB.</p>
+
+          <div className={styles.insuranceSection}>
+            <p className={styles.travelConfident}>Travel with confidence</p>
+            <div className={styles.plansContainer}>
+              {insurancePlans.map((plan) => (
+                <div
+                  key={plan.name}
+                  className={`${styles.planBox} ${
+                    activePlan === plan.name ? styles.activePlan : ""
+                  }`}
+                  onClick={() => setActivePlan(plan.name)}
+                >
+                  <span className={styles.planName}>{plan.name}</span>
+                  <p className={styles.planPrice}>₹{plan.price}</p>
+                  <p className={styles.planDesc}>{plan.description}</p>
+                </div>
+              ))}
+            </div>
+            <Link href="#" className={styles.learnMore}>
+              Learn More &gt;
+            </Link>
+          </div>
+
+          <div className={styles.actionButtons}>
+            <button className={styles.bookBtn} onClick={handleBookNow}>
+              Book Now
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* --- Stats Section --- */}
+      <div className={styles.statsSection}>
+        <div className={styles.statsContainer}>
+          {statsData.map((stat, i) => (
+            <Counter key={i} value={stat.number} label={stat.label} styles={styles} />
+          ))}
+        </div>
+      </div>
+
+      {/* --- Car Location --- */}
+      <div className={styles.locationSection}>
+        <div className={styles.worldMapContainer}>
+          <Image src="/chennai-map.png" alt="Map" fill className={styles.worldMapImage} />
+          <div className={styles.locationTextContent}>
+            <h2>
+              {car.location_name}, {car.city}
+            </h2>
+            <p>
+              Hosted by <strong>{host?.full_name || "TODO: Host Name"}</strong>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* --- Blur Cards --- */}
+      <div className={styles.blurCardsSection}>
+        <div className={styles.blurHeader}>
+          <h3>Key Features of {car.make} {car.model}</h3>
+        </div>
+        <div className={styles.blurCardsContainer}>
+          {blurCardsData.map((card) => (
+            <div key={card.id} className={`${styles.blurCard} ${styles[card.color]}`}>
+              <h3 className={styles.cardTitle}>{card.title}</h3>
+              <p className={styles.cardSubtext}>{card.subtext}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* --- FAQ --- */}
+      <div className={styles.faqSection}>
+        <div className={styles.faqHeader}>
+          <h3>Looking for help? Here are our most frequently asked questions</h3>
+        </div>
+        <div className={styles.faqGrid}>
+          {faqData.map((q) => (
+            <div key={q.id} className={styles.faqCard}>
+              <div className={styles.faqNumber}>{q.id}</div>
+              <h4 className={styles.faqQuestion}>{q.question}</h4>
+              <p className={styles.faqAnswer}>{q.answer}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* --- Explore --- */}
+      <div className={styles.exploreSection}>
+        <h2 className={styles.exploreTitle}>Explore More Cars</h2>
+        <div className={styles.exploreCardsGrid}>
+          {exploreCardsData.map((card) => (
+            <Link key={card.id} href="#" className={styles.exploreCardLink}>
+              <div className={styles.exploreCard}>
+                <div className={styles.exploreCardImageWrapper}>
+                  <Image src={card.image} alt={card.title} fill className={styles.exploreCardImage} />
+                </div>
+                <div className={styles.exploreCardContent}>
+                  <span className={styles.exploreCardTag}>{card.tag}</span>
+                  <h3 className={styles.exploreCardTitle}>{card.title}</h3>
+                  <p className={styles.exploreCardDescription}>{card.description}</p>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }

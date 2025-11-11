@@ -1,198 +1,488 @@
+/* Root container */
 .container {
-  font-family: "Poppins", sans-serif;
-  background: #fef9f5;
+  font-family: "Inter", sans-serif;
+  background: #FEF9F5;
   min-height: 100vh;
-  padding: 20px 40px;
+  padding-bottom: 80px;
 }
 
-.backBtn {
-  background: none;
-  border: none;
-  color: #bf9860;
-  font-weight: 600;
-  font-size: 16px;
-  margin-bottom: 15px;
-  cursor: pointer;
+/* --- Layout --- */
+.contentWrapper {
+  display: flex;
+  gap: 40px;
+  padding: 40px 60px;
+  max-width: 1400px;
+  margin: 0 auto;
+  background: #FEF9F5;
+  border-radius: 12px;
 }
 
+.leftColumn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.rightColumn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* --- Image Gallery --- */
 .mainImage {
   position: relative;
   width: 100%;
-  height: 350px;
+  height: 320px;
   border-radius: 12px;
   overflow: hidden;
-}
-
-.imageFill {
-  object-fit: cover;
+  border: 1px solid #ddd;
 }
 
 .thumbnails {
   display: flex;
-  gap: 10px;
-  margin: 10px 0 20px;
+  gap: 15px;
+  flex-wrap: wrap;
 }
 
 .thumbnail {
   position: relative;
-  width: 100px;
-  height: 70px;
-  border-radius: 8px;
+  width: 150px;
+  height: 90px;
+  border-radius: 10px;
   overflow: hidden;
-  border: 2px solid transparent;
+  border: 1px solid #ccc;
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.thumbnail:hover {
+  transform: scale(1.05);
 }
 
 .activeThumbnail {
-  border-color: #bf9860;
+  border: 2px solid #bf9860;
+  box-shadow: 0 0 10px rgba(191, 152, 96, 0.7);
 }
 
-.detailsWrapper {
-  display: flex;
-  gap: 40px;
-  align-items: flex-start;
-  position: relative;
-}
-
-.detailsContent {
-  flex: 2;
-  background: #fff;
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
-}
-
+/* --- Car Details --- */
 .carName {
-  font-size: 28px;
+  font-size: 2.3rem;
   font-weight: 700;
   color: #333;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 }
 
-.description {
-  color: #666;
-  margin-bottom: 20px;
-}
-
-.hostBlock {
-  margin-bottom: 25px;
-}
-
-.hostTitle {
+.priceTag {
+  color: #555;
   font-weight: 600;
-  color: #888;
+  margin-bottom: 10px;
 }
 
-.hostName {
-  font-weight: 700;
-  font-size: 1.2rem;
-  color: #333;
-}
-
-.hostDesc {
-  color: #555;
-  font-size: 0.9rem;
-}
-
-.infoSection {
-  margin-bottom: 25px;
-}
-
-.infoSection h3 {
-  font-size: 1.1rem;
-  color: #333;
-  margin-bottom: 5px;
-}
-
-.infoSection p {
-  color: #666;
-}
-
-.infoSection ul {
-  padding-left: 18px;
-  color: #555;
-}
-
-.reviewBlock {
-  background: #f7f9fc;
-  padding: 15px;
-  border-radius: 10px;
-  color: #444;
-}
-
-/* --- Booking Summary Fixed Card --- */
-.bookingCard {
-  position: sticky;
-  top: 100px;
-  flex: 1;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-  padding: 25px 20px;
-  height: fit-content;
-}
-
-.bookingCard h3 {
-  font-size: 1.3rem;
-  font-weight: 700;
-  margin-bottom: 15px;
-}
-
-.priceRow,
-.totalRow,
-.finalAmount {
-  display: flex;
-  justify-content: space-between;
-  margin: 8px 0;
-  color: #333;
-  font-weight: 500;
-}
-
-.note,
-.refundNote {
+.startingAt {
   font-size: 0.85rem;
   color: #777;
-  margin-bottom: 8px;
 }
 
-.finalAmount {
-  font-size: 1.1rem;
+.priceValue {
+  font-size: 2rem;
   font-weight: 700;
   color: #000;
 }
 
-.bookBtn {
-  width: 100%;
-  margin-top: 20px;
-  padding: 14px;
-  background: linear-gradient(to right, #d8b480, #bf9860);
-  border: none;
-  color: #fff;
-  font-weight: 600;
-  font-size: 1rem;
+.priceUnit {
+  font-size: 1.2rem;
+  color: #555;
+}
+
+.description {
+  color: #666;
+  line-height: 1.5;
+  margin-top: 12px;
+  margin-bottom: 20px;
+}
+
+/* --- Insurance Plans --- */
+.insuranceSection {
+  margin-top: 16px;
+}
+
+.travelConfident {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 14px;
+}
+
+.plansContainer {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.planBox {
+  flex: 1;
+  min-width: 150px;
+  border: 2px solid #ddd;
+  padding: 15px;
   border-radius: 10px;
   cursor: pointer;
-  transition: 0.3s;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  background: #fff;
+}
+
+.planBox:hover {
+  border-color: #bf9860;
+  box-shadow: 0 0 12px rgba(191, 152, 96, 0.5);
+}
+
+.activePlan {
+  border-color: #bf9860;
+  box-shadow: 0 0 14px rgba(191, 152, 96, 0.7);
+}
+
+.planName {
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.planPrice {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #000;
+  margin: 4px 0;
+}
+
+.planDesc {
+  font-size: 0.9rem;
+  color: #777;
+  line-height: 1.4;
+}
+
+.learnMore {
+  display: inline-block;
+  margin-top: 10px;
+  color: #bf9860;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+/* --- Action Buttons --- */
+.actionButtons {
+  display: flex;
+  justify-content: flex-start;
+  gap: 30px;
+  margin-top: 25px;
+}
+
+.bookBtn {
+  padding: 16px 40px;
+  border: none;
+  border-radius: 33px;
+  background: #000;
+  color: #bdbdbd;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .bookBtn:hover {
-  transform: scale(1.03);
-  background: linear-gradient(to right, #cfa86a, #a67a47);
+  color: #fff;
+  transform: scale(1.04);
+  box-shadow: 0 0 10px rgba(191, 152, 96, 0.4);
 }
 
-.loadingWrapper,
-.errorWrapper {
+/* --- Stats Section --- */
+.statsSection {
+  background: #FEF9F5;
+  padding: 60px 50px 20px;
   text-align: center;
-  padding: 100px 0;
-  color: #777;
-  font-size: 18px;
 }
-.loadingSpinner {
-  border: 6px solid #f3f3f3;
-  border-top: 6px solid #bf9860;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 15px;
+
+.statsContainer {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
+
+.statNumber {
+  font-size: 3rem;
+  font-weight: 800;
+  color: #c00d2b;
+}
+
+.statLabel {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #666;
+}
+
+/* --- Car Location --- */
+.locationSection {
+  background: #FEF9F5;
+  padding: 60px 0 50px;
+  text-align: center;
+}
+
+.worldMapContainer {
+  position: relative;
+  width: 100%;
+  height: 400px;
+}
+
+.worldMapImage {
+  object-fit: cover !important;
+}
+
+.locationTextContent {
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #000;
+  text-align: center;
+}
+
+.locationTextContent h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+/* --- Blur Cards --- */
+.blurCardsSection {
+  background: #FEF9F5;
+  padding: 80px 50px;
+}
+
+.blurHeader {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 26px;
+}
+
+.blurCardsContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.blurCard {
+  width: 170px;
+  height: 170px;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  transition: transform 0.3s, filter 0.3s;
+}
+
+.blurCardsContainer:hover .blurCard:not(:hover) {
+  filter: blur(6px);
+  transform: scale(0.95);
+}
+
+.blurCard:hover {
+  transform: scale(1.1);
+}
+
+.blue {
+  background: #007bff;
+}
+.green {
+  background: #28a745;
+}
+.cyan {
+  background: #17a2b8;
+}
+
+.cardTitle {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.cardSubtext {
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+/* --- FAQ --- */
+.faqSection {
+  background: #FEF9F5;
+  padding: 0 70px 80px;
+}
+
+.faqHeader {
+  padding: 40px 50px;
+  text-align: left;
+}
+
+.faqHeader h3 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.faqGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.faqCard {
+  background: linear-gradient(to right, #e0f2f7, #c9e6f3);
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.faqCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+}
+
+.faqNumber {
+  width: 35px;
+  height: 35px;
+  background: #007bff;
+  color: #fff;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.faqQuestion {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.faqAnswer {
+  font-size: 0.95rem;
+  color: #666;
+}
+
+/* --- Explore Section --- */
+.exploreSection {
+  background: #FEF9F5;
+  padding: 80px 50px;
+  text-align: center;
+}
+
+.exploreTitle {
+  font-size: 2.3rem;
+  font-weight: 800;
+  color: #000;
+  margin-bottom: 50px;
+}
+
+.exploreCardsGrid {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.exploreCardLink {
+  text-decoration: none;
+  color: inherit;
+  flex: 1;
+  min-width: 300px;
+  max-width: 380px;
+}
+
+.exploreCard {
+  background: #444;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.exploreCardImageWrapper {
+  position: relative;
+  width: 100%;
+  height: 200px;
+}
+
+.exploreCardImage {
+  object-fit: cover !important;
+  filter: brightness(0.85);
+}
+
+.exploreCardContent {
+  padding: 20px;
+  text-align: left;
+}
+
+.exploreCardTag {
+  display: inline-block;
+  background: rgba(0, 0, 0, 0.4);
+  color: #bbb;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 0.85rem;
+  margin-bottom: 10px;
+}
+
+.exploreCardTitle {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.exploreCardDescription {
+  font-size: 0.95rem;
+  color: #ccc;
+  line-height: 1.6;
+}
+
+/* --- Loading / Error States --- */
+.loading,
+.error {
+  text-align: center;
+  padding: 100px;
+  font-size: 1.3rem;
+  color: #555;
+}
+
+/* --- Responsive --- */
+@media (max-width: 1024px) {
+  .contentWrapper {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .thumbnails {
+    justify-content: center;
+  }
+
+  .rightColumn {
+    margin-top: 20px;
+  }
+
+  .statsContainer {
+    flex-direction: column;
+  }
 }
