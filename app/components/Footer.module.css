@@ -233,9 +233,15 @@
   display: flex;
   flex-direction: row;
   justify-content: center;
-  gap: 20px;
+  gap: 30px;
   margin-right: 0px;
   font-size: 14px;
+}
+.footerContainer {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
 }
@@ -257,6 +263,14 @@
   font-size: 14px;
   white-space: nowrap; /* keep it in one line */
   margin-left: 0px;
+}
+.footerLinks {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 20px;
+  margin-right: 0px;
+  font-size: 14px;
 }
 
 .footerLinks h4 {
@@ -289,6 +303,14 @@
     /* Set the default text color for the contact info */
     color: #bdbdbd; /* Use the color from your buttons, or your footer's text color */
     font-size: 13px; /* Adjust font size as needed */
+}
+
+.footerLogo{
+  max-width: 150px !important;
+  max-height: 42px;
+  align-items: center;
+  margin-left: 50px;
+  justify-content: center;
 }
 
 }
