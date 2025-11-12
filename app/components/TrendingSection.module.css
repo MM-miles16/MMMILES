@@ -231,3 +231,111 @@
 
 
 
+
+
+
+
+/* ===== Scroll Buttons ===== */
+.scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: white;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  transition: all 0.3s ease;
+}
+
+.scroll-btn svg {
+  font-size: 18px;
+}
+
+.scroll-btn:hover {
+  transform: translateY(-50%) scale(1.1);
+  background: #f6e8d4;
+}
+
+.scroll-btn.left {
+  left: 20px;
+}
+
+.scroll-btn.right {
+  right: 20px;
+}
+
+/* ===== Dots ===== */
+.dot-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background: #ccc;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.activeDot {
+  background: #bf9860;
+  transform: scale(1.4);
+  animation: pulse 0.8s infinite alternate;
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(1.6);
+    opacity: 1;
+  }
+}
+
+
+
+
+
+
+
+.carousel-viewport {
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.6s ease-in-out;
+}
+
+.trendy-card {
+  flex: 0 0 calc(100% / 3);
+  margin-right: 29px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1024px) {
+  .trendy-card {
+    flex: 0 0 50%;
+  }
+}
+
+@media (max-width: 768px) {
+  .trendy-card {
+    flex: 0 0 100%;
+  }
+}

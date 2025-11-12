@@ -49,20 +49,69 @@
   white-space: nowrap; /* keep it in one line */
   margin-left: -100px;
 }
-
 .socialIcons {
   display: flex;
   gap: 15px;
-  padding: 15px;
   align-items: center;
- 
+  padding: 10px;
 }
-.socialIcons img{
-  border: 1px solid #8e4444;
-  background: #EDE7E4;
-  border-radius: 8px;
-  padding: 3px 3px 2px;
+
+.icon {
+  font-size: 28px;
+  border: 1.8px solid #bfa171;
+  background: #ede7e4;
+  color: #2e2e2e;
+  border-radius: 12px;
+  padding: 5px;
+  transition: all 0.35s ease;
+  
 }
+
+/* ✨ Hover animation */
+.icon:hover {
+  transform: scale(1.2) rotate(5deg);
+  box-shadow: 0 0 15px rgba(191, 152, 96, 0.7);
+  background: #fffaf3;
+  border-color: #d8b480;
+  color: #b27e3f;
+}
+
+/* 💫 Optional idle pulsing glow for premium feel */
+@keyframes socialPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 6px rgba(191, 152, 96, 0.25);
+  }
+  50% {
+    transform: scale(1.06);
+    box-shadow: 0 0 12px rgba(191, 152, 96, 0.45);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 6px rgba(191, 152, 96, 0.25);
+  }
+}
+
+.icon {
+  animation: socialPulse 4.5s ease-in-out infinite;
+}
+
+/* 🌈 Optional per-icon color highlights */
+.instagram:hover {
+  color: #e1306c;
+  box-shadow: 0 0 20px #e1306c;
+}
+
+.facebook:hover {
+  color: #1877f2;
+  box-shadow: 0 0 20px #1877f2;
+}
+
+.whatsapp:hover {
+  color: #25d366;
+  box-shadow: 0 0 20px #25d366;
+}
+
 
 
 .footerLinks {
@@ -156,4 +205,13 @@
     gap: 20px;
     text-align: center;
   }
+
+  .footerLeft {
+  max-width: 300px;
+  font-size: 14px;
+  margin-left: 0px;
+  margin-top: 15px;
+  line-height: 1.9;
+
+}
 }
