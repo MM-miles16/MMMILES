@@ -7,7 +7,9 @@ export default function FAQPage() {
 
   const faqs = [
     {
-      question: "What documents do I need to rent a car?",
+
+      question: "What document do I need to rent a car?",
+
       answer:
         "You need a valid Driving License and a government-issued ID proof (Aadhar / Passport / PAN).",
     },
