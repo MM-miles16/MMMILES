@@ -132,6 +132,11 @@
   .faqQuestion {
     font-size: 1.05rem;
   }
+  .faqSection {
+  background: #FEF9F5;
+  padding: 30px 20px;
+  text-align: center;
+}
 }
 
 
@@ -162,5 +167,10 @@
     flex: 0 0 15px;
     transition: transform 0.65s ease;
   }
+  .faqSection {
+  background: #FEF9F5;
+  padding: 10px 20px;
+  text-align: center;
+}
   
 }
