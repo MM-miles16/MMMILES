@@ -47,7 +47,7 @@
 .followText {
   font-size: 14px;
   white-space: nowrap; /* keep it in one line */
-  margin-left: -100px;
+  margin-left: 100px;
 }
 .socialIcons {
   display: flex;
@@ -200,6 +200,11 @@
     margin-bottom: 12px;
     padding-left: 18px;
   }
+  .followText {
+  font-size: 14px;
+  white-space: nowrap; /* keep it in one line */
+  margin-left: -100px;
+}
 
   .footerContainer {
     flex-direction: column;
