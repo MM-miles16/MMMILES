@@ -8,11 +8,11 @@ import styles from "./Checkout.module.css";
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const searchParams = useSearchParams(); // safe — page is client-only now
+  const searchParams = useSearchParams();
   const carId = searchParams.get("car");
   const pickup = searchParams.get("pickup");
   const returnTime = searchParams.get("return");
-  const plan = searchParams.get("plan") || "BASIC"; // plan passed from car page
+  const plan = searchParams.get("plan") || "BASIC";
 
   const [car, setCar] = useState(null);
   const [host, setHost] = useState(null);
@@ -23,8 +23,10 @@ export default function CheckoutPage() {
     address: "",
     phone: "",
   });
+
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
+
   const [priceSummary, setPriceSummary] = useState({
     basePrice: 0,
     gst: 0,
@@ -34,39 +36,51 @@ export default function CheckoutPage() {
 
   const [loggedInUser, setLoggedInUser] = useState(null);
 
-  // load Razorpay script dynamically (if needed)
+  // Load Razorpay script
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (window.Razorpay) return;
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    document.body.appendChild(script);
-    return () => {
-      // do not remove script — leave it for reuse
-    };
+    const s = document.createElement("script");
+    s.src = "https://checkout.razorpay.com/v1/checkout.js";
+    s.async = true;
+    document.body.appendChild(s);
   }, []);
 
-  // Check login and fetch user info
+  // 🔥 FIXED LOGIN CHECK + Supabase Session Injection
   useEffect(() => {
-    const token = typeof window !== "undefined" ? localStorage.getItem("auth_token") : null;
+    const token = typeof window !== "undefined"
+      ? localStorage.getItem("auth_token")
+      : null;
+
     if (!token) {
-      // redirect preserving query so login can send back
-      router.push(`/login?redirect=${encodeURIComponent(window?.location?.pathname + window?.location?.search || "/checkout")}`);
+      router.push(
+        `/login?redirect=${encodeURIComponent(
+          window.location.pathname + window.location.search
+        )}`
+      );
       return;
     }
+
     try {
       const payload = JSON.parse(
         atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))
       );
+
       setLoggedInUser(payload);
-    } catch {
-      router.push(`/login?redirect=${encodeURIComponent(window?.location?.pathname + window?.location?.search || "/checkout")}`);
+
+      // ⭐ THE IMPORTANT FIX — now RLS will work!
+      supabase.auth.setSession({
+        access_token: token,
+        refresh_token: null,
+      });
+
+    } catch (err) {
+      console.error("JWT parsing error:", err);
+      router.push("/login?redirect=/checkout");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
-  // Fetch car + host details
+  // Fetch car
   useEffect(() => {
     async function fetchCar() {
       try {
@@ -75,6 +89,7 @@ export default function CheckoutPage() {
           .select("*, hosts(*), vehicle_images(*)")
           .eq("id", carId)
           .single();
+
         if (error) throw error;
         setCar(data);
         setHost(data.hosts);
@@ -87,7 +102,7 @@ export default function CheckoutPage() {
     if (carId) fetchCar();
   }, [carId]);
 
-  // Fetch customer details if exist
+  // Fetch customer details
   useEffect(() => {
     async function fetchCustomer() {
       if (!loggedInUser?.sub) return;
@@ -97,15 +112,17 @@ export default function CheckoutPage() {
           .select("*")
           .eq("user_id", loggedInUser.sub)
           .single();
-        if (data) setCustomer({
-          first_name: data.first_name || "",
-          last_name: data.last_name || "",
-          email: data.email || "",
-          address: data.address || "",
-          phone: data.phone || loggedInUser.phone || "",
-        });
+
+        if (data)
+          setCustomer({
+            first_name: data.first_name || "",
+            last_name: data.last_name || "",
+            email: data.email || "",
+            address: data.address || "",
+            phone: data.phone || loggedInUser.phone_number || "",
+          });
       } catch (err) {
-        // ignore if none
+        console.log("No customer record yet.");
       }
     }
     fetchCustomer();
@@ -123,20 +140,14 @@ export default function CheckoutPage() {
         : car.price_basic;
 
     baseRate = Number(baseRate) || 0;
-
-    const gst = +(baseRate * 0.18).toFixed(2); // 18% GST
-    const convFee = 100; // hardcoded convenience fee
+    const gst = +(baseRate * 0.18).toFixed(2);
+    const convFee = 100;
     const total = +(baseRate + gst + convFee).toFixed(2);
 
-    setPriceSummary({
-      basePrice: baseRate,
-      gst,
-      convFee,
-      total,
-    });
+    setPriceSummary({ basePrice: baseRate, gst, convFee, total });
   }, [plan, car]);
 
-  // Handle save/update customer info
+  // Insert or update customer info
   async function handleSave() {
     if (!loggedInUser?.sub) return;
 
@@ -164,46 +175,37 @@ export default function CheckoutPage() {
             first_name: customer.first_name,
             last_name: customer.last_name,
             email: customer.email,
-            phone: customer.phone || loggedInUser.phone,
+            phone: customer.phone || loggedInUser.phone_number,
             address: customer.address,
           },
         ]);
       }
+
       setEditing(false);
     } catch (err) {
       console.error("Error saving customer:", err);
     }
   }
 
-  // Razorpay Integration
-  const handlePayment = async () => {
-    if (!priceSummary.total || !car) return;
+  // Handle payment
+  const handlePayment = () => {
+    if (!priceSummary.total) return;
 
-    if (typeof window === "undefined" || !window.Razorpay) {
-      alert("Payment gateway not loaded. Try again in a moment.");
-      return;
-    }
-
-    // create order on your backend ideally (server-side) — skipping here for demo, using client flow
     const options = {
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-      amount: Math.round(priceSummary.total * 100), // in paise
+      amount: priceSummary.total * 100,
       currency: "INR",
       name: "MMmiles Rentals",
-      description: `${car?.make} ${car?.model} booking (${plan})`,
+      description: `${car.make} ${car.model} booking`,
       image: "/logo.png",
-      handler: function (response) {
-        // You should verify payment server-side before confirming booking.
-        alert("Payment Successful! Razorpay ID: " + response.razorpay_payment_id);
+      handler: (response) => {
+        alert("Payment Successful: " + response.razorpay_payment_id);
         router.push("/booking-success");
       },
       prefill: {
-        name: `${customer.first_name || ""} ${customer.last_name || ""}`.trim(),
-        email: customer.email || "",
-        contact: customer.phone || "",
-      },
-      theme: {
-        color: "#d4a762",
+        name: `${customer.first_name} ${customer.last_name}`,
+        email: customer.email,
+        contact: customer.phone,
       },
     };
 
@@ -212,7 +214,7 @@ export default function CheckoutPage() {
   };
 
   if (loading) return <p className={styles.loading}>Loading...</p>;
-  if (!car) return <p className={styles.error}>Car not found</p>;
+  if (!car) return <p className={styles.error}>Car Not Found</p>;
 
   return (
     <div className={styles.checkoutContainer}>
@@ -221,9 +223,9 @@ export default function CheckoutPage() {
         <div className={styles.carCard}>
           <Image
             src={car.vehicle_images?.[0]?.image_url || "/cars/default.jpg"}
-            alt="Car"
             width={400}
             height={250}
+            alt="Car"
             className={styles.carImage}
           />
           <div className={styles.carDetails}>
@@ -231,59 +233,42 @@ export default function CheckoutPage() {
               {car.make} {car.model} ({car.model_year})
             </h2>
             <p>
-              Hosted by <strong>{host?.full_name || "TODO: Host Name"}</strong>
+              Hosted by <strong>{host?.full_name}</strong>
             </p>
             <p>📍 {car.location_name}, {car.city}</p>
           </div>
         </div>
 
-        {/* Customer Info */}
+        {/* Customer Details Form */}
         <div className={styles.formSection}>
           <h3>Your Details</h3>
-          <div className={styles.formGroup}>
-            <label>First Name</label>
-            <input
-              type="text"
-              value={customer.first_name || ""}
-              onChange={(e) => {
-                setCustomer({ ...customer, first_name: e.target.value });
-                setEditing(true);
-              }}
-            />
-          </div>
-          <div className={styles.formGroup}>
-            <label>Last Name</label>
-            <input
-              type="text"
-              value={customer.last_name || ""}
-              onChange={(e) => {
-                setCustomer({ ...customer, last_name: e.target.value });
-                setEditing(true);
-              }}
-            />
-          </div>
-          <div className={styles.formGroup}>
-            <label>Email</label>
-            <input
-              type="email"
-              value={customer.email || ""}
-              onChange={(e) => {
-                setCustomer({ ...customer, email: e.target.value });
-                setEditing(true);
-              }}
-            />
-          </div>
+
+          {["first_name", "last_name", "email"].map((field) => (
+            <div className={styles.formGroup} key={field}>
+              <label>{field.replace("_", " ").toUpperCase()}</label>
+              <input
+                type="text"
+                value={customer[field] || ""}
+                onChange={(e) => {
+                  setCustomer({ ...customer, [field]: e.target.value });
+                  setEditing(true);
+                }}
+              />
+            </div>
+          ))}
+
           <div className={styles.formGroup}>
             <label>Home Address</label>
             <textarea
               rows="3"
-              value={customer.address || ""}
+              value={customer.address}
               onChange={(e) => {
                 setCustomer({ ...customer, address: e.target.value });
                 setEditing(true);
               }}
             />
           </div>
+
           <button
             className={styles.saveBtn}
             disabled={!editing}
@@ -297,16 +282,15 @@ export default function CheckoutPage() {
       {/* Price Section */}
       <div className={styles.priceSection}>
         <h3>Trip Summary</h3>
-        <p>
-          <strong>Selected Plan:</strong> {plan}
-        </p>
+        <p><strong>Selected Plan:</strong> {plan}</p>
         <div className={styles.priceBreakdown}>
           <p>Base Price: ₹{priceSummary.basePrice}</p>
           <p>Convenience Fee: ₹{priceSummary.convFee}</p>
-          <p>GST (18%): ₹{priceSummary.gst.toFixed(2)}</p>
+          <p>GST (18%): ₹{priceSummary.gst}</p>
           <hr />
-          <h4>Total: ₹{priceSummary.total.toFixed(2)}</h4>
+          <h4>Total: ₹{priceSummary.total}</h4>
         </div>
+
         <button className={styles.payBtn} onClick={handlePayment}>
           Pay Now
         </button>
