@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { supabase } from "../../lib/supabaseClient";
+import { makeAuthenticatedRequest } from "../../lib/customSupabaseClient";
+import { testAuth } from "../../lib/authTest";
 import styles from "./Checkout.module.css";
 
 export default function CheckoutPage() {
@@ -62,17 +63,30 @@ export default function CheckoutPage() {
     }
 
     try {
-      const payload = JSON.parse(
-        atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))
+      // Fix JWT payload parsing - handle base64 padding correctly
+      const base64Url = token.split(".")[1];
+      const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/").padEnd(
+        base64Url.length + (4 - base64Url.length % 4) % 4,
+        "="
       );
+      const payload = JSON.parse(atob(base64));
 
       setLoggedInUser(payload);
 
-      // ⭐ THE IMPORTANT FIX — now RLS will work!
-      supabase.auth.setSession({
-        access_token: token,
-        refresh_token: null,
-      });
+      // 🚫 REMOVED SESSION SETTING - GoTrueClient expects auth.users table
+      // RLS will now work with the RLS policy changes (custom JWT claims)
+      console.log("✅ Custom JWT loaded, RLS will work with policy fixes");
+      
+      // Test authentication after JWT is loaded
+      setTimeout(() => {
+        testAuth().then(success => {
+          if (success) {
+            console.log("✅ Authentication test passed!");
+          } else {
+            console.log("❌ Authentication test failed - check console for details");
+          }
+        });
+      }, 1000);
 
     } catch (err) {
       console.error("JWT parsing error:", err);
@@ -84,15 +98,25 @@ export default function CheckoutPage() {
   useEffect(() => {
     async function fetchCar() {
       try {
-        const { data, error } = await supabase
-          .from("vehicles")
-          .select("*, hosts(*), vehicle_images(*)")
-          .eq("id", carId)
-          .single();
-
-        if (error) throw error;
-        setCar(data);
-        setHost(data.hosts);
+        // Fetch vehicles with related data using direct fetch
+        const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/vehicles?id=eq.${carId}&select=*,hosts(*),vehicle_images(*)`;
+        const response = await fetch(url, {
+          headers: {
+            "apikey": process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+            "Content-Type": "application/json",
+          },
+        });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        if (data.length > 0) {
+          const carData = data[0];
+          setCar(carData);
+          setHost(carData.hosts);
+        }
       } catch (err) {
         console.error("Error fetching car:", err);
       } finally {
@@ -107,20 +131,21 @@ export default function CheckoutPage() {
     async function fetchCustomer() {
       if (!loggedInUser?.sub) return;
       try {
-        const { data } = await supabase
-          .from("customers")
-          .select("*")
-          .eq("user_id", loggedInUser.sub)
-          .single();
+        const data = await makeAuthenticatedRequest(
+          "GET",
+          `customers?user_id=eq.${loggedInUser.sub}&select=*`
+        );
 
-        if (data)
+        if (data && data.length > 0) {
+          const customerData = data[0];
           setCustomer({
-            first_name: data.first_name || "",
-            last_name: data.last_name || "",
-            email: data.email || "",
-            address: data.address || "",
-            phone: data.phone || loggedInUser.phone_number || "",
+            first_name: customerData.first_name || "",
+            last_name: customerData.last_name || "",
+            email: customerData.email || "",
+            address: customerData.address || "",
+            phone: customerData.phone || loggedInUser.phone_number || "",
           });
+        }
       } catch (err) {
         console.log("No customer record yet.");
       }
@@ -149,41 +174,77 @@ export default function CheckoutPage() {
 
   // Insert or update customer info
   async function handleSave() {
-    if (!loggedInUser?.sub) return;
+    if (!loggedInUser?.sub) {
+      console.error("No logged in user");
+      return;
+    }
 
     try {
-      const { data: existing } = await supabase
-        .from("customers")
-        .select("id")
-        .eq("user_id", loggedInUser.sub)
-        .single();
+      console.log("💾 Saving customer data...");
+      
+      // Check if customer exists
+      console.log("🔍 Checking for existing customer...");
+      const existingData = await makeAuthenticatedRequest(
+        "GET",
+        `customers?user_id=eq.${loggedInUser.sub}&select=id`
+      );
+      
+      console.log("Existing data:", existingData);
 
-      if (existing) {
-        await supabase
-          .from("customers")
-          .update({
-            first_name: customer.first_name,
-            last_name: customer.last_name,
-            email: customer.email,
-            address: customer.address,
-          })
-          .eq("user_id", loggedInUser.sub);
-      } else {
-        await supabase.from("customers").insert([
+      if (existingData && existingData.length > 0) {
+        console.log("🔄 Updating existing customer...");
+        // Update existing customer
+        const updateData = {
+          first_name: customer.first_name,
+          last_name: customer.last_name,
+          email: customer.email,
+          address: customer.address,
+        };
+        
+        await makeAuthenticatedRequest(
+          "PATCH",
+          `customers?user_id=eq.${loggedInUser.sub}`,
           {
-            user_id: loggedInUser.sub,
-            first_name: customer.first_name,
-            last_name: customer.last_name,
-            email: customer.email,
-            phone: customer.phone || loggedInUser.phone_number,
-            address: customer.address,
-          },
-        ]);
+            headers: {
+              "Content-Type": "application/json",
+              "Prefer": "return=minimal",
+            },
+            body: JSON.stringify(updateData),
+          }
+        );
+        
+        console.log("✅ Customer updated successfully");
+      } else {
+        console.log("🆕 Creating new customer...");
+        // Insert new customer
+        const insertData = {
+          user_id: loggedInUser.sub,
+          first_name: customer.first_name,
+          last_name: customer.last_name,
+          email: customer.email,
+          phone: customer.phone || loggedInUser.phone_number,
+          address: customer.address,
+        };
+        
+        await makeAuthenticatedRequest(
+          "POST",
+          "customers",
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "Prefer": "return=minimal",
+            },
+            body: JSON.stringify(insertData),
+          }
+        );
+        
+        console.log("✅ Customer created successfully");
       }
 
       setEditing(false);
     } catch (err) {
-      console.error("Error saving customer:", err);
+      console.error("❌ Error saving customer:", err);
+      alert("Failed to save customer data. Please try again.");
     }
   }
 

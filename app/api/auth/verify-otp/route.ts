@@ -95,13 +95,15 @@ export async function POST(req: Request) {
       .eq("id", user.id);
 
     // 5️⃣ Construct correct Supabase-compatible JWT
+    const now = Math.floor(Date.now() / 1000);
     const token = jwt.sign(
       {
         aud: "authenticated",
         role: "authenticated",
-        sub: user.id, // 🔥 MOST IMPORTANT — REAL UUID
+        sub: user.id, // 🔥 MOST IMPORTANT — REAL UUID (enables auth.uid())
         phone_number: user.phone,
-        exp: Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60,
+        iat: now, // Issued at timestamp (recommended by Supabase)
+        exp: now + 7 * 24 * 60 * 60, // 7 days expiration
       },
       process.env.SUPABASE_JWT_SECRET!
     );
