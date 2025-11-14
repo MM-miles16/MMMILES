@@ -7,94 +7,75 @@ import { makeAuthenticatedRequest } from "../../lib/customSupabaseClient";
 import { testAuth } from "../../lib/authTest";
 import styles from "./Checkout.module.css";
 
-/**
- * Robust parser for the common date formats we expect from the URL
- * Supports:
- *  - "17/11/2025 09:00"  (dd/mm/yyyy hh:mm)
- *  - "17-11-2025 09:00"
- *  - "2025-11-17 09:00"  (yyyy-mm-dd)
- *  - ISO strings
- *  - epoch milliseconds
- */
+/* -------------------------------------------------------------------------- */
+/*                          DATE PARSING HELPERS                               */
+/* -------------------------------------------------------------------------- */
 function parseDateInput(raw) {
   if (!raw) return null;
   try {
     let s = decodeURIComponent(String(raw)).trim();
 
-    // If it's a pure number (epoch ms or seconds)
     if (/^\d+$/.test(s)) {
       const asNum = Number(s);
-      // if seconds, convert to ms (10-digit), if ms keep
       return asNum < 1e12 ? new Date(asNum * 1000) : new Date(asNum);
     }
 
-    // First try native parse (ISO and other recognized formats)
     const native = new Date(s);
     if (!isNaN(native.getTime())) return native;
 
-    // dd/mm/yyyy hh:mm or dd-mm-yyyy hh:mm
     const dmy = s.match(
       /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})(?:[T\s]+(\d{1,2}):(\d{2}))?$/
     );
     if (dmy) {
-      const day = Number(dmy[1]);
-      const month = Number(dmy[2]) - 1;
-      const year = Number(dmy[3]);
-      const hour = Number(dmy[4] || 0);
-      const minute = Number(dmy[5] || 0);
-      return new Date(year, month, day, hour, minute);
+      return new Date(+dmy[3], +dmy[2] - 1, +dmy[1], +(dmy[4] || 0), +(dmy[5] || 0));
     }
 
-    // yyyy/mm/dd or yyyy-mm-dd hh:mm
     const ymd = s.match(
       /^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})(?:[T\s]+(\d{1,2}):(\d{2}))?$/
     );
     if (ymd) {
-      const year = Number(ymd[1]);
-      const month = Number(ymd[2]) - 1;
-      const day = Number(ymd[3]);
-      const hour = Number(ymd[4] || 0);
-      const minute = Number(ymd[5] || 0);
-      return new Date(year, month, day, hour, minute);
+      return new Date(+ymd[1], +ymd[2] - 1, +ymd[3], +(ymd[4] || 0), +(ymd[5] || 0));
     }
 
-    // Last resort: try replacing dots with hyphens and parse
-    const tryAlt = new Date(s.replace(/\./g, "-"));
-    if (!isNaN(tryAlt.getTime())) return tryAlt;
+    const alt = new Date(s.replace(/\./g, "-"));
+    if (!isNaN(alt.getTime())) return alt;
   } catch (err) {
-    console.warn("parseDateInput error", err);
+    console.warn("Date parse error", err);
   }
   return null;
 }
 
-/** Clean numeric string like "₹500" or "500.00 " -> 500 */
 function toNumberClean(v) {
   if (v === undefined || v === null) return 0;
-  const s = String(v).trim();
-  // Remove any non-digit except dot and minus
-  const cleaned = s.replace(/[^\d.\-]/g, "");
+  const cleaned = String(v).replace(/[^\d.\-]/g, "");
   const n = parseFloat(cleaned);
   return Number.isFinite(n) ? n : 0;
 }
 
+/* -------------------------------------------------------------------------- */
+/*                             MAIN COMPONENT                                   */
+/* -------------------------------------------------------------------------- */
 export default function CheckoutPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+
   const carId = searchParams.get("car");
-  const pickup = searchParams.get("pickup"); // e.g. "17/11/2025 09:00"
-  const returnTime = searchParams.get("return"); // e.g. "19/11/2025 17:00"
+  const pickup = searchParams.get("pickup");
+  const returnTime = searchParams.get("return");
   const plan = searchParams.get("plan") || "BASIC";
 
   const [car, setCar] = useState(null);
   const [host, setHost] = useState(null);
+
   const [customer, setCustomer] = useState({
     first_name: "",
     last_name: "",
     email: "",
-    address: "",
     phone: "",
+    address: "",
   });
 
+  const [loggedInUser, setLoggedInUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
 
@@ -107,30 +88,26 @@ export default function CheckoutPage() {
     error: null,
   });
 
-  const [loggedInUser, setLoggedInUser] = useState(null);
-
-  // Load Razorpay script
+  /* -------------------------------------------------------------------------- */
+  /*                               LOAD RAZORPAY                                */
+  /* -------------------------------------------------------------------------- */
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (window.Razorpay) return;
-    const s = document.createElement("script");
-    s.src = "https://checkout.razorpay.com/v1/checkout.js";
-    s.async = true;
-    document.body.appendChild(s);
+    if (!window.Razorpay) {
+      const s = document.createElement("script");
+      s.src = "https://checkout.razorpay.com/v1/checkout.js";
+      s.async = true;
+      document.body.appendChild(s);
+    }
   }, []);
 
-  // 🔥 FIXED LOGIN CHECK + Supabase Session Injection
+  /* -------------------------------------------------------------------------- */
+  /*                             AUTH CHECK (JWT)                                */
+  /* -------------------------------------------------------------------------- */
   useEffect(() => {
-    const token = typeof window !== "undefined"
-      ? localStorage.getItem("auth_token")
-      : null;
-
+    const token = localStorage.getItem("auth_token");
     if (!token) {
-      router.push(
-        `/login?redirect=${encodeURIComponent(
-          window.location.pathname + window.location.search
-        )}`
-      );
+      router.push(`/login?redirect=${encodeURIComponent(window.location.href)}`);
       return;
     }
 
@@ -139,122 +116,95 @@ export default function CheckoutPage() {
       const base64 = base64Url
         .replace(/-/g, "+")
         .replace(/_/g, "/")
-        .padEnd(base64Url.length + (4 - base64Url.length % 4) % 4, "=");
+        .padEnd(base64Url.length + (4 - (base64Url.length % 4)) % 4, "=");
+
       const payload = JSON.parse(atob(base64));
       setLoggedInUser(payload);
 
-      setTimeout(() => {
-        testAuth().then((success) => {
-          if (success) {
-            console.log("✅ Authentication test passed!");
-          } else {
-            console.log("❌ Authentication test failed - check console for details");
-          }
-        });
-      }, 1000);
+      setTimeout(() => testAuth().then(() => {}), 300);
     } catch (err) {
-      console.error("JWT parsing error:", err);
       router.push("/login?redirect=/checkout");
     }
   }, [router]);
 
-  // Fetch car
+  /* -------------------------------------------------------------------------- */
+  /*                                FETCH CAR                                    */
+  /* -------------------------------------------------------------------------- */
   useEffect(() => {
-    async function fetchCar() {
+    async function go() {
       try {
         const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/vehicles?id=eq.${carId}&select=*,hosts(*),vehicle_images(*)`;
-        const response = await fetch(url, {
+
+        const r = await fetch(url, {
           headers: {
             apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
             "Content-Type": "application/json",
           },
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        if (data.length > 0) {
-          const carData = data[0];
-          setCar(carData);
-          setHost(carData.hosts);
-        } else {
-          setCar(null);
-        }
+        const d = await r.json();
+        setCar(d[0]);
+        setHost(d[0]?.hosts || null);
       } catch (err) {
-        console.error("Error fetching car:", err);
-        setCar(null);
+        console.error(err);
       } finally {
         setLoading(false);
       }
     }
-    if (carId) fetchCar();
-    else setLoading(false);
+
+    if (carId) go();
   }, [carId]);
 
-  // Fetch customer details
+  /* -------------------------------------------------------------------------- */
+  /*                           FETCH CUSTOMER DATA                               */
+  /* -------------------------------------------------------------------------- */
   useEffect(() => {
-    async function fetchCustomer() {
-      if (!loggedInUser?.sub) return;
-      try {
-        const data = await makeAuthenticatedRequest(
-          "GET",
-          `customers?user_id=eq.${loggedInUser.sub}&select=*`
-        );
+    if (!loggedInUser?.sub) return;
 
-        if (data && data.length > 0) {
-          const customerData = data[0];
-          setCustomer({
-            first_name: customerData.first_name || "",
-            last_name: customerData.last_name || "",
-            email: customerData.email || "",
-            address: customerData.address || "",
-            phone: customerData.phone || loggedInUser.phone_number || "",
-          });
-        }
-      } catch (err) {
-        console.log("No customer record yet.", err);
+    async function go() {
+      const res = await makeAuthenticatedRequest(
+        "GET",
+        `customers?user_id=eq.${loggedInUser.sub}&select=*`
+      );
+
+      if (res?.length) {
+        const c = res[0];
+        setCustomer({
+          first_name: c.first_name,
+          last_name: c.last_name,
+          email: c.email,
+          phone: c.phone,
+          address: c.address,
+        });
       }
     }
-    fetchCustomer();
+
+    go();
   }, [loggedInUser]);
 
-  // Calculate total price (robust)
+  /* -------------------------------------------------------------------------- */
+  /*                        PRICE CALCULATION (HOURS)                            */
+  /* -------------------------------------------------------------------------- */
   useEffect(() => {
-    // Safe defaults
-    if (!car) return setPriceSummary((s) => ({ ...s, error: "Car data not loaded yet" }));
+    if (!car) return;
 
     const start = parseDateInput(pickup);
     const end = parseDateInput(returnTime);
 
     if (!start || !end) {
-      // Provide helpful error & zeroed numbers (avoid NaN)
-      setPriceSummary({
+      return setPriceSummary({
         basePrice: 0,
         gst: 0,
         convFee: 100,
         total: 0,
         hours: 0,
-        error: "Invalid pickup/return datetime format. Use dd/mm/yyyy hh:mm or ISO.",
+        error: "Invalid datetime",
       });
-      console.warn("Invalid date(s): pickup=", pickup, " return=", returnTime);
-      return;
     }
 
-    // Convert DB rates to numbers safely
-    let hourlyRateRaw =
-      plan === "MAX"
-        ? car.price_max
-        : plan === "PLUS"
-        ? car.price_plus
-        : car.price_basic;
-
-    const hourlyRate = toNumberClean(hourlyRateRaw);
-
-    const diffMs = end.getTime() - start.getTime();
+    const diffMs = end - start;
     if (diffMs <= 0) {
-      setPriceSummary({
+      return setPriceSummary({
         basePrice: 0,
         gst: 0,
         convFee: 100,
@@ -262,12 +212,16 @@ export default function CheckoutPage() {
         hours: 0,
         error: "Return must be after pickup",
       });
-      return;
     }
 
-    const hours = Math.ceil(diffMs / (1000 * 60 * 60)); // round up to next hour
+    const hours = Math.ceil(diffMs / 3600000);
 
-    const basePrice = +(hours * hourlyRate).toFixed(2);
+    const rate =
+      plan === "MAX" ? toNumberClean(car.price_max)
+      : plan === "PLUS" ? toNumberClean(car.price_plus)
+      : toNumberClean(car.price_basic);
+
+    const basePrice = +(hours * rate).toFixed(2);
     const gst = +(basePrice * 0.18).toFixed(2);
     const convFee = 100;
     const total = +(basePrice + gst + convFee).toFixed(2);
@@ -280,84 +234,122 @@ export default function CheckoutPage() {
       hours,
       error: null,
     });
-  }, [plan, car, pickup, returnTime]);
+  }, [car, pickup, returnTime, plan]);
 
-  // Insert or update customer info
+  /* -------------------------------------------------------------------------- */
+  /*                        SAVE CUSTOMER PROFILE                                */
+  /* -------------------------------------------------------------------------- */
   async function handleSave() {
-    if (!loggedInUser?.sub) {
-      console.error("No logged in user");
-      return;
-    }
+    if (!loggedInUser?.sub) return;
 
-    try {
-      const existingData = await makeAuthenticatedRequest(
-        "GET",
-        `customers?user_id=eq.${loggedInUser.sub}&select=id`
+    const exists = await makeAuthenticatedRequest(
+      "GET",
+      `customers?user_id=eq.${loggedInUser.sub}&select=id`
+    );
+
+    if (exists?.length) {
+      await makeAuthenticatedRequest(
+        "PATCH",
+        `customers?user_id=eq.${loggedInUser.sub}`,
+        {
+          headers: { "Content-Type": "application/json", Prefer: "return=minimal" },
+          body: JSON.stringify(customer),
+        }
       );
-
-      if (existingData && existingData.length > 0) {
-        await makeAuthenticatedRequest(
-          "PATCH",
-          `customers?user_id=eq.${loggedInUser.sub}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Prefer: "return=minimal",
-            },
-            body: JSON.stringify({
-              first_name: customer.first_name,
-              last_name: customer.last_name,
-              email: customer.email,
-              address: customer.address,
-            }),
-          }
-        );
-      } else {
-        await makeAuthenticatedRequest(
-          "POST",
-          "customers",
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Prefer: "return=minimal",
-            },
-            body: JSON.stringify({
-              user_id: loggedInUser.sub,
-              first_name: customer.first_name,
-              last_name: customer.last_name,
-              email: customer.email,
-              phone: customer.phone || loggedInUser.phone_number,
-              address: customer.address,
-            }),
-          }
-        );
-      }
-
-      setEditing(false);
-    } catch (err) {
-      console.error("❌ Error saving customer:", err);
-      alert("Failed to save customer data. Please try again.");
+    } else {
+      await makeAuthenticatedRequest("POST", "customers", {
+        headers: { "Content-Type": "application/json", Prefer: "return=minimal" },
+        body: JSON.stringify({ ...customer, user_id: loggedInUser.sub }),
+      });
     }
+
+    setEditing(false);
   }
 
-  // Handle payment
+  /* -------------------------------------------------------------------------- */
+  /*                       CREATE BOOKING AFTER PAYMENT                          */
+  /* -------------------------------------------------------------------------- */
+  async function createBooking(paymentId) {
+    const start = parseDateInput(pickup);
+    const end = parseDateInput(returnTime);
+
+    const payload = {
+      user_id: loggedInUser.sub,
+      vehicle_id: car.id,
+      host_id: car.host_id,
+
+      plan,
+      hours: priceSummary.hours,
+
+      base_price: priceSummary.basePrice,
+      gst: priceSummary.gst,
+      conv_fee: priceSummary.convFee,
+      total_amount: priceSummary.total,
+
+      payment_id: paymentId,
+
+      pickup_datetime_raw: pickup,
+      return_datetime_raw: returnTime,
+
+      start_time: start.toISOString(),
+      end_time: end.toISOString(),
+
+      status: "confirmed",
+      created_at: new Date().toISOString(),
+    };
+
+    // Prevent duplicate bookings
+    const dup = await makeAuthenticatedRequest(
+      "GET",
+      `bookings?payment_id=eq.${paymentId}&select=id`
+    );
+    if (dup?.length) return dup;
+
+    const res = await makeAuthenticatedRequest("POST", "bookings", {
+      headers: { "Content-Type": "application/json", Prefer: "return=representation" },
+      body: JSON.stringify(payload),
+    });
+
+    return res;
+  }
+
+  /* -------------------------------------------------------------------------- */
+  /*                               PAYMENT HANDLER                               */
+  /* -------------------------------------------------------------------------- */
   const handlePayment = () => {
-    if (!priceSummary.total || priceSummary.total <= 0) {
-      alert("Invalid payment amount. Check trip details.");
-      return;
-    }
+    if (!priceSummary.total) return alert("Invalid amount");
 
     const options = {
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-      amount: Math.round(priceSummary.total * 100), // in paise
+      amount: Math.round(priceSummary.total * 100),
       currency: "INR",
+
       name: "MMmiles Rentals",
-      description: `${car.make} ${car.model} booking`,
+      description: `${car.make} ${car.model}`,
       image: "/logo.png",
-      handler: (response) => {
-        alert("Payment Successful: " + response.razorpay_payment_id);
-        router.push("/booking-success");
+
+      handler: async (response) => {
+        try {
+          const pid = response.razorpay_payment_id;
+          alert("Payment Success! Saving booking...");
+
+          const booking = await createBooking(pid);
+
+          const bookingId = Array.isArray(booking)
+            ? booking[0]?.id
+            : booking?.id;
+
+          router.push(
+            bookingId
+              ? `/booking-success?booking=${bookingId}`
+              : `/booking-success`
+          );
+        } catch (err) {
+          console.error(err);
+          alert("Payment succeeded but booking failed.");
+        }
       },
+
       prefill: {
         name: `${customer.first_name} ${customer.last_name}`,
         email: customer.email,
@@ -365,9 +357,12 @@ export default function CheckoutPage() {
       },
     };
 
-    const rzp = new window.Razorpay(options);
-    rzp.open();
+    new window.Razorpay(options).open();
   };
+
+  /* -------------------------------------------------------------------------- */
+  /*                                   UI                                        */
+  /* -------------------------------------------------------------------------- */
 
   if (loading) return <p className={styles.loading}>Loading...</p>;
   if (!car) return <p className={styles.error}>Car Not Found</p>;
@@ -375,7 +370,7 @@ export default function CheckoutPage() {
   return (
     <div className={styles.checkoutContainer}>
       <div className={styles.leftColumn}>
-        {/* Car Info */}
+        {/* CAR CARD */}
         <div className={styles.carCard}>
           <Image
             src={car.vehicle_images?.[0]?.image_url || "/cars/default.jpg"}
@@ -385,17 +380,13 @@ export default function CheckoutPage() {
             className={styles.carImage}
           />
           <div className={styles.carDetails}>
-            <h2>
-              {car.make} {car.model} ({car.model_year})
-            </h2>
-            <p>
-              Hosted by <strong>{host?.full_name}</strong>
-            </p>
+            <h2>{car.make} {car.model} ({car.model_year})</h2>
+            <p>Hosted by <strong>{host?.full_name}</strong></p>
             <p>📍 {car.location_name}, {car.city}</p>
           </div>
         </div>
 
-        {/* Customer Details Form */}
+        {/* CUSTOMER FORM */}
         <div className={styles.formSection}>
           <h3>Your Details</h3>
 
@@ -404,7 +395,7 @@ export default function CheckoutPage() {
               <label>{field.replace("_", " ").toUpperCase()}</label>
               <input
                 type="text"
-                value={customer[field] || ""}
+                value={customer[field]}
                 onChange={(e) => {
                   setCustomer({ ...customer, [field]: e.target.value });
                   setEditing(true);
@@ -435,18 +426,20 @@ export default function CheckoutPage() {
         </div>
       </div>
 
-      {/* Price Section */}
+      {/* PRICE / SUMMARY */}
       <div className={styles.priceSection}>
         <h3>Trip Summary</h3>
-        <p><strong>Selected Plan:</strong> {plan}</p>
+
+        <p><strong>Plan:</strong> {plan}</p>
         <p><strong>Pickup:</strong> {pickup}</p>
         <p><strong>Return:</strong> {returnTime}</p>
 
         {priceSummary.error && (
-          <p style={{ color: "crimson" }}>{priceSummary.error}</p>
+          <p style={{ color: "red" }}>{priceSummary.error}</p>
         )}
 
         <p><strong>Duration:</strong> {priceSummary.hours} hours</p>
+
         <div className={styles.priceBreakdown}>
           <p>Base Price: ₹{priceSummary.basePrice}</p>
           <p>Convenience Fee: ₹{priceSummary.convFee}</p>
