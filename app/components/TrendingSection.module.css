@@ -239,7 +239,7 @@
   .trendy-price-row {
   display: flex;
   align-items: baseline;
-  gap: 2px;
+  gap: 4px;
   margin-bottom: 12px;
   background:linear-gradient(to right bottom, #f0dec3, rgb(223, 223, 213));
   padding: 8px 12px 8px 21px;
