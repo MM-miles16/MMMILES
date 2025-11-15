@@ -222,7 +222,7 @@ export default function TrendingSection() {
 
                   <div className={styles["trendy-price-row"]}>
                     <span className={styles["trendy-price"]}>Rs.{car.price}</span>
-                    <span className={styles["trendy-per-day"]}>per day</span>
+                    <span className={styles["trendy-per-day"]}>/ day</span>
                     <button className={styles["trendy-reserve-btn"]}>
                       Book Now
                     </button>

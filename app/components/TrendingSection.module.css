@@ -206,18 +206,53 @@
   .scroll-btn{
     display: none !important;
   }
-  
+  .trendy-reserve-btn {
+  width: 40%;
+  background: linear-gradient(to right, #D8B480 50%, #BF9860 100%);
+  color: white;
+  border: none;
+  margin-left: 30px;
+  border-radius: 8px;
+  padding: 10px 5px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
 }
-
+}
 @media (max-width: 480px) {
   .trendy-card {
     width: 180px;
     
   }
-  
+   .trendy-reserve-btn {
+  width: 40%;
+  background: linear-gradient(to right, #D8B480 50%, #BF9860 100%);
+  color: white;
+  border: none;
+  margin-left: 26px !important;
+  border-radius: 8px;
+  padding: 10px 5px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+}
+  .trendy-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  margin-bottom: 12px;
+  background:linear-gradient(to right bottom, #f0dec3, rgb(223, 223, 213));
+  padding: 8px 12px 8px 21px;
+  border-radius: 12px;
+}
   .trendy-image-wrapper {
     height: 150px;
   }
+  .trendy-reserve-btn:hover {
+  
+  transform: scale(0.8);
+  box-shadow: 0 6px 20px rgba(228, 192, 44, 0.5);
+}
 }
 
 /* Remove link underline */
