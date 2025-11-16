@@ -4,7 +4,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 2rem 0.4rem;
-  background:linear-gradient(to bottom,#000000 10%, #2a2929 80%) ;
+  background:linear-gradient(to right bottom,#000000 10%, #2a2929 80%) ;
   color: #f5e7e7;
   position: sticky;
   top: 0;
