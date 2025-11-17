@@ -88,6 +88,20 @@ export default function CheckoutPage() {
     error: null,
   });
 
+  const [lockStatus, setLockStatus] = useState({
+    checking: false,
+    error: null,
+    lockInfo: null,
+    blocked: false,
+    canProceed: false
+  });
+
+  const [bookingCheckStatus, setBookingCheckStatus] = useState({
+    checking: false,
+    overlaps: false,
+    error: null
+  });
+
   /* -------------------------------------------------------------------------- */
   /*                               LOAD RAZORPAY                                */
   /* -------------------------------------------------------------------------- */
@@ -242,6 +256,13 @@ export default function CheckoutPage() {
   async function handleSave() {
     if (!loggedInUser?.sub) return;
 
+    // Validate required fields
+    if (!customer.first_name?.trim() || !customer.last_name?.trim() || 
+        !customer.email?.trim() || !customer.address?.trim()) {
+      alert("Please fill in all required fields: First Name, Last Name, Email, and Address");
+      return;
+    }
+
     const exists = await makeAuthenticatedRequest(
       "GET",
       `customers?user_id=eq.${loggedInUser.sub}&select=id`
@@ -264,6 +285,204 @@ export default function CheckoutPage() {
     }
 
     setEditing(false);
+  }
+
+  /* -------------------------------------------------------------------------- */
+  /*                     CHECK CUSTOMER DATA COMPLETENESS                       */
+  /* -------------------------------------------------------------------------- */
+  const isCustomerDataComplete = () => {
+    return customer.first_name?.trim() && 
+           customer.last_name?.trim() && 
+           customer.email?.trim() && 
+           customer.address?.trim();
+  };
+
+  /* -------------------------------------------------------------------------- */
+  /*                    CHECK FOR BOOKING OVERLAPS                              */
+  /* -------------------------------------------------------------------------- */
+  async function checkBookingOverlaps() {
+    if (!car?.id) return false;
+
+    setBookingCheckStatus({ checking: true, overlaps: false, error: null });
+
+    try {
+      const start = parseDateInput(pickup);
+      const end = parseDateInput(returnTime);
+      
+      if (!start || !end) {
+        alert("Invalid date range specified");
+        return false;
+      }
+
+      const startIso = start.toISOString();
+      const endIso = end.toISOString();
+
+      // Check for overlapping confirmed bookings using Supabase REST API
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/bookings?vehicle_id=eq.${car.id}&status=eq.confirmed&select=id,start_time,end_time,pickup_datetime_raw,return_datetime_raw`,
+        {
+          headers: {
+            apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to check existing bookings');
+      }
+
+      const existingBookings = await response.json();
+      
+      // Check for time overlap using PostgreSQL range logic
+      for (const booking of existingBookings) {
+        const existingStart = new Date(booking.start_time);
+        const existingEnd = new Date(booking.end_time);
+        
+        // Check if requested time overlaps with existing booking
+        // Two time ranges overlap if: start1 < end2 AND start2 < end1
+        if (start < existingEnd && existingStart < end) {
+          const formatDate = (date) => {
+            return date.toLocaleString('en-IN', {
+              day: '2-digit',
+              month: '2-digit', 
+              year: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            });
+          };
+
+          alert(
+            `This vehicle is already booked during your requested time.\n\n` +
+            `Existing booking:\n` +
+            `From: ${formatDate(existingStart)}\n` +
+            `To: ${formatDate(existingEnd)}\n\n` +
+            `Please choose different dates/times for your booking.`
+          );
+          setBookingCheckStatus({ checking: false, overlaps: true, error: null });
+          return false;
+        }
+      }
+
+      setBookingCheckStatus({ checking: false, overlaps: false, error: null });
+      return true;
+
+    } catch (error) {
+      console.error('Booking overlap check error:', error);
+      setBookingCheckStatus({ checking: false, overlaps: false, error: "Unable to check availability" });
+      alert("Unable to check vehicle availability. Please try again.");
+      return false;
+    }
+  }
+
+  /* -------------------------------------------------------------------------- */
+  /*                        CHECK AND CREATE LOCKS                              */
+  /* -------------------------------------------------------------------------- */
+  async function checkAndCreateLock() {
+    if (!loggedInUser?.sub || !car?.id) return false;
+
+    setLockStatus({ checking: true, error: null, lockInfo: null, blocked: false, canProceed: false });
+
+    try {
+      // Step 1: Check existing locks
+      const token = localStorage.getItem("auth_token");
+      const response = await fetch(`/api/locks?vehicle_id=${car.id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to check lock status');
+      }
+
+      const lockData = await response.json();
+      const existingLocks = lockData.locks || [];
+
+      // Step 2: If locks exist, check if they're by current user
+      if (existingLocks.length > 0) {
+        const userLocks = existingLocks.filter(lock => lock.user_id === loggedInUser.sub);
+        const otherUserLocks = existingLocks.filter(lock => lock.user_id !== loggedInUser.sub);
+
+        if (otherUserLocks.length > 0) {
+          // Vehicle is locked by another user
+          setLockStatus({ 
+            checking: false, 
+            error: "Someone else is currently booking this car. Try again later.", 
+            lockInfo: null, 
+            blocked: true, 
+            canProceed: false 
+          });
+          return false;
+        }
+
+        if (userLocks.length > 0) {
+          // User already has a lock, allow to continue
+          setLockStatus({ 
+            checking: false, 
+            error: null, 
+            lockInfo: userLocks[0], 
+            blocked: false, 
+            canProceed: true 
+          });
+          return true;
+        }
+      }
+
+      // Step 3: No locks exist, create new lock
+      const start = parseDateInput(pickup);
+      const end = parseDateInput(returnTime);
+      
+      const lockCreateResponse = await fetch('/api/locks', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          vehicle_id: car.id,
+          start_time: start?.toISOString(),
+          end_time: end?.toISOString()
+        })
+      });
+
+      if (!lockCreateResponse.ok) {
+        const errorData = await lockCreateResponse.json();
+        if (errorData.locked_by_other) {
+          setLockStatus({ 
+            checking: false, 
+            error: "Someone else is currently booking this car. Try again later.", 
+            lockInfo: null, 
+            blocked: true, 
+            canProceed: false 
+          });
+          return false;
+        }
+        throw new Error(errorData.error || 'Failed to create lock');
+      }
+
+      const lockResult = await lockCreateResponse.json();
+      setLockStatus({ 
+        checking: false, 
+        error: null, 
+        lockInfo: lockResult.lock, 
+        blocked: false, 
+        canProceed: true 
+      });
+      return true;
+
+    } catch (error) {
+      console.error('Lock check error:', error);
+      setLockStatus({ 
+        checking: false, 
+        error: "Failed to check booking status. Please try again.", 
+        lockInfo: null, 
+        blocked: false, 
+        canProceed: false 
+      });
+      return false;
+    }
   }
 
   /* -------------------------------------------------------------------------- */
@@ -314,11 +533,35 @@ export default function CheckoutPage() {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                               PAYMENT HANDLER                               */
+  /*                          ENHANCED PAYMENT HANDLER                           */
   /* -------------------------------------------------------------------------- */
-  const handlePayment = () => {
+  const handlePayment = async () => {
     if (!priceSummary.total) return alert("Invalid amount");
 
+    // Step 1: Check if customer data is complete
+    if (!isCustomerDataComplete()) {
+      alert("Please fill in all required fields: First Name, Last Name, Email, and Address before proceeding.");
+      return;
+    }
+
+    // Step 2: Save customer data if editing
+    if (editing) {
+      await handleSave();
+    }
+
+    // Step 3: Check for booking overlaps BEFORE any lock checks
+    const noOverlaps = await checkBookingOverlaps();
+    if (!noOverlaps) {
+      return; // Booking overlaps detected, block payment
+    }
+
+    // Step 4: Check and create locks
+    const lockCreated = await checkAndCreateLock();
+    if (!lockCreated) {
+      return; // User is blocked or error occurred
+    }
+
+    // Step 5: Proceed with payment
     const options = {
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
       amount: Math.round(priceSummary.total * 100),
@@ -338,6 +581,24 @@ export default function CheckoutPage() {
           const bookingId = Array.isArray(booking)
             ? booking[0]?.id
             : booking?.id;
+
+          // Step 6: Handle booking completion (buffer time, lock conversion)
+          try {
+            await fetch('/api/booking-complete', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem("auth_token")}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                vehicle_id: car.id,
+                booking_id: bookingId,
+                payment_id: pid
+              })
+            });
+          } catch (completionError) {
+            console.warn('Booking completion handler failed, but payment was successful:', completionError);
+          }
 
           router.push(
             bookingId
@@ -389,10 +650,24 @@ export default function CheckoutPage() {
         {/* CUSTOMER FORM */}
         <div className={styles.formSection}>
           <h3>Your Details</h3>
+          
+          {/* Customer Data Validation */}
+          {!isCustomerDataComplete() && (
+            <div style={{ 
+              background: '#fff3cd', 
+              color: '#856404', 
+              padding: '10px', 
+              borderRadius: '4px', 
+              marginBottom: '15px',
+              border: '1px solid #ffeaa7'
+            }}>
+              <strong>Please complete your profile:</strong> First Name, Last Name, Email, and Address are required to proceed with booking.
+            </div>
+          )}
 
           {["first_name", "last_name", "email"].map((field) => (
             <div className={styles.formGroup} key={field}>
-              <label>{field.replace("_", " ").toUpperCase()}</label>
+              <label>{field.replace("_", " ").toUpperCase()} *</label>
               <input
                 type="text"
                 value={customer[field]}
@@ -400,12 +675,16 @@ export default function CheckoutPage() {
                   setCustomer({ ...customer, [field]: e.target.value });
                   setEditing(true);
                 }}
+                placeholder={field === "email" ? "your.email@example.com" : ""}
+                style={{
+                  borderColor: !customer[field]?.trim() && !isCustomerDataComplete() ? '#dc3545' : '#ddd'
+                }}
               />
             </div>
           ))}
 
           <div className={styles.formGroup}>
-            <label>Home Address</label>
+            <label>Home Address *</label>
             <textarea
               rows="3"
               value={customer.address}
@@ -413,17 +692,97 @@ export default function CheckoutPage() {
                 setCustomer({ ...customer, address: e.target.value });
                 setEditing(true);
               }}
+              placeholder="Enter your complete address including city and state"
+              style={{
+                borderColor: !customer.address?.trim() && !isCustomerDataComplete() ? '#dc3545' : '#ddd'
+              }}
             />
           </div>
 
           <button
             className={styles.saveBtn}
-            disabled={!editing}
+            disabled={!editing || !customer.first_name?.trim() || !customer.last_name?.trim() || !customer.email?.trim() || !customer.address?.trim()}
             onClick={handleSave}
           >
             {editing ? "Save Changes" : "Saved ✓"}
           </button>
         </div>
+
+        {/* BOOKING OVERLAP STATUS */}
+        {bookingCheckStatus.checking && (
+          <div className={styles.formSection}>
+            <div style={{ 
+              background: '#cce5ff', 
+              color: '#004085', 
+              padding: '10px', 
+              borderRadius: '4px', 
+              border: '1px solid #b3d9ff'
+            }}>
+              📅 Checking vehicle availability against existing bookings...
+            </div>
+          </div>
+        )}
+
+        {bookingCheckStatus.overlaps && (
+          <div className={styles.formSection}>
+            <div style={{ 
+              background: '#f8d7da', 
+              color: '#721c24', 
+              padding: '15px', 
+              borderRadius: '4px', 
+              border: '1px solid #f5c6cb',
+              textAlign: 'center'
+            }}>
+              <strong>📅 Booking Conflict Detected</strong><br />
+              This vehicle has confirmed bookings that overlap with your requested time. Please choose different dates/times.
+            </div>
+          </div>
+        )}
+
+        {/* LOCK STATUS */}
+        {lockStatus.checking && (
+          <div className={styles.formSection}>
+            <div style={{ 
+              background: '#cce5ff', 
+              color: '#004085', 
+              padding: '10px', 
+              borderRadius: '4px', 
+              border: '1px solid #b3d9ff'
+            }}>
+              🔄 Checking vehicle availability...
+            </div>
+          </div>
+        )}
+
+        {lockStatus.blocked && lockStatus.error && (
+          <div className={styles.formSection}>
+            <div style={{ 
+              background: '#f8d7da', 
+              color: '#721c24', 
+              padding: '15px', 
+              borderRadius: '4px', 
+              border: '1px solid #f5c6cb',
+              textAlign: 'center'
+            }}>
+              <strong>⚠️ Booking Unavailable</strong><br />
+              {lockStatus.error}
+            </div>
+          </div>
+        )}
+
+        {lockStatus.canProceed && lockStatus.lockInfo && (
+          <div className={styles.formSection}>
+            <div style={{ 
+              background: '#d4edda', 
+              color: '#155724', 
+              padding: '10px', 
+              borderRadius: '4px', 
+              border: '1px solid #c3e6cb'
+            }}>
+              ✅ Vehicle reserved for 30 minutes. Complete your payment to confirm the booking.
+            </div>
+          </div>
+        )}
       </div>
 
       {/* PRICE / SUMMARY */}
@@ -448,8 +807,34 @@ export default function CheckoutPage() {
           <h4>Total: ₹{priceSummary.total}</h4>
         </div>
 
-        <button className={styles.payBtn} onClick={handlePayment}>
-          Pay Now
+        <button 
+          className={styles.payBtn} 
+          onClick={handlePayment}
+          disabled={
+            !priceSummary.total || 
+            !isCustomerDataComplete() || 
+            bookingCheckStatus.checking ||
+            bookingCheckStatus.overlaps ||
+            lockStatus.checking ||
+            lockStatus.blocked ||
+            (editing && (!customer.first_name?.trim() || !customer.last_name?.trim() || !customer.email?.trim() || !customer.address?.trim()))
+          }
+        >
+          {bookingCheckStatus.checking ? (
+            "Checking Availability..."
+          ) : bookingCheckStatus.overlaps ? (
+            "Time Conflict"
+          ) : lockStatus.checking ? (
+            "Checking Lock Status..."
+          ) : lockStatus.blocked ? (
+            "Currently Unavailable"
+          ) : !isCustomerDataComplete() ? (
+            "Complete Profile Required"
+          ) : lockStatus.canProceed ? (
+            "Pay Now ✓"
+          ) : (
+            "Pay Now"
+          )}
         </button>
       </div>
     </div>
