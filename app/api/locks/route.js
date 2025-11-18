@@ -177,6 +177,93 @@ export async function POST(request) {
   }
 }
 
+// PATCH /api/locks - Extend lock by 20 minutes
+export async function PATCH(request) {
+  try {
+    const user = getUserFromToken(request.headers.get('authorization'));
+    if (!user) {
+      return Response.json({ error: 'Invalid or missing authentication' }, { status: 401 });
+    }
+
+    const { vehicle_id } = await request.json();
+    
+    if (!vehicle_id) {
+      return Response.json({ 
+        error: 'vehicle_id is required' 
+      }, { status: 400 });
+    }
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    
+    // First, get the user's current lock
+    const currentLockResponse = await fetch(
+      `${supabaseUrl}/rest/v1/locks?vehicle_id=eq.${vehicle_id}&user_id=eq.${user.sub}&status=eq.active&expires_at=gt.${new Date().toISOString()}&select=*`,
+      {
+        headers: {
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${request.headers.get('authorization').split(' ')[1]}`,
+        },
+      }
+    );
+
+    if (!currentLockResponse.ok) {
+      throw new Error('Failed to fetch current lock');
+    }
+
+    const currentLocks = await currentLockResponse.json();
+    
+    if (currentLocks.length === 0) {
+      return Response.json({ 
+        error: 'No active lock found for this user and vehicle',
+        no_lock_found: true
+      }, { status: 404 });
+    }
+
+    const currentLock = currentLocks[0];
+    
+    // Calculate new expiry time: current expires_at + 20 minutes
+    const currentExpiresAt = new Date(currentLock.expires_at);
+    const newExpiresAt = new Date(currentExpiresAt.getTime() + 20 * 60 * 1000); // Add 20 minutes
+
+    // Update the lock with new expiry time
+    const updateResponse = await fetch(
+      `${supabaseUrl}/rest/v1/locks?id=eq.${currentLock.id}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${request.headers.get('authorization').split(' ')[1]}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation'
+        },
+        body: JSON.stringify({
+          expires_at: newExpiresAt.toISOString()
+        })
+      }
+    );
+
+    if (!updateResponse.ok) {
+      const error = await updateResponse.text();
+      throw new Error(`Failed to extend lock: ${error}`);
+    }
+
+    const updatedLock = await updateResponse.json();
+    
+    return Response.json({ 
+      message: 'Lock extended by 20 minutes',
+      lock: Array.isArray(updatedLock) ? updatedLock[0] : updatedLock,
+      extended: true,
+      previous_expires_at: currentExpiresAt.toISOString(),
+      new_expires_at: newExpiresAt.toISOString()
+    });
+
+  } catch (error) {
+    console.error('Error extending lock:', error);
+    return Response.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
 // DELETE /api/locks?vehicle_id=123 - Remove lock for current user
 export async function DELETE(request) {
   try {

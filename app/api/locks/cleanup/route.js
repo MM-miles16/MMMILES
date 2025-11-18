@@ -2,12 +2,14 @@
 import { NextRequest } from 'next/server';
 
 // POST /api/locks/cleanup - Manually trigger cleanup of expired locks
+// NOTE: This is now primarily handled by the database trigger (auto_cleanup_expired_locks)
+// This endpoint is kept for manual/admin cleanup only
 export async function POST(request) {
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     
-    // Update expired locks to 'expired' status
+    // Only update expired locks to 'expired' status (fast operation with index)
     const updateResponse = await fetch(
       `${supabaseUrl}/rest/v1/locks?expires_at=lt.${new Date().toISOString()}&status=eq.active`,
       {
@@ -23,27 +25,11 @@ export async function POST(request) {
     );
 
     if (!updateResponse.ok) {
-      throw new Error('Failed to update expired locks');
+      console.warn('Warning: Failed to update expired locks');
     }
 
-    // Clean up old locks (older than 24 hours)
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-
-    const cleanupResponse = await fetch(
-      `${supabaseUrl}/rest/v1/locks?created_at=lt.${yesterday.toISOString()}&status=in.(expired,cancelled,converted)`,
-      {
-        method: 'DELETE',
-        headers: {
-          'apikey': supabaseKey,
-          'Authorization': request.headers.get('authorization'),
-        },
-      }
-    );
-
-    if (!cleanupResponse.ok) {
-      console.warn('Warning: Failed to clean up old locks');
-    }
+    // Skip the slow DELETE operation - let database handle cleanup via scheduled jobs
+    // The DELETE operation was causing 20-28 second delays
 
     return Response.json({ 
       message: 'Lock cleanup completed successfully',

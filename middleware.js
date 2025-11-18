@@ -16,30 +16,14 @@ export function middleware(request) {
     }
   }
 
-  // Add lock cleanup for checkout page access
-  if (pathname.startsWith("/checkout")) {
-    // Trigger lock cleanup when accessing checkout (non-blocking)
-    try {
-      const cleanupPromise = fetch(`${request.nextUrl.origin}/api/locks/cleanup`, {
-        method: 'POST',
-        headers: {
-          'Authorization': request.headers.get('authorization') || '',
-        },
-      });
-      // Don't await - let it run in background
-      cleanupPromise.catch(err => {
-        console.warn('Background lock cleanup failed:', err);
-      });
-    } catch (err) {
-      console.warn('Failed to trigger lock cleanup:', err);
-    }
-  }
+  // Lock cleanup is now handled by database triggers (auto_cleanup_expired_locks)
+  // No need to call cleanup API on every page load
 
   // Continue normally
   return NextResponse.next();
 }
 
-// Apply middleware only to the /search route and /checkout
+// Apply middleware only to the /search route
 export const config = {
-  matcher: ["/search/:path*", "/checkout/:path*"],
+  matcher: ["/search/:path*"],
 };

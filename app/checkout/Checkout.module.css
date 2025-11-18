@@ -99,17 +99,17 @@
   background: linear-gradient(to right, #cfa86a, #a67a47);
 }
 
-/* Lock Timer Styles */
+/* Payment Window Timer Styles */
 .lockTimer {
   position: fixed;
   top: 20px;
   right: 20px;
   z-index: 1000;
-  background: linear-gradient(135deg, #dc3545, #c82333);
+  background: linear-gradient(135deg, #d8b480, #bf9860);
   color: white;
   padding: 12px 20px;
   border-radius: 25px;
-  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+  box-shadow: 0 4px 15px rgba(191, 152, 96, 0.3);
   animation: pulse 2s infinite;
   min-width: 200px;
   text-align: center;
@@ -117,8 +117,8 @@
 }
 
 .lockTimerWarning {
-  background: linear-gradient(135deg, #fd7e14, #e8650e);
-  box-shadow: 0 4px 15px rgba(253, 126, 20, 0.4);
+  background: linear-gradient(135deg, #e8a84d, #d89437);
+  box-shadow: 0 4px 15px rgba(232, 168, 77, 0.4);
   animation: urgentPulse 1s infinite;
 }
 
@@ -146,11 +146,11 @@
   top: 20px;
   right: 20px;
   z-index: 1000;
-  background: linear-gradient(135deg, #6c757d, #5a6268);
+  background: linear-gradient(135deg, #9a8267, #7a6550);
   color: white;
   padding: 12px 20px;
   border-radius: 25px;
-  box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+  box-shadow: 0 4px 15px rgba(122, 101, 80, 0.3);
   min-width: 200px;
   text-align: center;
 }
@@ -163,30 +163,30 @@
 @keyframes pulse {
   0% {
     transform: scale(1);
-    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    box-shadow: 0 4px 15px rgba(191, 152, 96, 0.3);
   }
   50% {
     transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.5);
+    box-shadow: 0 6px 20px rgba(191, 152, 96, 0.5);
   }
   100% {
     transform: scale(1);
-    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    box-shadow: 0 4px 15px rgba(191, 152, 96, 0.3);
   }
 }
 
 @keyframes urgentPulse {
   0% {
     transform: scale(1);
-    box-shadow: 0 4px 15px rgba(253, 126, 20, 0.4);
+    box-shadow: 0 4px 15px rgba(232, 168, 77, 0.4);
   }
   50% {
     transform: scale(1.08);
-    box-shadow: 0 8px 25px rgba(253, 126, 20, 0.7);
+    box-shadow: 0 8px 25px rgba(232, 168, 77, 0.7);
   }
   100% {
     transform: scale(1);
-    box-shadow: 0 4px 15px rgba(253, 126, 20, 0.4);
+    box-shadow: 0 4px 15px rgba(232, 168, 77, 0.4);
   }
 }
 

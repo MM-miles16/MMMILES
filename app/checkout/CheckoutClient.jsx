@@ -196,11 +196,10 @@ export default function CheckoutPage() {
         expired: remaining === 0
       });
 
-      // Auto-reload when timer expires
+      // When timer expires, automatically reload the page (Ctrl+R style)
+      // This is safe now because we fixed the middleware performance issue
       if (remaining === 0) {
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
+        window.location.reload();
       }
     };
 
@@ -462,15 +461,54 @@ export default function CheckoutPage() {
         }
 
         if (userLocks.length > 0) {
-          // User already has a lock, allow to continue
-          setLockStatus({ 
-            checking: false, 
-            error: null, 
-            lockInfo: userLocks[0], 
-            blocked: false, 
-            canProceed: true 
-          });
-          return true;
+          // User already has a lock - extend it by 20 minutes
+          try {
+            const extendResponse = await fetch('/api/locks', {
+              method: 'PATCH',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                vehicle_id: car.id
+              })
+            });
+
+            if (extendResponse.ok) {
+              const extendData = await extendResponse.json();
+              setLockStatus({ 
+                checking: false, 
+                error: null, 
+                lockInfo: extendData.lock, 
+                blocked: false, 
+                canProceed: true 
+              });
+              console.log('Lock extended by 20 minutes:', extendData);
+              return true;
+            } else {
+              // If extension fails, still allow with existing lock
+              console.warn('Lock extension failed, using existing lock');
+              setLockStatus({ 
+                checking: false, 
+                error: null, 
+                lockInfo: userLocks[0], 
+                blocked: false, 
+                canProceed: true 
+              });
+              return true;
+            }
+          } catch (extendError) {
+            console.warn('Lock extension error:', extendError);
+            // Fall back to existing lock on error
+            setLockStatus({ 
+              checking: false, 
+              error: null, 
+              lockInfo: userLocks[0], 
+              blocked: false, 
+              canProceed: true 
+            });
+            return true;
+          }
         }
       }
 
@@ -689,27 +727,19 @@ export default function CheckoutPage() {
 
   return (
     <div className={styles.checkoutContainer}>
-      {/* LOCK COUNTDOWN TIMER */}
+      {/* PAYMENT WINDOW COUNTDOWN TIMER */}
       {lockTimer.isActive && (
         <div className={`${styles.lockTimer} ${isTimeRunningLow(lockTimer.remaining) ? styles.lockTimerWarning : ''}`}>
           <div className={styles.timerContent}>
-            <span className={styles.timerLabel}>⏰</span>
+            <span className={styles.timerLabel}>⏱️</span>
             <span className={styles.timerText}>
-              Lock expires in: {formatTimeRemaining(lockTimer.remaining)}
+              Pay within {formatTimeRemaining(lockTimer.remaining)}
             </span>
-            <span className={styles.timerLabel}>⏰</span>
+            <span className={styles.timerLabel}>⏱️</span>
           </div>
         </div>
       )}
 
-      {/* EXPIRED LOCK MESSAGE */}
-      {lockTimer.expired && (
-        <div className={styles.expiredLockMessage}>
-          <div className={styles.expiredContent}>
-            <span>🔒 Lock expired! Refreshing page...</span>
-          </div>
-        </div>
-      )}
       <div className={styles.leftColumn}>
         {/* CAR CARD */}
         <div className={styles.carCard}>
@@ -859,7 +889,7 @@ export default function CheckoutPage() {
               borderRadius: '4px', 
               border: '1px solid #c3e6cb'
             }}>
-              ✅ Vehicle reserved for 30 minutes. Complete your payment to confirm the booking.
+              ✅ Vehicle reserved! Complete your payment within the time shown above to confirm booking.
             </div>
           </div>
         )}
