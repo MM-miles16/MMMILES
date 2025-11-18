@@ -96,6 +96,12 @@ export default function CheckoutPage() {
     canProceed: false
   });
 
+  const [lockTimer, setLockTimer] = useState({
+    remaining: 0,
+    isActive: false,
+    expired: false
+  });
+
   const [bookingCheckStatus, setBookingCheckStatus] = useState({
     checking: false,
     overlaps: false,
@@ -168,6 +174,44 @@ export default function CheckoutPage() {
 
     if (carId) go();
   }, [carId]);
+
+  /* -------------------------------------------------------------------------- */
+  /*                           LOCK COUNTDOWN TIMER                               */
+  /* -------------------------------------------------------------------------- */
+  useEffect(() => {
+    if (!lockStatus.canProceed || !lockStatus.lockInfo?.expires_at) {
+      setLockTimer({ remaining: 0, isActive: false, expired: false });
+      return;
+    }
+
+    const expiresAt = new Date(lockStatus.lockInfo.expires_at).getTime();
+    
+    const updateTimer = () => {
+      const now = Date.now();
+      const remaining = Math.max(0, expiresAt - now);
+      
+      setLockTimer({
+        remaining,
+        isActive: remaining > 0,
+        expired: remaining === 0
+      });
+
+      // Auto-reload when timer expires
+      if (remaining === 0) {
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
+    };
+
+    // Update immediately
+    updateTimer();
+    
+    // Update every second
+    const interval = setInterval(updateTimer, 1000);
+    
+    return () => clearInterval(interval);
+  }, [lockStatus.canProceed, lockStatus.lockInfo]);
 
   /* -------------------------------------------------------------------------- */
   /*                           FETCH CUSTOMER DATA                               */
@@ -628,8 +672,44 @@ export default function CheckoutPage() {
   if (loading) return <p className={styles.loading}>Loading...</p>;
   if (!car) return <p className={styles.error}>Car Not Found</p>;
 
+  // Format time remaining
+  const formatTimeRemaining = (ms) => {
+    if (ms <= 0) return "00:00";
+    
+    const minutes = Math.floor(ms / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+    
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  // Check if time is running low (less than 5 minutes)
+  const isTimeRunningLow = (ms) => {
+    return ms > 0 && ms < 5 * 60 * 1000; // Less than 5 minutes
+  };
+
   return (
     <div className={styles.checkoutContainer}>
+      {/* LOCK COUNTDOWN TIMER */}
+      {lockTimer.isActive && (
+        <div className={`${styles.lockTimer} ${isTimeRunningLow(lockTimer.remaining) ? styles.lockTimerWarning : ''}`}>
+          <div className={styles.timerContent}>
+            <span className={styles.timerLabel}>⏰</span>
+            <span className={styles.timerText}>
+              Lock expires in: {formatTimeRemaining(lockTimer.remaining)}
+            </span>
+            <span className={styles.timerLabel}>⏰</span>
+          </div>
+        </div>
+      )}
+
+      {/* EXPIRED LOCK MESSAGE */}
+      {lockTimer.expired && (
+        <div className={styles.expiredLockMessage}>
+          <div className={styles.expiredContent}>
+            <span>🔒 Lock expired! Refreshing page...</span>
+          </div>
+        </div>
+      )}
       <div className={styles.leftColumn}>
         {/* CAR CARD */}
         <div className={styles.carCard}>
