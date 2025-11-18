@@ -4,13 +4,12 @@ import Footer from "./components/Footer";
 import DriveDiscoverSection from "./components/DriveDiscoverSection";
 import FAQSection from "./components/FAQSection";
 import AdvantageSection from "./components/AdvantageSection";
-import SearchBar from "./components/SearchBar";
 import Hero from "./components/Hero";
 import ReviewSlider from "./components/ReviewSlider";
 import BookingSteps from "./components/BookingSteps";
 import BecomeHost from "./components/BecomeHost";
 import OffersSection from "./components/OfferSection";
-import TrendingSection from "./components/TrendingSection";
+import HomeContent from "./components/HomeContent";
 
 
 
@@ -30,8 +29,7 @@ export default function HomePage() {
         
         
         <Hero />
-        <SearchBar />
-        <TrendingSection />
+        <HomeContent />
         <AdvantageSection />
         < OffersSection />
         <DriveDiscoverSection/>

@@ -11,6 +11,7 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import { toast } from "react-hot-toast";
+import { useCity } from "../context/CityContext";
 import styles from "./SearchBar.module.css";
 
 const CITIES = ["Chennai", "Bengaluru", "Kochi", "Hyderabad", "Mumbai"];
@@ -18,6 +19,7 @@ const LOCATION_PLACEHOLDER = "Select Your Place";
 
 export default function SearchBar() {
   const router = useRouter();
+  const { setSelectedCity } = useCity();
 
   // Form state
   const [location, setLocation] = useState(LOCATION_PLACEHOLDER);
@@ -117,6 +119,7 @@ export default function SearchBar() {
 
   const handleCitySelect = (city) => {
     setLocation(city);
+    setSelectedCity(city); // Update context for TrendingSection
     setIsDropdownOpen(false);
   };
 

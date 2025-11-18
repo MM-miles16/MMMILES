@@ -11,73 +11,50 @@ import {
   FaChevronLeft,
   FaChevronRight,
 } from "react-icons/fa";
+import { useCity } from "../context/CityContext";
 import styles from "./TrendingSection.module.css";
 
-const carData = [
-  {
-    id: 1,
-    name: "Maruthi Suzuki FRONX",
-    type: "For Young One",
-    deal: "Trending",
-    price: 2660,
-    features: ["5 Seater", "4.9 rating", "2022 Model", "Petrol", "Vaccinated after every ride"],
-    img: "/trendfronx.png",
-    link: "/car2",
-  },
-  {
-    id: 2,
-    name: "Innova CRYSTA",
-    type: "Comfort",
-    deal: "Hot Deal",
-    price: 2999,
-    features: ["7 Seater", "4.5 rating", "2022 Model", "Petrol", "Vaccinated after every ride"],
-    img: "/trendcrysta.png",
-    link: "/car4",
-  },
-  {
-    id: 3,
-    name: "Toyota FORTUNER",
-    type: "Compact SUV",
-    deal: "Weekend Deal",
-    price: 4000,
-    features: ["7 Seater", "4.7 rating", "2020 Model", "Diesel", "Vaccinated after every ride"],
-    img: "/trendfortuner.png",
-    link: "/car7",
-  },
-  {
-    id: 4,
-    name: "Maruthi Suzuki SWIFT",
-    type: "Budget",
-    deal: "Trending",
-    price: 1999,
-    features: ["5 Seater", "4.2 rating", "2020 Model", "Petrol", "Vaccinated after every ride"],
-    img: "/trendswift.png",
-    link: "/car3",
-  },
-  {
-    id: 5,
-    name: "Maruthi Suzuki BALENO",
-    type: "Recommended",
-    deal: "Price Drop",
-    price: 2699,
-    features: ["5 Seater", "4.9 rating", "2025 Model", "Petrol", "Vaccinated after every ride"],
-    img: "/trendbaleno.png",
-    link: "/car1",
-  },
-];
-
 export default function TrendingSection() {
+  const { selectedCity } = useCity();
+  
+  // State management
+  const [vehicles, setVehicles] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  
+  // Carousel state
   const [activeIndex, setActiveIndex] = useState(0);
   const [hoveredCard, setHoveredCard] = useState(null);
   const intervalRef = useRef(null);
   const scrollRef = useRef(null);
+  const touchStartX = useRef(0);
 
-  // clone the data for seamless looping
-  const loopedData = [...carData, ...carData.slice(0, 3)]; // add first 3 at the end
-  const totalSlides = carData.length;
+  // Transform vehicle data to match card structure
+  const transformedVehicles = vehicles.map((vehicle) => ({
+    id: vehicle.id,
+    name: `${vehicle.make} ${vehicle.model}`,
+    type: vehicle.vehicle_type || "Car",
+    deal: "Trending",
+    price: vehicle.hourly_rate || 0,
+    features: [
+      vehicle.seats ? `${vehicle.seats} Seater` : "5 Seater",
+      "4.5 rating",
+      vehicle.year ? `${vehicle.year} Model` : "2023 Model",
+      vehicle.fuel_type || "Petrol",
+      "Vaccinated after every ride",
+    ],
+    img: vehicle.image_url || "/default-car.png",
+    link: `/car/${vehicle.id}`,
+  }));
 
-  const cardWidth = 310 + 29; // match CSS: card width + gap
+  // Carousel calculations
+  const loopedData = transformedVehicles.length > 0 
+    ? [...transformedVehicles, ...transformedVehicles.slice(0, Math.min(3, transformedVehicles.length))]
+    : [];
+  const totalSlides = transformedVehicles.length;
+  const cardWidth = 310 + 29;
 
+  // Carousel callbacks - ALL HOOKS MUST BE AT THE TOP
   const scrollToCard = useCallback(
     (index, smooth = true) => {
       if (!scrollRef.current) return;
@@ -97,19 +74,75 @@ export default function TrendingSection() {
     setActiveIndex((prev) => prev - 1);
   }, []);
 
+  const stopAutoSlide = useCallback(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+  }, []);
+
+  const startAutoSlide = useCallback(() => {
+    stopAutoSlide();
+    if (totalSlides > 0) {
+      intervalRef.current = setInterval(() => {
+        setActiveIndex((prev) => prev + 1);
+      }, 3000);
+    }
+  }, [totalSlides, stopAutoSlide]);
+
+  const handleTouchStart = useCallback((e) => {
+    touchStartX.current = e.touches[0].clientX;
+    stopAutoSlide();
+  }, [stopAutoSlide]);
+
+  const handleTouchEnd = useCallback((e) => {
+    const endX = e.changedTouches[0].clientX;
+    const diff = endX - touchStartX.current;
+    if (diff > 50) prevSlide();
+    else if (diff < -50) nextSlide();
+    startAutoSlide();
+  }, [prevSlide, nextSlide, startAutoSlide]);
+
+  // Fetch trending vehicles when city changes
+  useEffect(() => {
+    if (!selectedCity) {
+      setVehicles([]);
+      return;
+    }
+
+    const fetchTrendingVehicles = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const response = await fetch(`/api/vehicles/trending?city=${encodeURIComponent(selectedCity)}`);
+        
+        if (!response.ok) {
+          throw new Error("Failed to fetch trending vehicles");
+        }
+        
+        const data = await response.json();
+        setVehicles(data.vehicles || []);
+      } catch (err) {
+        console.error("Error fetching trending vehicles:", err);
+        setError(err.message);
+        setVehicles([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTrendingVehicles();
+  }, [selectedCity]);
+
   // Handle looping
   useEffect(() => {
-    if (!scrollRef.current) return;
+    if (!scrollRef.current || totalSlides === 0) return;
     const current = scrollRef.current;
 
     if (activeIndex >= totalSlides) {
-      // reached cloned section — reset instantly to start
       setTimeout(() => {
         current.scrollTo({ left: 0, behavior: "auto" });
         setActiveIndex(0);
       }, 600);
     } else if (activeIndex < 0) {
-      // if moving back from start, jump to end
       current.scrollTo({ left: totalSlides * cardWidth, behavior: "auto" });
       setActiveIndex(totalSlides - 1);
     } else {
@@ -118,39 +151,54 @@ export default function TrendingSection() {
   }, [activeIndex, totalSlides, cardWidth, scrollToCard]);
 
   // Auto slide
-  const startAutoSlide = useCallback(() => {
-    stopAutoSlide();
-    intervalRef.current = setInterval(() => {
-      setActiveIndex((prev) => prev + 1);
-    }, 3000);
-  }, []);
-
-  const stopAutoSlide = () => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-  };
-
   useEffect(() => {
-    startAutoSlide();
-    return stopAutoSlide;
-  }, [startAutoSlide]);
+    if (totalSlides > 0) {
+      startAutoSlide();
+    }
+    return () => stopAutoSlide();
+  }, [startAutoSlide, stopAutoSlide, totalSlides]);
 
-  // swipe handling
-  const touchStartX = useRef(0);
-  const handleTouchStart = (e) => {
-    touchStartX.current = e.touches[0].clientX;
-    stopAutoSlide();
-  };
-  const handleTouchEnd = (e) => {
-    const endX = e.changedTouches[0].clientX;
-    const diff = endX - touchStartX.current;
-    if (diff > 50) prevSlide();
-    else if (diff < -50) nextSlide();
-    startAutoSlide();
-  };
+  // CONDITIONAL RENDERING - AFTER ALL HOOKS
+  
+  // Don't render if no city selected
+  if (!selectedCity) {
+    return null;
+  }
 
+  // Loading state
+  if (loading) {
+    return (
+      <section className={styles["trendy-section"]}>
+        <h2 className={styles["trendy-heading"]}>Drive What's Trending in {selectedCity}</h2>
+        <p className={styles["trendy-subheading"]}>Loading trending cars...</p>
+      </section>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <section className={styles["trendy-section"]}>
+        <h2 className={styles["trendy-heading"]}>Drive What's Trending in {selectedCity}</h2>
+        <p className={styles["trendy-subheading"]}>Unable to load trending cars. Please try again later.</p>
+      </section>
+    );
+  }
+
+  // Empty state
+  if (vehicles.length === 0) {
+    return (
+      <section className={styles["trendy-section"]}>
+        <h2 className={styles["trendy-heading"]}>Drive What's Trending in {selectedCity}</h2>
+        <p className={styles["trendy-subheading"]}>No trending cars available in {selectedCity} right now.</p>
+      </section>
+    );
+  }
+
+  // Main render with carousel
   return (
     <section className={styles["trendy-section"]}>
-      <h2 className={styles["trendy-heading"]}>Drive What’s Trending</h2>
+      <h2 className={styles["trendy-heading"]}>Drive What's Trending in {selectedCity}</h2>
       <p className={styles["trendy-subheading"]}>Hot Rides, High Demand</p>
 
       <div
@@ -179,7 +227,7 @@ export default function TrendingSection() {
             {loopedData.map((car, i) => (
               <Link
                 href={car.link}
-                key={i}
+                key={`${car.id}-${i}`}
                 className={styles["trendy-card"]}
                 onMouseEnter={() => setHoveredCard(car.id)}
                 onMouseLeave={() => setHoveredCard(null)}
@@ -221,8 +269,8 @@ export default function TrendingSection() {
                   </div>
 
                   <div className={styles["trendy-price-row"]}>
-                    <span className={styles["trendy-price"]}>Rs.{car.price}</span>
-                    <span className={styles["trendy-per-day"]}>/ day</span>
+                    <span className={styles["trendy-price"]}>₹{car.price}</span>
+                    <span className={styles["trendy-per-day"]}>/ hr</span>
                     <button className={styles["trendy-reserve-btn"]}>
                       Book Now
                     </button>
@@ -242,7 +290,7 @@ export default function TrendingSection() {
 
         {/* Dots */}
         <div className={styles["dot-container"]}>
-          {carData.map((_, i) => (
+          {transformedVehicles.map((_, i) => (
             <span
               key={i}
               className={`${styles.dot} ${
