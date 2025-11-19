@@ -19,7 +19,7 @@ const DriveDiscoverSection = () => {
   return (
     <div className={styles.placebody}>
       <section className={styles.discoverSection}>
-        <h2>Drive. Discover. Delight.</h2>
+        <h2>Drives. Discover. Delight.</h2>
         <p className={styles.subtitle}>Turn Every Trip Into a Memory</p>
 
         <div className={styles.slider}>
