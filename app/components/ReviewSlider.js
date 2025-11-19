@@ -1,8 +1,6 @@
 "use client";
-import { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import styles from "./ReviewSlider.module.css";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const reviews = [
   {
@@ -29,13 +27,13 @@ const reviews = [
     title: "Frequent Traveler",
     img: "/profile4.jpg",
   },
-  {
+   {
     text: "I often rent for work trips, and MM Miles is the most reliable. The process is seamless and the cars are always in excellent condition.",
     name: "Kavita D.",
     title: "Corporate Client",
     img: "/profile1.jpg",
   },
-  {
+   {
     text: "Got stuck in the rain with no transport, and MM Miles helped me get a car. Smooth pickup and great service even in bad weather.",
     name: "Neha V.",
     title: "Daily Commuter",
@@ -60,7 +58,7 @@ const reviews = [
     img: "/profile1.jpg",
   },
   {
-    text: "I have booked just a day before my trip and still got a reliable vehicle. Super impressed with MM Miles’ quick response.",
+    text: "I Booked just an day before my trip and still got a reliable vehicle. I'm super impressed with MM miles a quick turn around and its response.",
     name: "Ananya D.",
     title: "Solo Traveler",
     img: "/profile2.jpg",
@@ -68,146 +66,32 @@ const reviews = [
 ];
 
 export default function ReviewSlider() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const intervalRef = useRef(null);
-  const scrollRef = useRef(null);
-
-  const loopedData = [...reviews, ...reviews.slice(0, 3)];
-  const totalSlides = reviews.length;
-
-  const cardWidth = 270 + 20; // your card width + gap
-
-  const scrollToCard = useCallback(
-    (index, smooth = true) => {
-      if (!scrollRef.current) return;
-      scrollRef.current.scrollTo({
-        left: index * cardWidth,
-        behavior: smooth ? "smooth" : "auto",
-      });
-    },
-    [cardWidth]
-  );
-
-  const nextSlide = useCallback(() => {
-    setActiveIndex((prev) => prev + 1);
-  }, []);
-
-  const prevSlide = useCallback(() => {
-    setActiveIndex((prev) => prev - 1);
-  }, []);
-
-  useEffect(() => {
-    if (!scrollRef.current) return;
-    const current = scrollRef.current;
-
-    if (activeIndex >= totalSlides) {
-      setTimeout(() => {
-        current.scrollTo({ left: 0, behavior: "auto" });
-        setActiveIndex(0);
-      }, 600);
-    } else if (activeIndex < 0) {
-      current.scrollTo({ left: totalSlides * cardWidth, behavior: "auto" });
-      setActiveIndex(totalSlides - 1);
-    } else {
-      scrollToCard(activeIndex);
-    }
-  }, [activeIndex, totalSlides, cardWidth, scrollToCard]);
-
-  const startAuto = useCallback(() => {
-    stopAuto();
-    intervalRef.current = setInterval(() => {
-      setActiveIndex((prev) => prev + 1);
-    }, 3000);
-  }, []);
-
-  const stopAuto = () => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-  };
-
-  useEffect(() => {
-    startAuto();
-    return stopAuto;
-  }, [startAuto]);
-
-  const touchStartX = useRef(0);
-
-  const handleTouchStart = (e) => {
-    touchStartX.current = e.touches[0].clientX;
-    stopAuto();
-  };
-
-  const handleTouchEnd = (e) => {
-    const endX = e.changedTouches[0].clientX;
-    const diff = endX - touchStartX.current;
-    if (diff > 50) prevSlide();
-    else if (diff < -50) nextSlide();
-    startAuto();
-  };
-
   return (
     <div className={styles.reviewslide}>
-      <section className={styles.reviewSection}>
+      <section
+        className={styles.reviewSection}
+        aria-label="Customer testimonials"
+      >
         <h2 className={styles.heading}>People are talking</h2>
-
-        <div
-          className={styles.reviewSliderWrapper}
-          onMouseEnter={stopAuto}
-          onMouseLeave={startAuto}
-        >
-          <button
-            className={`${styles.reviewArrow} ${styles.left}`}
-            onClick={prevSlide}
-          >
-            <FaChevronLeft />
-          </button>
-
-          <div
-            className={styles.carouselViewport}
-            onTouchStart={handleTouchStart}
-            onTouchEnd={handleTouchEnd}
-          >
-            <div
-              className={styles.carouselTrack}
-              ref={scrollRef}
-              style={{ transform: `translateX(-${activeIndex * cardWidth}px)` }}
-            >
-              {loopedData.map((rev, i) => (
-                <div className={styles.card} key={i}>
-                  <p className={styles.text}>{rev.text}</p>
-                  <div className={styles.profile}>
-                    <Image
-                      src={rev.img}
-                      alt={rev.name}
-                      width={40}
-                      height={40}
-                      className={styles.avatar}
-                    />
-                    <div>
-                      <strong>{rev.name}</strong>
-                      <p className={styles.title}>{rev.title}</p>
-                    </div>
+        <div className={styles.slider}>
+          <div className={styles.sliderTrack}>
+            {[...reviews, ...reviews, ...reviews].map((review, idx) => (
+              <div className={styles.card} key={idx}>
+                <p className={styles.text}>{review.text}</p>
+                <div className={styles.profile}>
+                  <Image
+                    src={review.img}
+                    alt={review.name}
+                    width={40}
+                    height={40}
+                    className={styles.avatar}
+                  />
+                  <div>
+                    <strong>{review.name}</strong>
+                    <p className={styles.title}>{review.title}</p>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-
-          <button
-            className={`${styles.reviewArrow} ${styles.right}`}
-            onClick={nextSlide}
-          >
-            <FaChevronRight />
-          </button>
-
-          <div className={styles.reviewDots}>
-            {reviews.map((_, i) => (
-              <span
-                key={i}
-                className={`${styles.reviewDot} ${
-                  i === (activeIndex % totalSlides) ? styles.activeDot : ""
-                }`}
-                onClick={() => setActiveIndex(i)}
-              ></span>
+              </div>
             ))}
           </div>
         </div>
@@ -215,3 +99,4 @@ export default function ReviewSlider() {
     </div>
   );
 }
+
