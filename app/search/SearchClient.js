@@ -3,7 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { FaFilter, FaSearch, FaMapMarkerAlt, FaClock, FaCar, FaGasPump, FaCog, FaUsers, FaCalendarAlt, FaChevronDown, FaStar, FaMedal, FaAirFreshener, FaAirbnb, FaSafari, FaFirstAid, FaUserFriends, FaChair, FaRegSave, FaSatellite, FaPhone } from "react-icons/fa";
+import { FaFilter, FaSearch, FaMapMarkerAlt, FaClock, FaCar, FaGasPump, FaCog, FaUsers, FaCalendarAlt, FaChevronDown } from "react-icons/fa";
 import styles from "./filters.module.css";
 
 // debounce helper
@@ -189,34 +189,37 @@ export default function SearchPage() {
     <div className={styles.container}>
       {/* Top Bar */}
       <div className={styles.topBar}>
-        {/*<div className={styles.tabs}>
+        <div className={styles.tabs}>
           <button className={styles.activeTab}>All Vehicles</button>
           <button className={styles.inactiveTab}>Nearby</button>
           <button className={styles.inactiveTab}>Recommended</button>
-        </div>*/}
+        </div>
 
         <div className={styles.search}>
           <FaMapMarkerAlt className={styles.searchIcon} />
           <input
             type="text"
-            placeholder={`Search for cars in ${city || 'your area'}`}
+            placeholder={`Search in ${city || 'your area'}`}
             onChange={(e) => {
               // Implement search functionality if needed
               console.log("Search:", e.target.value);
             }}
           />
         </div>
-        <div>
-           {pickup && returndate && (
-            <div className={styles.tags}>
-              <span className={styles.tag}>
-                <FaClock /> {pickup} - <FaClock />{returndate}
-              </span>
-            </div>
-          )}
+
+        <div className={styles.filterSort}>
+          <button 
+            className={styles.filterBtn}
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <FaFilter className={styles.filterIcon} />
+            Filters
+          </button>
+          <button className={styles.sortBtn}>
+            <FaSearch className={styles.sortIcon} />
+            Sort
+          </button>
         </div>
-        
-        
       </div>
 
       {/* Main Layout */}
@@ -235,7 +238,7 @@ export default function SearchPage() {
             <div className={styles.block}>
               <h4 className={styles.label}>Vehicle Type</h4>
               <div className={styles.cardsRow}>
-                {["SUV", "Sedan", "Hatchback"].map((type) => (
+                {["SUV", "Sedan", "Hatchback", "Luxury", "Van"].map((type) => (
                   <button
                     key={type}
                     className={`${styles.selectCard} ${
@@ -279,7 +282,7 @@ export default function SearchPage() {
             <div className={styles.block}>
               <h4 className={styles.label}>Fuel Type</h4>
               <div className={styles.cardsRow}>
-                {["Petrol", "Diesel", "Hybrid"].map((fuel) => (
+                {["Petrol", "Diesel", "Electric", "Hybrid"].map((fuel) => (
                   <button
                     key={fuel}
                     className={`${styles.selectCard} ${
@@ -325,7 +328,7 @@ export default function SearchPage() {
             <div className={styles.block}>
               <h4 className={styles.label}>Seating Capacity</h4>
               <div className={styles.cardsRow}>
-                {[ "5 seater", "8 seater"].map((seats) => (
+                {["2", "4", "5", "6", "7", "8+"].map((seats) => (
                   <button
                     key={seats}
                     className={`${styles.selectCard} ${
@@ -344,7 +347,28 @@ export default function SearchPage() {
               </div>
             </div>
 
-            
+            {/* Model Year */}
+            <div className={styles.block}>
+              <h4 className={styles.label}>Model Year</h4>
+              <div className={styles.yearRange}>
+                <input
+                  type="range"
+                  min="2018"
+                  max="2025"
+                  value={filters.year || "2023"}
+                  onChange={(e) =>
+                    setFilters(prev => ({ ...prev, year: e.target.value }))
+                  }
+                />
+                <div className={styles.priceValues}>
+                  <span>2018</span>
+                  <span style={{ fontWeight: 'bold', color: '#446dff' }}>
+                    {filters.year || "2023"}
+                  </span>
+                  <span>2025</span>
+                </div>
+              </div>
+            </div>
 
             {/* Price Range */}
             <div className={styles.block}>
@@ -378,8 +402,42 @@ export default function SearchPage() {
               </div>
             </div>
 
-           
-            
+            {/* Additional Features */}
+            <div className={styles.block}>
+              <h4 className={styles.label}>Features</h4>
+              <div className={styles.toggleRow}>
+                <div>
+                  <h5 className={styles.labelSmall}>GPS Navigation</h5>
+                  <p className={styles.subSmall}>Built-in navigation system</p>
+                </div>
+                <label className={styles.switch}>
+                  <input 
+                    type="checkbox" 
+                    checked={filters.gps}
+                    onChange={(e) =>
+                      setFilters(prev => ({ ...prev, gps: e.target.checked }))
+                    }
+                  />
+                  <span className={styles.sliderRound}></span>
+                </label>
+              </div>
+              <div className={styles.toggleRow}>
+                <div>
+                  <h5 className={styles.labelSmall}>Air Conditioning</h5>
+                  <p className={styles.subSmall}>Climate control</p>
+                </div>
+                <label className={styles.switch}>
+                  <input 
+                    type="checkbox" 
+                    checked={filters.ac}
+                    onChange={(e) =>
+                      setFilters(prev => ({ ...prev, ac: e.target.checked }))
+                    }
+                  />
+                  <span className={styles.sliderRound}></span>
+                </label>
+              </div>
+            </div>
           </aside>
         )}
 
@@ -387,10 +445,15 @@ export default function SearchPage() {
         <div className={styles.content}>
           <div className={styles.resultCount}>
             {loading ? 'Searching...' : `${cars.length} vehicles in ${city}`}
-          
-          
-         
           </div>
+          
+          {pickup && returndate && (
+            <div className={styles.tags}>
+              <span className={styles.tag}>
+                <FaClock /> {pickup} - {returndate}
+              </span>
+            </div>
+          )}
 
           {loading ? (
             <div className={styles.grid}>
@@ -423,9 +486,7 @@ export default function SearchPage() {
                       </h3>
                       <p className={styles.carType}>{car.vehicle_type}</p>
                     </div>
-                    <span className={styles.starTag}>
-                        <FaStar style={{marginRight: '4px'}} />4.5/5
-                      </span>
+                    <FaCar className={styles.bookmark} />
                   </div>
                   
                   <Image
@@ -436,41 +497,25 @@ export default function SearchPage() {
                     className={styles.carImg}
                   />
                   
-                  <div style={{display: 'flex', gap: '13px 10px', margin: '1px 5px 8px 12px', flexWrap: 'wrap'}} className={styles.features}>
+                  <div style={{display: 'flex', gap: '8px', margin: '8px 0', flexWrap: 'wrap'}}>
                     {car.fuel_type && (
-                      <span className={styles.iTag}>
+                      <span className={styles.blueTag}>
                         <FaGasPump style={{marginRight: '4px'}} /> {car.fuel_type}
                       </span>
                     )}
                     {car.transmission_type && (
-                      <span className={styles.iiTag}>
+                      <span className={styles.greenTag}>
                         <FaCog style={{marginRight: '4px'}} /> {car.transmission_type}
                       </span>
                     )}
                     {car.seating_capacity && (
-                      <span className={styles.iiiTag} >
-                        <FaStar style={{marginRight: '4px'}} /> {car.seating_capacity} / 5
-                      </span>
-                    )}
-                    {car.transmission_type && (
-                      <span className={styles.ivTag}>
-                        <FaPhone style={{marginRight: '4px'}} /> 24/7*
-                      </span>
-                    )}
-                    {car.seating_capacity && (
-                      <span className={styles.vTag}>
-                        <FaMedal style={{marginRight: '4px'}} /> {car.seating_capacity} year
-                      </span>
-                    )}
-                    {car.seating_capacity && (
-                      <span className={styles.viTag}>
+                      <span className={styles.redTag}>
                         <FaUsers style={{marginRight: '4px'}} /> {car.seating_capacity} seats
                       </span>
                     )}
-                    
                   </div>
                   
-                  {/*<div className={styles.price}>
+                  <div className={styles.price}>
                     ₹{car.hourly_rate}/hour
                     {car.distance_km && (
                       <span style={{fontSize: '12px', color: '#6b7280', marginLeft: '12px'}}>
@@ -483,8 +528,6 @@ export default function SearchPage() {
                       </span>
                     )}
                   </div>
-
-
                 </div>
               ))}
             </div>
