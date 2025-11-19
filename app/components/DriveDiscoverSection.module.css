@@ -1,6 +1,6 @@
 .discoverSection {
   text-align: center;
-  padding: 40px 20px 50px;
+  padding: 40px 20px 50px ;
   background-color: #F9F4EC;
 }
 
@@ -15,58 +15,29 @@
   margin-bottom: 20px;
 }
 
-/* ------------------------- */
-/* HOVER EFFECT ON CARDS     */
-/* ------------------------- */
-.discoverCard:hover {
-  transform: scale(1.08);
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 1px 18px 20px rgba(142, 108, 61, 0.35);
-  z-index: 3;
-}
-
-/* Trending-style fade on non-hover */
-.slider:hover .discoverCard:not(:hover) {
-  opacity: 0.82;
-  transform: scale(0.97);
-}
-
-/* ------------------------- */
-/* CAROUSEL VIEWPORT         */
-/* ------------------------- */
 .slider {
-  overflow: visible;
+  overflow: hidden;
   position: relative;
   width: 100%;
 }
 
-.carouselViewport {
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  scroll-behavior: smooth;
-  padding: 6px 40px;
-}
-
-.carouselViewport::-webkit-scrollbar {
-  display: none;
-}
-
-.carouselTrack {
+.slideTrack {
   display: flex;
-  gap: 20px;
-  align-items: stretch;
+  animation: scroll 90s linear infinite;
+  width: calc(300px * 50);
+  will-change: transform;
 }
 
-/* ------------------------- */
-/* CARD (desktop size kept)  */
-/* ------------------------- */
+.slider:hover .slideTrack {
+  animation-play-state: paused;
+}
+
 .discoverCard {
   position: relative;
   flex-shrink: 0;
   width: 350px;
   height: 220px;
+  margin-right: 20px;
   border-radius: 16px;
   overflow: hidden;
 }
@@ -76,14 +47,13 @@
   height: 100%;
   object-fit: cover;
   border-radius: 16px;
-  transition: transform 0.35s ease;
+  transition: transform 0.4s ease;
 }
 
 .discoverCard:hover .image {
-  transform: scale(1.12);
+  transform: scale(1.08);
 }
 
-/* Label */
 .label {
   position: absolute;
   bottom: 12px;
@@ -94,119 +64,38 @@
   border-radius: 10px;
   font-weight: bold;
   font-size: 16px;
-  font-family: "Courier New", monospace;
+  font-family: 'Courier New', monospace;
 }
 
-/* ------------------------- */
-/* ARROWS                    */
-/* ------------------------- */
-.arrowBtn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 20;
-  background: white;
-  border: none;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+@keyframes scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
-.arrowBtn:hover {
-  transform: translateY(-50%) scale(1.08);
-  background: #f6e8d4;
-}
-
-.left {
-  left: 8px;
-}
-
-.right {
-  right: 8px;
-}
-
-/* ------------------------- */
-/* DOTS                      */
-/* ------------------------- */
-.dotContainer {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 16px;
-}
-
-.dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 999px;
-  background: #ccc;
-  cursor: pointer;
-  transition: background 0.18s ease, transform 0.12s ease;
-}
-
-.dot:hover {
-  transform: scale(1.12);
-}
-
-.activeDot {
-  background: #bf9860;
-  transform: scale(1.4);
-}
-
-/* ------------------------- */
-/* RESPONSIVE — same desktop UI */
-/* ------------------------- */
-
-/* TABLET */
-@media (max-width: 900px) {
-  .placebody {
-    padding: 50px 20px;
-  }
-  
-  .arrowBtn {
-    width: 40px;
-    height: 40px;
-  }
-}
-
-/* MOBILE — SAME DESIGN, SAME VIEW, JUST SHRINK SLIGHTLY */
-@media (max-width: 600px) {
-
-  .placebody {
-    padding: 40px 12px;
-  }
-
-  .carouselViewport {
-    padding: 6px 18px;
-  }
-
+@media (max-width: 768px) {
   .discoverCard {
-    width: 300px;
-    height: 190px;
+    width: 250px;
+    height: 160px;
   }
-
-  .arrowBtn {
-    width: 36px;
-    height: 36px;
+  .slideTrack {
+    width: calc(250px * 12);
   }
+  .placebody {
+  padding: 60px 40px;
+  background-color: #FEF9F5;
+}
 }
 
-/* VERY SMALL MOBILES */
-@media (max-width: 420px) {
-
+@media (max-width: 480px) {
   .discoverCard {
-    width: 260px;
-    height: 170px;
+    width: 200px;
+    height: 130px;
   }
-
-  .arrowBtn {
-    width: 32px;
-    height: 32px;
+  .slideTrack {
+    width: calc(200px * 12);
+  }
+  .placebody {
+    padding: 60px 20px;
+    background-color: #FEF9F5;
   }
 }
