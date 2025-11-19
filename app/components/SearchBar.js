@@ -17,10 +17,85 @@ import styles from "./SearchBar.module.css";
 const CITIES = ["Chennai", "Bengaluru", "Kochi", "Hyderabad", "Mumbai"];
 const LOCATION_PLACEHOLDER = "Select Your Place";
 
+// Google Maps API configuration
+const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || process.env.GOOGLE_MAPS_API_KEY;
+
+// Google Maps services - will be initialized when needed
+let geocoder = null;
+let isGoogleMapsLoaded = false;
+
+// Initialize Google Maps services (similar to Google's example)
+const initializeGoogleMapsServices = (map) => {
+  if (typeof window !== "undefined" && window.google && window.google.maps) {
+    geocoder = new window.google.maps.Geocoder();
+    isGoogleMapsLoaded = true;
+    return true;
+  }
+  return false;
+};
+
+// Load Google Maps JavaScript API with proper callback handling
+const loadGoogleMapsAPI = () => {
+  return new Promise((resolve) => {
+    if (typeof window === "undefined") {
+      resolve(false);
+      return;
+    }
+
+    // Check if already loaded and services available
+    if (window.google && window.google.maps && window.google.maps.Geocoder) {
+      // Create a temporary map for service initialization
+      const tempMap = new window.google.maps.Map(document.createElement('div'));
+      if (initializeGoogleMapsServices(tempMap)) {
+        resolve(true);
+        return;
+      }
+    }
+
+    // Check if script is already loading
+    if (window.googleMapsLoading) {
+      // Wait for existing loading to complete
+      const checkLoaded = setInterval(() => {
+        if (window.google && window.google.maps && window.google.maps.Geocoder) {
+          clearInterval(checkLoaded);
+          resolve(initializeGoogleMapsServices(new window.google.maps.Map(document.createElement('div'))));
+        }
+      }, 100);
+      return;
+    }
+
+    if (!GOOGLE_MAPS_API_KEY) {
+      console.error("Google Maps API key not configured");
+      resolve(false);
+      return;
+    }
+
+    window.googleMapsLoading = true;
+    window.initGoogleMaps = () => {
+      window.googleMapsLoading = false;
+      const tempMap = new window.google.maps.Map(document.createElement('div'));
+      const success = initializeGoogleMapsServices(tempMap);
+      resolve(success);
+    };
+    
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${GOOGLE_MAPS_API_KEY}&libraries=places&callback=initGoogleMaps&loading=async`;
+    script.async = true;
+    script.defer = true;
+    
+    script.onerror = () => {
+      window.googleMapsLoading = false;
+      resolve(false);
+    };
+    
+    document.head.appendChild(script);
+  });
+};
+
 export default function SearchBar() {
   const router = useRouter();
   const { setSelectedCity } = useCity();
-
+  
   // Form state
   const [location, setLocation] = useState(LOCATION_PLACEHOLDER);
   const [pickupDate, setPickupDate] = useState(null);
@@ -54,6 +129,19 @@ export default function SearchBar() {
   const debounceRef = useRef(null);
   const abortRef = useRef(null);
 
+  // Pre-load Google Maps API on component mount
+  useEffect(() => {
+    if (GOOGLE_MAPS_API_KEY && !isGoogleMapsLoaded) {
+      loadGoogleMapsAPI().then((loaded) => {
+        if (loaded) {
+          console.log("Google Maps API loaded successfully");
+        } else {
+          console.warn("Google Maps API failed to load");
+        }
+      });
+    }
+  }, []);
+
   // today is computed on client to avoid SSR/CSR hydration mismatch
   const [today, setToday] = useState(null);
   useEffect(() => {
@@ -73,7 +161,10 @@ export default function SearchBar() {
       const pickup = params.get("pickupTime");
       const drop = params.get("returnTime");
 
-      if (city) setLocation(city);
+      if (city) {
+        setLocation(city);
+        setSelectedCity(city); // Sync CityContext when restoring from sessionStorage
+      }
 
       if (address) {
         // 🚫 Prevent manual search from firing again
@@ -134,10 +225,106 @@ export default function SearchBar() {
     return `${day}/${month}/${year} ${hours}:00`;
   };
 
-  // Get current GPS location (free). Shows loading state & handles errors.
-  const handleUseMyLocation = () => {
+  // Format Google Maps address for better display - prioritize formatted_address
+  const formatGoogleAddress = (result) => {
+    if (!result) return "Current Location";
+    
+    // Use formatted_address as the primary source (this addresses the first issue)
+    let formatted = result.formatted_address;
+    
+    // If formatted_address is not available, try to build it from components
+    if (!formatted && result.address_components && result.address_components.length > 0) {
+      const components = result.address_components;
+      const streetNumber = components.find(comp => comp.types.includes('street_number'))?.long_name || '';
+      const route = components.find(comp => comp.types.includes('route'))?.long_name || '';
+      const locality = components.find(comp => comp.types.includes('locality'))?.long_name || '';
+      const sublocality = components.find(comp => comp.types.includes('sublocality'))?.long_name || '';
+      const sublocalityLevel1 = components.find(comp => comp.types.includes('sublocality_level_1'))?.long_name || '';
+      const administrativeArea = components.find(comp => comp.types.includes('administrative_area_level_1'))?.long_name || '';
+      
+      // Build address from components
+      let addressParts = [];
+      
+      if (streetNumber && route) {
+        addressParts.push(`${streetNumber} ${route}`);
+      } else if (route) {
+        addressParts.push(route);
+      }
+      
+      // Add locality information
+      const localityInfo = sublocality || sublocalityLevel1 || locality;
+      if (localityInfo && !addressParts.includes(localityInfo)) {
+        addressParts.push(localityInfo);
+      }
+      
+      if (administrativeArea && !addressParts.includes(administrativeArea)) {
+        addressParts.push(administrativeArea);
+      }
+      
+      formatted = addressParts.join(', ') || "Current Location";
+    }
+    
+    return formatted || "Current Location";
+  };
+
+  // Helper function to extract city from Google Maps API response and auto-select from dropdown
+  const extractAndSelectCity = (result) => {
+    if (!result || !result.address_components) return;
+    
+    const components = result.address_components;
+    
+    // Try to find city/locality in the following order of preference
+    const cityPriorityTypes = [
+      'locality',           // Most specific city
+      'sublocality',        // Sub-locality
+      'sublocality_level_1', // Level 1 sub-locality
+      'administrative_area_level_2' // District/County level
+    ];
+    
+    // Extract city name from components
+    let detectedCity = null;
+    
+    for (const type of cityPriorityTypes) {
+      const component = components.find(comp => comp.types.includes(type));
+      if (component && component.long_name) {
+        detectedCity = component.long_name;
+        break;
+      }
+    }
+    
+    // If no city found in priority types, try administrative_area_level_1
+    if (!detectedCity) {
+      const adminComponent = components.find(comp => 
+        comp.types.includes('administrative_area_level_1')
+      );
+      if (adminComponent && adminComponent.long_name) {
+        detectedCity = adminComponent.long_name;
+      }
+    }
+    
+    // Check if detected city matches any city in our CITIES array
+    if (detectedCity) {
+      const matchedCity = CITIES.find(city => 
+        city.toLowerCase() === detectedCity.toLowerCase()
+      );
+      
+      if (matchedCity && location !== matchedCity) {
+        setLocation(matchedCity);
+        if (setSelectedCity) setSelectedCity(matchedCity);
+        toast.success(`City automatically set to ${matchedCity}`);
+      }
+    }
+  };
+
+  // Get current GPS location and reverse geocode with Google Maps
+  const handleUseMyLocation = async () => {
     if (typeof navigator === "undefined" || !navigator.geolocation) {
       toast.error("Geolocation not supported by your browser.");
+      return;
+    }
+
+    if (!GOOGLE_MAPS_API_KEY) {
+      toast.error("Google Maps API key not configured. Please add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your environment variables.");
       return;
     }
 
@@ -145,38 +332,61 @@ export default function SearchBar() {
     setIsDetecting(true);
     setCurrentAddress("Detecting location…");
 
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        try {
-          const lat = pos.coords.latitude;
-          const lon = pos.coords.longitude;
-          setLatitude(lat);
-          setLongitude(lon);
+    // Load Google Maps API if not already loaded
+    if (!isGoogleMapsLoaded) {
+      const loaded = await loadGoogleMapsAPI();
+      if (!loaded) {
+        setIsLocating(false);
+        setIsDetecting(false);
+        setCurrentAddress("");
+        toast.error("Failed to load Google Maps API. Please check your internet connection.");
+        return;
+      }
+    }
 
-          try {
-            const res = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
-            );
-            if (res.ok) {
-              const data = await res.json();
-              const address = data.display_name || "Current Location";
-              skipNextSearchRef.current = true;
-              setManualInput(address); // auto-fill input field
-              setCurrentAddress(address);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        setLatitude(lat);
+        setLongitude(lon);
+
+        // Use Google Maps Geocoder for reverse geocoding
+        if (geocoder) {
+          const latlng = { lat: lat, lng: lon };
+          
+          geocoder.geocode({ location: latlng }, (results, status) => {
+            if (status === "OK") {
+              if (results[0]) {
+                const address = formatGoogleAddress(results[0]);
+                skipNextSearchRef.current = true;
+                setManualInput(address);
+                setCurrentAddress(address);
+                
+                // Auto-select city from dropdown based on the detected location
+                extractAndSelectCity(results[0]);
+                
+                toast.success("Location detected!");
+              } else {
+                setManualInput("Current Location");
+                setCurrentAddress("Current Location");
+                toast.error("No address found for this location.");
+              }
             } else {
+              console.error("Geocoder failed due to: " + status);
               setManualInput("Current Location");
               setCurrentAddress("Current Location");
+              toast.error("Failed to get address for this location.");
             }
-          } catch (e) {
-            console.error("Reverse geocode failed:", e);
-            setManualInput("Current Location");
-            setCurrentAddress("Current Location");
-          }
-
-          toast.success("Location detected!");
-        } finally {
+            setIsLocating(false);
+            setIsDetecting(false);
+          });
+        } else {
+          setManualInput("Current Location");
+          setCurrentAddress("Current Location");
           setIsLocating(false);
           setIsDetecting(false);
+          toast.error("Google Maps geocoder not available.");
         }
       },
       (err) => {
@@ -199,7 +409,7 @@ export default function SearchBar() {
     );
   };
 
-  // Manual suggestions search (OpenStreetMap Nominatim)
+  // Manual suggestions search using Google Places API
   const fetchSuggestions = async (query) => {
     // Cancel previous inflight fetch
     if (abortRef.current) {
@@ -214,21 +424,103 @@ export default function SearchBar() {
     setIsSearching(true);
 
     try {
-      // Nominatim usage policy: throttle requests; we'll debounce on client
-      const url = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=6&q=${encodeURIComponent(
-        query
-      )}`;
-
-      const res = await fetch(url, { signal: controller.signal, headers: { "Accept-Language": "en" } });
-      if (!res.ok) {
+      if (!GOOGLE_MAPS_API_KEY) {
         setIsSuggestLoading(false);
+        setIsSearching(false);
+        toast.error("Google Maps API key not configured. Please add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to your environment variables.");
         return;
       }
-      const data = await res.json();
-      setIsSuggestLoading(false);
-      setIsSearching(false);
-      setSuggestions(data || []);
-      setIsSuggestOpen(true);
+
+      // Load Google Maps API if not already loaded
+      if (!isGoogleMapsLoaded) {
+        const loaded = await loadGoogleMapsAPI();
+        if (!loaded) {
+          setIsSuggestLoading(false);
+          setIsSearching(false);
+          toast.error("Failed to load Google Maps API. Please check your internet connection.");
+          return;
+        }
+      }
+
+      if (!isGoogleMapsLoaded) {
+        setIsSuggestLoading(false);
+        setIsSearching(false);
+        toast.error("Google Maps service not available. Please refresh the page and try again.");
+        console.error("Google Maps not loaded:", { isGoogleMapsLoaded });
+        return;
+      }
+
+      // Use the new Google Places AutocompleteSuggestion API (as of March 2025)
+      const autocompleteRequest = {
+        input: query,
+        location: new google.maps.LatLng(20.5937, 78.9629), // Center of India
+        radius: 100000, // 100km radius
+        componentRestrictions: { country: 'in' },
+        types: ['geocode']
+      };
+
+      google.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions(autocompleteRequest, async (suggestions, status) => {
+        if (status === "OK" && suggestions && suggestions.length > 0) {
+          // Get detailed information for each suggestion
+          const detailedPromises = suggestions.slice(0, 6).map(async (suggestion) => {
+            try {
+              // Use the new Place API to get detailed information
+              const place = new google.maps.places.Place({
+                id: suggestion.placeId,
+                location: suggestion.location
+              });
+
+              await place.fetchFields({
+                fields: ['addressComponents', 'formattedAddress', 'location', 'types']
+              });
+
+              return {
+                place_id: suggestion.placeId,
+                display_name: suggestion.formatPrimaryText?.text || suggestion.formatSuggestion?.text || suggestion.placePredictionText?.text || suggestion.placeId,
+                formatted_address: place.getFormattedAddress(),
+                lat: place.getLocation().lat(),
+                lon: place.getLocation().lng(),
+                types: suggestion.types || [],
+                primary_text: suggestion.formatPrimaryText?.text || '',
+                secondary_text: suggestion.formatSecondaryText?.text || ''
+              };
+            } catch (error) {
+              console.warn('Failed to get place details for:', suggestion.placeId, error);
+              return {
+                place_id: suggestion.placeId,
+                display_name: suggestion.formatPrimaryText?.text || suggestion.formatSuggestion?.text || suggestion.placePredictionText?.text || suggestion.placeId,
+                formatted_address: '',
+                lat: 0,
+                lon: 0,
+                types: suggestion.types || [],
+                primary_text: suggestion.formatPrimaryText?.text || '',
+                secondary_text: suggestion.formatSecondaryText?.text || ''
+              };
+            }
+          });
+
+          Promise.all(detailedPromises).then((detailedResults) => {
+            const validResults = detailedResults.filter(result => result.lat !== 0 && result.lon !== 0);
+            
+            setIsSuggestLoading(false);
+            setIsSearching(false);
+            setSuggestions(validResults);
+            setIsSuggestOpen(true);
+          });
+        } else {
+          setIsSuggestLoading(false);
+          setIsSearching(false);
+          setSuggestions([]);
+          setIsSuggestOpen(true);
+          
+          // Show helpful message if no predictions found
+          if (status === "ZERO_RESULTS") {
+            // Silent - no toast for zero results
+          } else {
+            console.error("Autocomplete status:", status);
+          }
+        }
+      });
     } catch (e) {
       if (e.name === "AbortError") {
         // aborted — ignore
@@ -236,6 +528,7 @@ export default function SearchBar() {
         console.error("Suggestion fetch error", e);
         setIsSuggestLoading(false);
         setIsSearching(false);
+        toast.error("Failed to search locations. Please try again.");
       }
     }
   };
@@ -267,10 +560,10 @@ export default function SearchBar() {
     return () => clearTimeout(debounceRef.current);
   }, [manualInput]);
 
-  const handlePickSuggestion = (item) => {
+  const handlePickSuggestion = async (item) => {
     const lat = parseFloat(item.lat);
     const lon = parseFloat(item.lon);
-    const display = item.display_name;
+    const display = item.display_name || item.formatted_address;
 
     setLatitude(lat);
     setLongitude(lon);
@@ -279,6 +572,41 @@ export default function SearchBar() {
     // 🔒 prevent re-triggering useEffect fetch
     skipNextSearchRef.current = true;
     setManualInput(display);
+
+    // Get detailed place information to extract city for auto-selection
+    if (isGoogleMapsLoaded && item.place_id) {
+      try {
+        // Use the new Place API to get detailed information
+        const place = new google.maps.places.Place({
+          id: item.place_id,
+          latLng: item.lat && item.lon ? new google.maps.LatLng(item.lat, item.lon) : undefined
+        });
+
+        place.fetchFields({
+          fields: ['addressComponents', 'formattedAddress', 'location']
+        }).then(() => {
+          // Auto-select city from dropdown based on the selected location
+          const placeData = {
+            address_components: place.getAddressComponents().map(comp => ({
+              long_name: comp.longText?.text || '',
+              types: comp.types
+            }))
+          };
+          extractAndSelectCity(placeData);
+          
+          // Update address with formatted address if available
+          const formattedAddress = place.getFormattedAddress();
+          if (formattedAddress && formattedAddress !== display) {
+            setCurrentAddress(formattedAddress);
+            setManualInput(formattedAddress);
+          }
+        }).catch((error) => {
+          console.warn('Failed to fetch place details for city auto-selection:', error);
+        });
+      } catch (error) {
+        console.warn('Failed to create Place object for city auto-selection:', error);
+      }
+    }
 
     setIsSuggestOpen(false);
     setSuggestions([]);
@@ -400,10 +728,10 @@ export default function SearchBar() {
                 </button>
               ) : (
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     if (manualInput.trim().length >= 3) {
                       clearTimeout(debounceRef.current);
-                      fetchSuggestions(manualInput);
+                      await fetchSuggestions(manualInput);
                     } else {
                       toast("Type 3+ chars");
                     }
@@ -448,12 +776,13 @@ export default function SearchBar() {
                       className={styles.suggestionItem}
                       onClick={() => handlePickSuggestion(s)}
                       role="option"
-                      aria-selected={currentAddress === s.display_name}
+                      aria-selected={currentAddress === s.display_name || currentAddress === s.formatted_address}
                     >
-                      <div className={styles.suggestionTitle}>{s.display_name}</div>
-                      {/* optionally show type or country */}
+                      <div className={styles.suggestionTitle}>{s.display_name || s.formatted_address}</div>
+                      {/* Show type information */}
                       <div className={styles.suggestionMeta}>
-                        {s.type} {s.address?.country ? `• ${s.address.country}` : ""}
+                        {s.types && s.types.length > 0 ? s.types[0].replace(/_/g, ' ') : ''} 
+                        {s.secondary_text ? ` • ${s.secondary_text}` : ""}
                       </div>
                     </li>
                   ))}
@@ -517,7 +846,7 @@ export default function SearchBar() {
                     const now = new Date();
                     now.setHours(0, 0, 0, 0);
                     if (selected < now) {
-                      toast.error("You can’t select a past date.");
+                      toast.error("You can't select a past date.");
                       return;
                     }
                     setPickupDate(selected);
@@ -546,7 +875,7 @@ export default function SearchBar() {
                     const now = new Date();
                     now.setHours(0, 0, 0, 0);
                     if (selected < now) {
-                      toast.error("You can’t select a past date.");
+                      toast.error("You can't select a past date.");
                       return;
                     }
                     setReturnDate(selected);

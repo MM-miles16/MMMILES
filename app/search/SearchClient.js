@@ -37,10 +37,13 @@ export default function SearchPage() {
   const city = searchParams.get("city");
   const pickup = searchParams.get("pickupTime");
   const returndate = searchParams.get("returnTime");
-
+  
+  // Extract coordinates from URL parameters (sent from SearchBar)
+  const userLat = searchParams.get("lat");
+  const userLon = searchParams.get("lon");
+  
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [userLocation, setUserLocation] = useState(null);
   const [brands, setBrands] = useState([]);
   const [priceRange, setPriceRange] = useState({ min: 0, max: 2000 });
   const [priceValues, setPriceValues] = useState({ min: 0, max: 2000 });
@@ -62,21 +65,22 @@ export default function SearchPage() {
   // debounce filter values to reduce API spam
   const debouncedFilters = useDebounce(filters);
 
-  // ---- get user location once ----
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          setUserLocation({
-            lat: pos.coords.latitude,
-            lon: pos.coords.longitude,
-          });
-        },
-        () => setUserLocation(null),
-        { enableHighAccuracy: true }
-      );
-    }
-  }, []);
+  // Prepare user coordinates from URL parameters
+  const userLocation = userLat && userLon ? {
+    lat: parseFloat(userLat),
+    lon: parseFloat(userLon)
+  } : null;
+
+  // Verify coordinates are valid numbers
+  const isValidLocation = userLocation && 
+    !isNaN(userLocation.lat) && 
+    !isNaN(userLocation.lon) && 
+    userLocation.lat !== 0 && 
+    userLocation.lon !== 0;
+
+  // Get address for display (fallback to city if no address provided)
+  const searchAddress = searchParams.get("address");
+  const displayLocation = searchAddress || city;
 
   // ---- fetch cars from Supabase via API ----
   useEffect(() => {
@@ -113,15 +117,17 @@ export default function SearchPage() {
           throw new Error("Invalid API response format");
         }
 
-        // Calculate distance for each car
+        // Calculate distance for each car synchronously to avoid flash
         const enriched = data.map((car) => {
-          if (userLocation && car.latitude && car.longitude) {
+          if (isValidLocation && car.latitude && car.longitude) {
             car.distance_km = calcDistance(
               userLocation.lat,
               userLocation.lon,
               car.latitude,
               car.longitude
             );
+          } else {
+            car.distance_km = null;
           }
           return car;
         });
@@ -150,7 +156,7 @@ export default function SearchPage() {
     }
 
     fetchCars();
-  }, [city, userLocation, debouncedFilters, pickup, returndate]);
+  }, [city, userLat, userLon, debouncedFilters, pickup, returndate]);
 
   // Reset all filters
   const resetFilters = () => {
@@ -471,14 +477,11 @@ export default function SearchPage() {
                         📍 {car.distance_km} km away
                       </span>
                     )}
-                  </div>*/}
-
-                  <div className={styles["trendy-price-row"]}>
-                    <span className={styles["trendy-price"]}>₹{car.hourly_rate}</span>
-                    <span className={styles["trendy-per-day"]}>/ Hour</span>
-                    <button className={styles["trendy-reserve-btn"]}>
-                      Book Now
-                    </button>
+                    {!car.distance_km && city && (
+                      <span style={{fontSize: '12px', color: '#6b7280', marginLeft: '12px'}}>
+                        📍 in {city}
+                      </span>
+                    )}
                   </div>
 
 
