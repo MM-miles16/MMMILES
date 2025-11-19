@@ -161,7 +161,10 @@ export default function SearchBar() {
       const pickup = params.get("pickupTime");
       const drop = params.get("returnTime");
 
-      if (city) setLocation(city);
+      if (city) {
+        setLocation(city);
+        setSelectedCity(city); // Sync CityContext when restoring from sessionStorage
+      }
 
       if (address) {
         // 🚫 Prevent manual search from firing again
