@@ -450,53 +450,54 @@ export default function SearchBar() {
         return;
       }
 
-      // Use the new Google Places AutocompleteSuggestion API (as of March 2025)
+      // Use the standard Google Places Autocomplete service
+      const autocompleteService = new google.maps.places.AutocompleteService();
+      const placesService = new google.maps.places.PlacesService(document.createElement('div'));
+
       const autocompleteRequest = {
         input: query,
-        location: new google.maps.LatLng(20.5937, 78.9629), // Center of India
-        radius: 100000, // 100km radius
         componentRestrictions: { country: 'in' },
-        types: ['geocode']
+        types: ['geocode'],
+        region: 'IN'
       };
 
-      google.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions(autocompleteRequest, async (suggestions, status) => {
-        if (status === "OK" && suggestions && suggestions.length > 0) {
-          // Get detailed information for each suggestion
-          const detailedPromises = suggestions.slice(0, 6).map(async (suggestion) => {
-            try {
-              // Use the new Place API to get detailed information
-              const place = new google.maps.places.Place({
-                id: suggestion.placeId,
-                location: suggestion.location
-              });
-
-              await place.fetchFields({
-                fields: ['addressComponents', 'formattedAddress', 'location', 'types']
-              });
-
-              return {
-                place_id: suggestion.placeId,
-                display_name: suggestion.formatPrimaryText?.text || suggestion.formatSuggestion?.text || suggestion.placePredictionText?.text || suggestion.placeId,
-                formatted_address: place.getFormattedAddress(),
-                lat: place.getLocation().lat(),
-                lon: place.getLocation().lng(),
-                types: suggestion.types || [],
-                primary_text: suggestion.formatPrimaryText?.text || '',
-                secondary_text: suggestion.formatSecondaryText?.text || ''
-              };
-            } catch (error) {
-              console.warn('Failed to get place details for:', suggestion.placeId, error);
-              return {
-                place_id: suggestion.placeId,
-                display_name: suggestion.formatPrimaryText?.text || suggestion.formatSuggestion?.text || suggestion.placePredictionText?.text || suggestion.placeId,
-                formatted_address: '',
-                lat: 0,
-                lon: 0,
-                types: suggestion.types || [],
-                primary_text: suggestion.formatPrimaryText?.text || '',
-                secondary_text: suggestion.formatSecondaryText?.text || ''
-              };
-            }
+      autocompleteService.getPlacePredictions(autocompleteRequest, (predictions, status) => {
+        if (status === "OK" && predictions && predictions.length > 0) {
+          // Get detailed information for each prediction
+          const detailedPromises = predictions.slice(0, 6).map((prediction) => {
+            return new Promise((resolve) => {
+              placesService.getDetails(
+                {
+                  placeId: prediction.place_id,
+                  fields: ['address_components', 'formatted_address', 'geometry', 'types']
+                },
+                (place, status) => {
+                  if (status === "OK" && place && place.geometry && place.geometry.location) {
+                    resolve({
+                      place_id: prediction.place_id,
+                      display_name: prediction.structured_formatting?.main_text || prediction.description,
+                      formatted_address: place.formatted_address || '',
+                      lat: place.geometry.location.lat(),
+                      lon: place.geometry.location.lng(),
+                      types: place.types || [],
+                      primary_text: prediction.structured_formatting?.main_text || '',
+                      secondary_text: prediction.structured_formatting?.secondary_text || ''
+                    });
+                  } else {
+                    resolve({
+                      place_id: prediction.place_id,
+                      display_name: prediction.structured_formatting?.main_text || prediction.description,
+                      formatted_address: '',
+                      lat: 0,
+                      lon: 0,
+                      types: prediction.types || [],
+                      primary_text: prediction.structured_formatting?.main_text || '',
+                      secondary_text: prediction.structured_formatting?.secondary_text || ''
+                    });
+                  }
+                }
+              );
+            });
           });
 
           Promise.all(detailedPromises).then((detailedResults) => {
@@ -543,6 +544,16 @@ export default function SearchBar() {
       return;
     }
 
+    // 🚫 Skip search if input matches currentAddress (user just selected a suggestion)
+    if (manualInput && currentAddress && manualInput.trim() === currentAddress.trim()) {
+      setSuggestions([]);
+      setIsSuggestOpen(false);
+      if (abortRef.current) {
+        abortRef.current.abort();
+      }
+      return;
+    }
+
     if (!manualInput || manualInput.length < 3) {
       setSuggestions([]);
       setIsSuggestOpen(false);
@@ -558,12 +569,19 @@ export default function SearchBar() {
     }, 400);
 
     return () => clearTimeout(debounceRef.current);
-  }, [manualInput]);
+  }, [manualInput, currentAddress]);
 
   const handlePickSuggestion = async (item) => {
     const lat = parseFloat(item.lat);
     const lon = parseFloat(item.lon);
     const display = item.display_name || item.formatted_address;
+
+    // Immediately close suggestions to prevent the loop
+    setSuggestions([]);
+    setIsSuggestOpen(false);
+    if (abortRef.current) {
+      abortRef.current.abort();
+    }
 
     setLatitude(lat);
     setLongitude(lon);
@@ -576,35 +594,30 @@ export default function SearchBar() {
     // Get detailed place information to extract city for auto-selection
     if (isGoogleMapsLoaded && item.place_id) {
       try {
-        // Use the new Place API to get detailed information
-        const place = new google.maps.places.Place({
-          id: item.place_id,
-          latLng: item.lat && item.lon ? new google.maps.LatLng(item.lat, item.lon) : undefined
-        });
-
-        place.fetchFields({
-          fields: ['addressComponents', 'formattedAddress', 'location']
-        }).then(() => {
-          // Auto-select city from dropdown based on the selected location
-          const placeData = {
-            address_components: place.getAddressComponents().map(comp => ({
-              long_name: comp.longText?.text || '',
-              types: comp.types
-            }))
-          };
-          extractAndSelectCity(placeData);
-          
-          // Update address with formatted address if available
-          const formattedAddress = place.getFormattedAddress();
-          if (formattedAddress && formattedAddress !== display) {
-            setCurrentAddress(formattedAddress);
-            setManualInput(formattedAddress);
+        // Use the standard Places service to get detailed information
+        const placesService = new google.maps.places.PlacesService(document.createElement('div'));
+        
+        placesService.getDetails(
+          {
+            placeId: item.place_id,
+            fields: ['address_components', 'formatted_address', 'geometry']
+          },
+          (place, status) => {
+            if (status === "OK" && place) {
+              // Auto-select city from dropdown based on the selected location
+              extractAndSelectCity(place);
+              
+              // Update address with formatted address if available
+              const formattedAddress = place.formatted_address;
+              if (formattedAddress && formattedAddress !== display) {
+                setCurrentAddress(formattedAddress);
+                setManualInput(formattedAddress);
+              }
+            }
           }
-        }).catch((error) => {
-          console.warn('Failed to fetch place details for city auto-selection:', error);
-        });
+        );
       } catch (error) {
-        console.warn('Failed to create Place object for city auto-selection:', error);
+        console.warn('Failed to get place details for city auto-selection:', error);
       }
     }
 
