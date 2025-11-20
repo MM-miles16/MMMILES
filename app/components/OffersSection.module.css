@@ -7,7 +7,7 @@
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1400px;
   width: 100%;
 }
 
@@ -27,15 +27,15 @@
 }
 
 .card {
-  background: #fef9f5;
+  background: #FEF9F5;
   border-radius: 10px;
   overflow: hidden;
   
   transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 .card:hover {
-  transform: translateY(-6px) scale(1.03);
-  box-shadow: 0 8px 25px rgba(191, 152, 96, 0.4);
+  transform: translateY(6px) scale(1.03);
+  
 }
 
 .offerImage {

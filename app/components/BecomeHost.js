@@ -17,6 +17,8 @@ export default function BecomeHost() {
             className={styles.HoststepsImage}
             priority
           />
+          <button className={styles.HostFloatingButton}>Become a Host</button>
+
         </div>
       </div>
     </section>

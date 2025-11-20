@@ -7,7 +7,7 @@
 }
 
 .contentWrapper {
-  max-width: 1300px;
+  max-width: 1400px;
   width: 100%;
   text-align: center;
 }
@@ -40,6 +40,7 @@
 }
 
 /* Responsive text adjustments */
+
 @media (max-width: 1024px) {
   .heading {
     font-size: 1.75rem;
@@ -63,6 +64,13 @@
     display: flex;
     justify-content: center;
     }
+}
+
+
+@media (max-width: 480px) {
+  .stepsImage {
+    content: url("/5step.jpg"); /* your mobile image */
+  }
 }
 
 @media (max-width: 480px) {

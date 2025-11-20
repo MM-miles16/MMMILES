@@ -10,7 +10,7 @@ export default function BookingSteps() {
         <p className={styles.subheading}>Smart Booking, Rent Easy, Made Easy</p>
         <div className={styles.imageWrapper}>
           <Image
-            src="/4step.png"     // <-- put your image path here
+            src="/5step.jpg"     // <-- put your image path here
             alt="Car booking steps illustration"
             width={1920}                 // large natural size
             height={600}                 // height in proportion
