@@ -1,0 +1,896 @@
+/* ===== Root & page background (cream luxury) ===== */
+.pageWrap {
+  min-height: 100vh;
+  padding: 40px 48px;
+  box-sizing: border-box;
+  background: #FEF9F5;
+  color: #102030;
+}
+
+@media (min-width: 1340px) {
+  .pageWrap {
+    padding: 40px 120px 40px 120px !important;
+  }
+
+  .carImage {
+    margin-left: 50px;
+    margin-right: 10px;
+    border-radius: 16px;
+    object-fit: contain;
+    max-width: 470px !important;
+    max-height: 320px !important;
+    height: 100%;
+  }
+
+  .mainGrid {
+    display: grid;
+    grid-template-columns: 1fr 360px !important;
+    gap: 28px;
+    align-items: start;
+  }
+}
+
+/* ===== Stepper ===== */
+.stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.stepItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+  text-align: center;
+}
+
+.stepCircle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #d5ae7e;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  box-shadow: 0 6px 22px rgba(16, 32, 48, 0.06);
+}
+
+.stepDone {
+  background: #16a34a;
+  color: #fff;
+  box-shadow: 0 10px 28px rgba(22, 163, 74, 0.16);
+}
+
+.stepActive {
+  background: #bf9860;
+  color: #fff;
+  box-shadow: 0 10px 28px rgba(191, 152, 96, 0.14);
+}
+
+.stepInactive {
+  background: #d5ae7e;
+  color: #333;
+}
+
+.stepLabel {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #123;
+  font-weight: 600;
+}
+
+/* line */
+.stepLine {
+  flex: 0 0 160px;
+  height: 6px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #797775);
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.02);
+}
+
+/* ===== Main grid ===== */
+.mainGrid {
+  display: grid;
+  grid-template-columns: 1fr 340px !important;
+  gap: 28px;
+  align-items: start;
+}
+
+/* ===== Left column ===== */
+.leftCol {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+
+/* ===== Car Card ===== */
+.carCard {
+  display: flex;
+  gap: 28px;
+  align-items: center;
+  padding: 18px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #ffffff, #fbf9f6);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(6px);
+}
+
+/* image stage with spotlight and subtle reflection */
+.carImageStage {
+  position: relative;
+  padding: 25px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  flex: 0 0 400px;
+  height: 200px;
+}
+
+.carImage {
+  border-radius: 16px;
+  object-fit: contain;
+  max-width: 470px !important;
+  max-height: 320px !important;
+  height: 100%;
+}
+
+/* spotlight ground under car */
+.groundSpot::after {
+  content: "";
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 55%;
+  height: 40px;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.22), transparent 70%);
+  filter: blur(10px);
+}
+
+/* meta */
+.carMeta {
+  flex: 1;
+  padding-right: 10px;
+}
+
+.title {
+  margin: 0;
+  font-family: poppins;
+  font-size: 20px;
+  color: #0b1722;
+  letter-spacing: -0.2px;
+  font-weight: 700;
+}
+
+.subtitle {
+  color: #6b7280;
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+/* features & price */
+.features {
+  margin-top: 12px;
+  display: flex;
+  gap: 14px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.priceRow {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.discount {
+  background: linear-gradient(to right, #D8B480 0%, #BF9860 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.price {
+  font-weight: 900;
+  font-size: 28px;
+  font-family: poppins;
+  color: #081026;
+}
+
+.priceper {
+  font-weight: 500;
+  font-size: 14px;
+  color: #081026;
+}
+
+/* ===== Info row (two cards) ===== */
+.infoRow {
+  display: flex;
+  gap: 20px;
+  margin-top: 6px;
+}
+
+.infoCard {
+  background: linear-gradient(180deg, #ffffff, #fbf9f6);
+  padding: 18px;
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(12, 18, 25, 0.06);
+  border: 1px solid rgba(20, 20, 20, 0.03);
+  flex: 1;
+}
+
+.infoCard h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  color: #071226;
+}
+
+.infoList {
+  margin: 0;
+  padding: 0 8px;
+  color: #374151;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.infoListicon {
+  font-size: 16px;
+  font-weight: bolder;
+  color: #cd2a2a;
+  padding-right: 3px;
+}
+
+.infoListicongreen {
+  font-size: 16px;
+  font-weight: bolder;
+  color: #26db69;
+  padding-right: 3px;
+}
+
+/* cancellation side details */
+.small {
+  color: #4e525b;
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+.smallMuted {
+  color: #9aa0a6;
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+.refundLabel {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #6b6b6b;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.refundBar {
+  margin-top: 08px;
+  height: 16px;
+  background: #ffffff;
+  border-radius: 20px;
+  display: flex;
+  overflow: hidden;
+}
+
+.refundFill {
+  width: 55%;
+  background: linear-gradient(90deg, #c3c3c2);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  border-radius: 20px 0 0 20px;
+}
+
+.refundEmpty {
+  width: 50%;
+  background: rgba(12, 18, 25, 0.08);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  border-radius: 0 20px 20px 0;
+}
+
+.refundTime {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #535455;
+}
+
+.refundTimebelow {
+  color: #4e525b;
+  margin-top: 6px;
+  font-size: 14px;
+
+}
+
+.refundTimebelowstar {
+  color: #dd3636;
+  font-size: 14px;
+  margin-bottom: -10px;
+}
+
+
+
+/* ===== RIGHT COLUMN / Summary card ===== */
+.rightCol {
+  position: sticky;
+  top: 36px;
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+
+
+/* premium summary card */
+.summaryCard {
+  background: linear-gradient(140deg, #fffdfa 0%, #fbf6ef 100%);
+  padding: 20px 24px;
+  border-radius: 18px;
+  border: 1px solid rgba(210, 160, 91, 0.12);
+  /* subtle gold border */
+  box-shadow: 0 18px 40px rgba(16, 24, 32, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.summaryTitle {
+  margin: 0 0 12px 0;
+  font-family: "Playfair Display", serif;
+  font-size: 20px;
+  color: #0b1722;
+  font-weight: 700;
+}
+
+/* rows */
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 15px;
+  color: #17202a;
+}
+
+.rowLabel {
+  color: #394b56;
+}
+
+.rowValue {
+  font-weight: 700;
+  color: #0b1722;
+}
+
+/* divider */
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.02));
+  margin: 12px 0;
+  border-radius: 1px;
+}
+
+/* totals */
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  color: #333;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.totalBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, rgba(210, 160, 91, 0.06), rgba(210, 160, 91, 0.03));
+  border: 1px solid rgba(210, 160, 91, 0.06);
+}
+
+.totalText {
+  font-weight: 800;
+  font-size: 16px;
+  color: #071226;
+}
+
+.totalAmt {
+  font-weight: 900;
+  font-size: 18px;
+  color: #071226;
+}
+
+.totalLabel {
+  color: #394b56;
+}
+
+.totalValue {
+  font-weight: 700;
+  color: #0b1722;
+}
+
+/* PAY button - gold metallic with subtle shine animation */
+.payBtn {
+  width: 100%;
+  margin-top: 14px;
+  padding: 11px 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(170, 120, 50, 0.18);
+  background: linear-gradient(to right, #d8b480 0%, #bf9860 100%);
+  color: #fff;
+  font-weight: 800;
+  font-size: 15px;
+  cursor: pointer;
+
+  transition: transform .18s ease, box-shadow .18s ease, opacity .02s ease;
+}
+
+.payBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.payBtn:not(:disabled):hover {}
+
+/* subtle shimmer (one-pass) */
+.payBtn::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+/* ===== Terms strip below right card ===== */
+.termsStrip {
+  margin-top: 6px;
+  padding: 12px 14px;
+  background: linear-gradient(180deg, #fff, #fbf8f3);
+  border-radius: 12px;
+  border: 1px solid rgba(20, 20, 20, 0.03);
+  display: flex;
+  align-items: center;
+}
+
+.checkboxLabel {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  color: #24323a;
+  font-size: 14px;
+}
+
+.checkbox {
+  width: 35px;
+  height: 18px;
+  border-radius: 4px;
+  background: #faf0f0;
+  cursor: pointer;
+  position: relative;
+  margin-top: 2px;
+}
+
+.checkbox:checked {
+  background: linear-gradient(90deg, #bf9860, #a67c40);
+  border-color: rgba(191, 152, 96, 0.9);
+}
+
+.checkbox:checked::after {
+  content: "✔";
+  color: #fff;
+  font-weight: 800;
+  position: absolute;
+  left: 3px;
+  top: -1px;
+  font-size: 12px;
+}
+
+/* link styling gold */
+.link {
+  color: #bf9860;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+/* Additional utility classes for the form */
+.loading {
+  padding: 40px;
+  text-align: center;
+  font-size: 18px;
+  color: #666;
+}
+
+.error {
+  padding: 40px;
+  text-align: center;
+  font-size: 18px;
+  color: #d32f2f;
+}
+
+.formSection {
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.formGroup {
+  margin-bottom: 20px;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+}
+
+.formGroup input,
+.formGroup textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus {
+  outline: none;
+  border-color: #d5ae7e;
+  box-shadow: 0 0 0 2px rgba(213, 174, 126, 0.1);
+}
+
+.saveBtn {
+  background: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-right: 10px;
+}
+
+.saveBtn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.stepNextBtn {
+  background: #bf9860;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  transition: background 0.3s;
+}
+
+.stepNextBtn:hover:not(:disabled) {
+  background: #a67c40;
+}
+
+.stepNextBtn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.lockTimer {
+  background: linear-gradient(90deg, #bf9860, #a67c40);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.lockTimerWarning {
+  background: linear-gradient(90deg, #dc2626, #b91c1c);
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.8;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.timerContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.timerLabel {
+  font-size: 18px;
+}
+
+.timerText {
+  font-size: 16px;
+}
+
+.paymentSection {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.paymentCard {
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  max-width: 400px;
+  width: 100%;
+}
+
+.paymentSummary {
+  margin: 20px 0;
+}
+
+/* ===== Responsive ===== */
+
+@media (max-width: 820px) {
+  .mainGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .rightCol {
+    position: relative;
+    width: 100%;
+    top: 0;
+  }
+
+  .carCard {
+    flex-direction: column;
+    gap: 18px;
+    padding: 18px;
+  }
+
+  .carImageStage {
+    width: 100%;
+    height: 220px;
+  }
+
+  .groundSpot {
+    display: none;
+  }
+
+  .stepLine {
+    display: none;
+  }
+
+  .stepper {
+    justify-content: flex-start;
+    gap: 12px;
+    padding-left: 6px;
+  }
+}
+
+
+/* ========================================
+   📱 Mobile View — Premium Responsive Mode
+   For screens ≤ 600px
+=========================================== */
+@media (max-width: 600px) {
+
+  /* Page padding */
+  .pageWrap {
+    padding: 20px 18px;
+  }
+
+  /* Stepper */
+  .stepper {
+    gap: 10px;
+    padding-left: 0;
+    justify-content: flex-start;
+  }
+
+  .stepItem {
+    min-width: 90px;
+  }
+
+  .stepCircle {
+    width: 40px;
+    height: 40px;
+    font-size: 14px;
+  }
+
+  .stepLabel {
+    font-size: 11px;
+  }
+
+  /* Main grid becomes single column */
+  .mainGrid {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .leftCol {
+    gap: 18px;
+  }
+
+  /* Car Card */
+  .carCard {
+    flex-direction: column;
+    padding: 18px;
+    gap: 16px;
+    border-radius: 16px;
+  }
+
+  .carImageStage {
+    padding: 15px;
+    border-radius: 16px;
+    flex: none;
+    width: 100%;
+    height: 180px;
+  }
+
+  .carImage {
+    width: 100%;
+    max-height: 120px;
+    object-fit: contain;
+    transform: translateY(-3px);
+  }
+
+  /* Car meta */
+  .title {
+    font-size: 20px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+  }
+
+  .features {
+    font-size: 13px;
+    gap: 10px;
+  }
+
+  .priceRow {
+    gap: 12px;
+  }
+
+  .price {
+    font-size: 24px;
+  }
+
+  /* Info row */
+  .infoRow {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .infoCard {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .infoCard h3 {
+    font-size: 15px;
+  }
+
+  .infoList {
+    font-size: 13px;
+  }
+
+  /* Refund bar */
+  .refundBar {
+    height: 30px;
+  }
+
+  .refundFill,
+  .refundEmpty {
+    font-size: 12px;
+  }
+
+  .refundTime {
+    font-size: 12px;
+  }
+
+  /* Right Column */
+  .rightCol {
+    width: 100%;
+    position: relative;
+    top: 0;
+    gap: 10px;
+  }
+
+  /* Summary card */
+  .summaryCard {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .summaryTitle {
+    font-size: 18px;
+  }
+
+  .summaryRow {
+    font-size: 14px;
+    padding: 6px 0;
+  }
+
+  .rowLabel {
+    font-size: 13px;
+  }
+
+  .rowValue {
+    font-size: 14px;
+  }
+
+  .divider {
+    margin: 10px 0;
+  }
+
+  .totalRow {
+    font-size: 14px;
+  }
+
+  .totalText {
+    font-size: 15px;
+  }
+
+  .totalAmt {
+    font-size: 16px;
+  }
+
+  .totalBar {
+    padding: 10px;
+    margin-top: 10px;
+  }
+
+  /* Pay Button */
+  .payBtn {
+    padding: 12px 14px;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+
+  /* Terms Strip */
+  .termsStrip {
+    padding: 12px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+  }
+
+  .checkbox {
+    width: 18px;
+    height: 18px;
+  }
+
+  .checkboxLabel {
+    font-size: 13px;
+  }
+}
