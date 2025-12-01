@@ -1,0 +1,150 @@
+.paySuccessSection {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #FEF9F5;
+  padding: 20px;
+}
+
+.paySuccessCard {
+  width: 100%;
+  max-width: 900px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+/* Top green banner */
+.paySuccessHero {
+  background: #20d27b;
+  position: relative;
+  padding: 60px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Circle with thumb icon */
+.paySuccessIconCircle {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.16);
+}
+
+.paySuccessIconThumb {
+  font-size: 56px;
+}
+
+/* Content area */
+.paySuccessContent {
+  padding: 40px 40px 50px;
+  text-align: center;
+}
+
+.paySuccessTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #20d27b;
+  margin-bottom: 16px;
+}
+
+/* “✔ Payment Done Successfully” row */
+.paySuccessStatusRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 18px;
+}
+
+.paySuccessCheckIcon {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  background: #20d27b;
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+
+/* Small grey text */
+.paySuccessDescription {
+  max-width: 520px;
+  margin: 0 auto 28px;
+  font-size: 0.95rem;
+  color: #777777;
+  line-height: 1.6;
+}
+
+/* Green button */
+.paySuccessPrimaryButton {
+  padding: 14px 32px;
+  min-width: 260px;
+  border: none;
+  border-radius: 6px;
+  background: #20d27b;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.paySuccessPrimaryButton:hover {
+  background: #18b666;
+  box-shadow: 0 10px 24px rgba(24, 182, 102, 0.35);
+  transform: translateY(-1px);
+}
+
+/* --------- Responsive tweaks --------- */
+
+@media (max-width: 768px) {
+  .paySuccessHero {
+    padding: 40px 0;
+  }
+
+  .paySuccessIconCircle {
+    width: 110px;
+    height: 110px;
+  }
+
+  .paySuccessIconThumb {
+    font-size: 48px;
+  }
+
+  .paySuccessContent {
+    padding: 30px 20px 40px;
+  }
+
+  .paySuccessTitle {
+    font-size: 1.7rem;
+  }
+
+  .paySuccessPrimaryButton {
+    width: 100%;
+    max-width: 320px;
+  }
+}
+
+@media (max-width: 480px) {
+  .paySuccessTitle {
+    font-size: 1.5rem;
+  }
+
+  .paySuccessDescription {
+    font-size: 0.9rem;
+  }
+}

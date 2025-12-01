@@ -9,7 +9,7 @@ export default function Hero() {
       <section className="hero">
         <div className="hero-fit">
           <Image
-            src="/about-hero.jpg"
+            src="/about-hero-final.jpg"
             alt="Top View Car"
             width={1920}
             height={1080}

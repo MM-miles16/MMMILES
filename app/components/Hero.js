@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
 import styles from "./Hero.module.css";
 
-const desktopImages = ["/hero1.png", "/hero33.png", "/hero22.png"];
+const desktopImages = ["/tn-hero.jpg", "/kerala-hero.jpg", "/hero22.png"];
 const mobileImages = ["/hero-mobile4.png", "/hero-mobile2.png", "/hero-mobile5.png"]; // <-- your mobile images
 
 export default function HeroSlider() {
