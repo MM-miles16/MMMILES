@@ -1,26 +1,6 @@
 // app/api/locks/route.js
 import { NextRequest } from 'next/server';
-
-// Helper function to get user from token
-function getUserFromToken(authHeader) {
-  if (!authHeader?.startsWith('Bearer ')) {
-    return null;
-  }
-  
-  try {
-    const token = authHeader.split(' ')[1];
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url
-      .replace(/-/g, '+')
-      .replace(/_/g, '/')
-      .padEnd(base64Url.length + (4 - (base64Url.length % 4)) % 4, '=');
-    
-    return JSON.parse(atob(base64));
-  } catch (err) {
-    console.error('Token decode error:', err);
-    return null;
-  }
-}
+import { getUserFromAuthHeader } from '../../../lib/auth';
 
 // GET /api/locks?vehicle_id=123 - Check locks for a vehicle
 export async function GET(request) {
@@ -66,7 +46,7 @@ export async function GET(request) {
 // POST /api/locks - Create a new lock
 export async function POST(request) {
   try {
-    const user = getUserFromToken(request.headers.get('authorization'));
+    const user = getUserFromAuthHeader(request.headers.get('authorization'));
     if (!user) {
       return Response.json({ error: 'Invalid or missing authentication' }, { status: 401 });
     }
@@ -180,7 +160,7 @@ export async function POST(request) {
 // PATCH /api/locks - Extend lock by 20 minutes
 export async function PATCH(request) {
   try {
-    const user = getUserFromToken(request.headers.get('authorization'));
+    const user = getUserFromAuthHeader(request.headers.get('authorization'));
     if (!user) {
       return Response.json({ error: 'Invalid or missing authentication' }, { status: 401 });
     }
@@ -267,7 +247,7 @@ export async function PATCH(request) {
 // DELETE /api/locks?vehicle_id=123 - Remove lock for current user
 export async function DELETE(request) {
   try {
-    const user = getUserFromToken(request.headers.get('authorization'));
+    const user = getUserFromAuthHeader(request.headers.get('authorization'));
     if (!user) {
       return Response.json({ error: 'Invalid or missing authentication' }, { status: 401 });
     }

@@ -1,31 +1,11 @@
 // app/api/booking-complete/route.js
 import { NextRequest } from 'next/server';
-
-// Helper function to get user from token
-function getUserFromToken(authHeader) {
-  if (!authHeader?.startsWith('Bearer ')) {
-    return null;
-  }
-  
-  try {
-    const token = authHeader.split(' ')[1];
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url
-      .replace(/-/g, '+')
-      .replace(/_/g, '/')
-      .padEnd(base64Url.length + (4 - (base64Url.length % 4)) % 4, '=');
-    
-    return JSON.parse(atob(base64));
-  } catch (err) {
-    console.error('Token decode error:', err);
-    return null;
-  }
-}
+import { getUserFromAuthHeader } from '../../../lib/auth';
 
 // POST /api/booking-complete - Handle post-booking tasks like buffer time and lock conversion
 export async function POST(request) {
   try {
-    const user = getUserFromToken(request.headers.get('authorization'));
+    const user = getUserFromAuthHeader(request.headers.get('authorization'));
     if (!user) {
       return Response.json({ error: 'Invalid or missing authentication' }, { status: 401 });
     }
