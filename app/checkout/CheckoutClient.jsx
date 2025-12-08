@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { makeAuthenticatedRequest } from "../../lib/customSupabaseClient";
 import { testAuth } from "../../lib/authTest";
-import { parseDate, formatDateTimeForDB } from "../../lib/dateUtils";
+import { parseDate, formatDateTimeForDB, parseBookingRawDateTime } from "../../lib/dateUtils";
 import styles from "./Checkout.module.css";
 
 /* -------------------------------------------------------------------------- */
@@ -553,8 +553,15 @@ export default function CheckoutPage() {
   /*                       CREATE BOOKING AFTER PAYMENT                          */
   /* -------------------------------------------------------------------------- */
   async function createBooking(paymentId) {
-    const start = parseDateInput(pickup);
-    const end = parseDateInput(returnTime);
+    // Use the new parsing function to ensure consistent DD/MM/YYYY interpretation
+    const start = parseBookingRawDateTime(pickup);
+    const end = parseBookingRawDateTime(returnTime);
+
+    // Validate parsed dates
+    if (!start || !end) {
+      console.error("Failed to parse booking dates:", { pickup, returnTime });
+      throw new Error("Invalid booking dates");
+    }
 
     const payload = {
       user_id: loggedInUser.sub,
