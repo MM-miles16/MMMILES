@@ -1,6 +1,6 @@
 // app/api/booking-complete/route.js
 import { NextRequest } from 'next/server';
-import { getUserFromAuthHeader } from '../../../lib/auth';
+import { getUserFromAuthHeader } from '../../../../lib/auth';
 
 // POST /api/booking-complete - Handle post-booking tasks like buffer time and lock conversion
 export async function POST(request) {
