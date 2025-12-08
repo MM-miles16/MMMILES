@@ -316,13 +316,25 @@ export default function EnhancedCheckoutPage() {
   /*                    CHECK FOR BOOKING OVERLAPS                              */
   /* -------------------------------------------------------------------------- */
   async function checkBookingOverlaps() {
-    if (!car?.id) return false;
+    console.log('🔍 checkBookingOverlaps called', { carId: car?.id, pickup, returnTime });
+    
+    if (!car?.id) {
+      console.log('❌ No car ID found');
+      return false;
+    }
 
     setBookingCheckStatus({ checking: true, overlaps: false, error: null });
 
     try {
       const start = parseDateInput(pickup);
       const end = parseDateInput(returnTime);
+      
+      console.log('📅 Parsed dates:', { 
+        pickupRaw: pickup, 
+        returnRaw: returnTime,
+        start: start?.toISOString(),
+        end: end?.toISOString()
+      });
 
       if (!start || !end) {
         alert("Invalid date range specified");
@@ -331,9 +343,11 @@ export default function EnhancedCheckoutPage() {
 
       const startIso = formatDateTimeForDB(start);
       const endIso = formatDateTimeForDB(end);
+      
+      console.log('🗄️ Fetching existing bookings for vehicle:', car.id);
 
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/bookings?vehicle_id=eq.${car.id}&status=eq.confirmed&select=id,start_time,end_time`,
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/bookings?vehicle_id=eq.${car.id}&status=eq.confirmed&select=id,start_time,end_time,pickup_datetime_raw,return_datetime_raw`,
         {
           headers: {
             apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
@@ -347,12 +361,26 @@ export default function EnhancedCheckoutPage() {
       }
 
       const existingBookings = await response.json();
-
+      console.log('📋 Existing bookings found:', existingBookings.length, existingBookings);
+      
+      // Check for time overlap using PostgreSQL range logic
       for (const booking of existingBookings) {
         const existingStart = new Date(booking.start_time);
         const existingEnd = new Date(booking.end_time);
-
+        
+        console.log('⏰ Checking overlap with booking:', {
+          bookingId: booking.id,
+          existingStart: existingStart.toISOString(),
+          existingEnd: existingEnd.toISOString(),
+          requestedStart: start.toISOString(),
+          requestedEnd: end.toISOString(),
+          overlapCheck: `start < existingEnd: ${start < existingEnd}, existingStart < end: ${existingStart < end}`
+        });
+        
+        // Two time ranges overlap if: start1 < end2 AND start2 < end1
         if (start < existingEnd && existingStart < end) {
+          console.log('🚫 OVERLAP DETECTED! Blocking payment');
+          
           const formatDate = (date) => {
             return date.toLocaleString('en-IN', {
               day: '2-digit',
@@ -375,11 +403,12 @@ export default function EnhancedCheckoutPage() {
         }
       }
 
+      console.log('✅ No overlaps found - allowing payment');
       setBookingCheckStatus({ checking: false, overlaps: false, error: null });
       return true;
 
     } catch (error) {
-      console.error('Booking overlap check error:', error);
+      console.error('❌ Booking overlap check error:', error);
       setBookingCheckStatus({ checking: false, overlaps: false, error: "Unable to check availability" });
       alert("Unable to check vehicle availability. Please try again.");
       return false;
@@ -589,14 +618,20 @@ export default function EnhancedCheckoutPage() {
       await handleSave();
     }
 
+    console.log('🚀 Starting booking overlap check...', { pickup, returnTime, carId: car?.id });
+    
     const noOverlaps = await checkBookingOverlaps();
+    console.log('📋 Booking overlap check result:', noOverlaps);
+    
     if (!noOverlaps) {
-      return;
+      console.log('❌ Booking overlaps detected - blocking payment');
+      return; // Booking overlaps detected, block payment
     }
 
+    console.log('✅ No booking overlaps - proceeding to lock check');
     const lockCreated = await checkAndCreateLock();
     if (!lockCreated) {
-      return;
+      return; // User is blocked or error occurred
     }
 
     const options = {
@@ -1025,7 +1060,19 @@ export default function EnhancedCheckoutPage() {
                 lockStatus.checking ||
                 lockStatus.blocked
               }
-              onClick={handlePayment}
+              onClick={() => {
+                console.log('💳 Payment button clicked!', {
+                  priceSummary: priceSummary.total,
+                  bookingCheckStatus,
+                  lockStatus,
+                  disabled: !priceSummary.total ||
+                    bookingCheckStatus.checking ||
+                    bookingCheckStatus.overlaps ||
+                    lockStatus.checking ||
+                    lockStatus.blocked
+                });
+                handlePayment();
+              }}
             >
               {bookingCheckStatus.checking ? (
                 "Checking Availability..."
