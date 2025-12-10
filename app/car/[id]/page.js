@@ -247,6 +247,101 @@ export default function CarPage() {
           ))}
         </div>
       </div>
+
+      {/* --- Explore More Cars Section --- */}
+      <div className={styles.exploreSection}>
+        <h2 className={styles.exploreTitle}>Explore more Cars in {car.city}</h2>
+        <ExploreMoreCars currentCarId={id} city={car.city} pickup={pickup} returnTime={returnTime} />
+      </div>
+    </div>
+  );
+}
+
+// Component for exploring more cars from the same city
+function ExploreMoreCars({ currentCarId, city, pickup, returnTime }) {
+  const [vehicles, setVehicles] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchSimilarCars() {
+      try {
+        const { data, error } = await supabase
+          .from("vehicles")
+          .select("*, vehicle_images(*)")
+          .eq("city", city)
+          .eq("available_status", true)
+          .neq("id", currentCarId)
+          .limit(3);
+
+        if (error) throw error;
+        setVehicles(data || []);
+      } catch (e) {
+        console.error("Error fetching similar cars:", e);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchSimilarCars();
+  }, [currentCarId, city]);
+
+  if (loading) {
+    return <div className={styles.exploreLoading}>Loading more cars...</div>;
+  }
+
+  if (vehicles.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className={styles.exploreCardsGrid}>
+      {vehicles.map((vehicle) => (
+        <Link
+          key={vehicle.id}
+          href={`/car/${vehicle.id}?pickup=${pickup}&return=${returnTime}`}
+          className={styles.exploreCardLink}
+        >
+          <div className={styles.exploreCard}>
+            
+            {/* Rating Badge */}
+            <div className={styles.carRatingBadge}>
+              <span role="img" aria-label="star">★</span> 4.3/5
+            </div>
+
+            <div className={styles.exploreCardImageWrapper}>
+              <Image
+                src={vehicle.vehicle_images && vehicle.vehicle_images.length > 0 
+                  ? (vehicle.vehicle_images[0].image_url.startsWith("http") 
+                    ? vehicle.vehicle_images[0].image_url 
+                    : `${STORAGE_BASE_URL}${vehicle.vehicle_images[0].image_url}`)
+                  : "/cars/default.jpg"}
+                alt={`${vehicle.make} ${vehicle.model}`}
+                fill
+                className={styles.exploreCardImage}
+              />
+            </div>
+
+            <div className={styles.exploreCardContent}>
+              {/* Car Title */}
+              <h3 className={styles.exploreCardTitle}>{vehicle.make} {vehicle.model}</h3>
+
+              {/* Price and Action Section */}
+              <div className={styles.carActionRow}>
+                <p className={styles.carPrice}>
+                  <span className={styles.carPriceAmount}>₹{vehicle.hourly_rate}</span>
+                  <span className={styles.carPriceUnit}> per Hour</span>
+
+                  <button className={styles.bookNowButton}>
+                    Book Now
+                  </button>
+                </p>
+                
+                
+              </div>
+            </div>
+          </div>
+        </Link>
+      ))}
     </div>
   );
 }

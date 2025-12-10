@@ -17,10 +17,16 @@ export function useCity() {
 // City Provider Component
 export function CityProvider({ children }) {
   const [selectedCity, setSelectedCity] = useState(null);
+  const [pickupDateTime, setPickupDateTime] = useState(null);
+  const [returnDateTime, setReturnDateTime] = useState(null);
 
   const value = {
     selectedCity,
     setSelectedCity,
+    pickupDateTime,
+    setPickupDateTime,
+    returnDateTime,
+    setReturnDateTime,
   };
 
   return <CityContext.Provider value={value}>{children}</CityContext.Provider>;

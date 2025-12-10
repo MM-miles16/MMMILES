@@ -11,11 +11,12 @@ import {
   FaChevronLeft,
   FaChevronRight,
 } from "react-icons/fa";
+import { toast } from "react-hot-toast";
 import { useCity } from "../context/CityContext";
 import styles from "./TrendingSection.module.css";
 
 export default function TrendingSection() {
-  const { selectedCity } = useCity();
+  const { selectedCity, pickupDateTime, returnDateTime } = useCity();
   
   // State management
   const [vehicles, setVehicles] = useState([]);
@@ -45,23 +46,59 @@ export default function TrendingSection() {
     return "/default-car.png";
   };
 
+  // Handle car card click with datetime validation
+  const handleCarClick = (e) => {
+    // Check if both pickup and return datetime are set
+    if (!pickupDateTime || !returnDateTime) {
+      e.preventDefault();
+      toast.error("Please select pickup and return date & time in the search bar above");
+      return;
+    }
+    
+    // Update sessionStorage with current search params (same as SearchBar)
+    const params = new URLSearchParams({
+      city: selectedCity,
+      pickupTime: pickupDateTime,
+      returnTime: returnDateTime,
+    });
+    
+    sessionStorage.setItem("lastSearchParams", params.toString());
+    
+    // If datetime is set, navigation will happen naturally via Link
+  };
+
   // Transform vehicle data to match card structure
-  const transformedVehicles = vehicles.map((vehicle) => ({
-    id: vehicle.id,
-    name: `${vehicle.make} ${vehicle.model}`,
-    type: vehicle.vehicle_type || "Car",
-    deal: "Trending",
-    price: vehicle.hourly_rate || 0,
-    features: [
-      vehicle.seats ? `${vehicle.seats} Seater` : "5 Seater",
-      "4.5 rating",
-      vehicle.year ? `${vehicle.year} Model` : "2023 Model",
-      vehicle.fuel_type || "Petrol",
-      "Vaccinated after every ride",
-    ],
-    img: getPrimaryImageUrl(vehicle),
-    link: `/car/${vehicle.id}`,
-  }));
+  const transformedVehicles = vehicles.map((vehicle) => {
+    // Build URL with datetime parameters if available
+    const urlParams = new URLSearchParams();
+    urlParams.set('id', vehicle.id.toString());
+    
+    if (pickupDateTime) {
+      urlParams.set('pickup', pickupDateTime);
+    }
+    if (returnDateTime) {
+      urlParams.set('return', returnDateTime);
+    }
+    
+    const link = `/car/${vehicle.id}${urlParams.toString() ? `?${urlParams.toString()}` : ''}`;
+    
+    return {
+      id: vehicle.id,
+      name: `${vehicle.make} ${vehicle.model}`,
+      type: vehicle.vehicle_type || "Car",
+      deal: "Trending",
+      price: vehicle.hourly_rate || 0,
+      features: [
+        vehicle.seats ? `${vehicle.seats} Seater` : "5 Seater",
+        "4.5 rating",
+        vehicle.year ? `${vehicle.year} Model` : "2023 Model",
+        vehicle.fuel_type || "Petrol",
+        "Vaccinated after every ride",
+      ],
+      img: getPrimaryImageUrl(vehicle),
+      link: link,
+    };
+  });
 
   // Carousel calculations
   const loopedData = transformedVehicles.length > 0 
@@ -247,6 +284,7 @@ export default function TrendingSection() {
                 className={styles["trendy-card"]}
                 onMouseEnter={() => setHoveredCard(car.id)}
                 onMouseLeave={() => setHoveredCard(null)}
+                onClick={handleCarClick}
               >
                 <div className={styles["trendy-image-wrapper"]}>
                   <Image

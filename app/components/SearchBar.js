@@ -100,7 +100,7 @@ const loadGoogleMapsAPI = () => {
 
 export default function SearchBar() {
   const router = useRouter();
-  const { setSelectedCity } = useCity();
+  const { setSelectedCity, setPickupDateTime, setReturnDateTime } = useCity();
   
   // Form state
   const [location, setLocation] = useState(LOCATION_PLACEHOLDER);
@@ -219,6 +219,19 @@ export default function SearchBar() {
   const formatDateTime = (date, hour) => {
     return formatDateTimeForDisplay(date, hour);
   };
+
+  // Update context when datetime changes
+  useEffect(() => {
+    if (pickupDate && pickupHour !== undefined) {
+      setPickupDateTime(formatDateTime(pickupDate, pickupHour));
+    }
+  }, [pickupDate, pickupHour, setPickupDateTime, formatDateTime]);
+
+  useEffect(() => {
+    if (returnDate && returnHour !== undefined) {
+      setReturnDateTime(formatDateTime(returnDate, returnHour));
+    }
+  }, [returnDate, returnHour, setReturnDateTime, formatDateTime]);
 
   // Format Google Maps address for better display - prioritize formatted_address
   const formatGoogleAddress = (result) => {
