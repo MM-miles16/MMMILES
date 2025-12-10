@@ -29,6 +29,22 @@ export default function TrendingSection() {
   const scrollRef = useRef(null);
   const touchStartX = useRef(0);
 
+  // Supabase storage base URL for car images
+  const STORAGE_BASE_URL = "https://tktfsjtlfjxbqfvbcoqr.supabase.co/storage/v1/object/public/car-images/";
+
+  // Helper to get primary image URL
+  const getPrimaryImageUrl = (vehicle) => {
+    const images = vehicle.vehicle_images || [];
+    const primaryImage = images.find((img) => img.is_primary) || images[0];
+    if (primaryImage?.image_url) {
+      // If already a full URL, return as-is; otherwise prepend base URL
+      return primaryImage.image_url.startsWith("http")
+        ? primaryImage.image_url
+        : `${STORAGE_BASE_URL}${primaryImage.image_url}`;
+    }
+    return "/default-car.png";
+  };
+
   // Transform vehicle data to match card structure
   const transformedVehicles = vehicles.map((vehicle) => ({
     id: vehicle.id,
@@ -43,7 +59,7 @@ export default function TrendingSection() {
       vehicle.fuel_type || "Petrol",
       "Vaccinated after every ride",
     ],
-    img: vehicle.image_url || "/default-car.png",
+    img: getPrimaryImageUrl(vehicle),
     link: `/car/${vehicle.id}`,
   }));
 

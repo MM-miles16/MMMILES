@@ -16,6 +16,21 @@ function useDebounce(value, delay = 400) {
   return debounced;
 }
 
+// Supabase storage base URL for car images
+const STORAGE_BASE_URL = "https://tktfsjtlfjxbqfvbcoqr.supabase.co/storage/v1/object/public/car-images/";
+
+// Helper to get primary image URL
+function getPrimaryImageUrl(car) {
+  const images = car.vehicle_images || [];
+  const primaryImage = images.find((img) => img.is_primary) || images[0];
+  if (primaryImage?.image_url) {
+    return primaryImage.image_url.startsWith("http")
+      ? primaryImage.image_url
+      : `${STORAGE_BASE_URL}${primaryImage.image_url}`;
+  }
+  return "/cars/default.jpg";
+}
+
 // Helper function to calculate distance
 function calcDistance(lat1, lon1, lat2, lon2) {
   const R = 6371;
@@ -24,8 +39,8 @@ function calcDistance(lat1, lon1, lat2, lon2) {
   const a =
     Math.sin(dLat / 2) ** 2 +
     Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) ** 2;
+    Math.cos((lat2 * Math.PI) / 180) *
+    Math.sin(dLon / 2) ** 2;
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return (R * c).toFixed(1);
 }
@@ -37,11 +52,11 @@ export default function SearchPage() {
   const city = searchParams.get("city");
   const pickup = searchParams.get("pickupTime");
   const returndate = searchParams.get("returnTime");
-  
+
   // Extract coordinates from URL parameters (sent from SearchBar)
   const userLat = searchParams.get("lat");
   const userLon = searchParams.get("lon");
-  
+
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
   const [brands, setBrands] = useState([]);
@@ -72,10 +87,10 @@ export default function SearchPage() {
   } : null;
 
   // Verify coordinates are valid numbers
-  const isValidLocation = userLocation && 
-    !isNaN(userLocation.lat) && 
-    !isNaN(userLocation.lon) && 
-    userLocation.lat !== 0 && 
+  const isValidLocation = userLocation &&
+    !isNaN(userLocation.lat) &&
+    !isNaN(userLocation.lon) &&
+    userLocation.lat !== 0 &&
     userLocation.lon !== 0;
 
   // Get address for display (fallback to city if no address provided)
@@ -87,14 +102,14 @@ export default function SearchPage() {
     async function fetchCars() {
       if (!city) return;
       setLoading(true);
-      
+
       try {
         const params = new URLSearchParams({ city });
-        
+
         // Add pickup and return times for availability check
         if (pickup) params.append("pickupTime", pickup);
         if (returndate) params.append("returnTime", returndate);
-        
+
         // Add filters (only non-empty values)
         Object.entries(debouncedFilters).forEach(([key, val]) => {
           if (val && val !== false) params.append(key, val.toString());
@@ -103,15 +118,15 @@ export default function SearchPage() {
         const res = await fetch(`/api/cars?${params.toString()}`, {
           cache: "no-store",
         });
-        
+
         if (!res.ok) {
           const errorText = await res.text();
           console.error("API Error:", errorText);
           throw new Error(`API returned ${res.status}: ${errorText}`);
         }
-        
+
         const data = await res.json();
-        
+
         if (!Array.isArray(data)) {
           console.warn("API returned non-array data:", data);
           throw new Error("Invalid API response format");
@@ -146,7 +161,7 @@ export default function SearchPage() {
           setPriceRange({ min: Math.floor(minPrice), max: Math.ceil(maxPrice) });
           setPriceValues({ min: Math.floor(minPrice), max: Math.ceil(maxPrice) });
         }
-        
+
       } catch (e) {
         console.error("Error fetching cars:", e);
         setCars([]);
@@ -189,7 +204,7 @@ export default function SearchPage() {
     <div className={styles.container}>
       {/* Top Bar */}
       <div className={styles.topBar}>
-        
+
 
         <div className={styles.search}>
           <FaMapMarkerAlt className={styles.searchIcon} />
@@ -203,15 +218,15 @@ export default function SearchPage() {
           />
         </div>
         <div>
-           {pickup && returndate && (
+          {pickup && returndate && (
             <div className={styles.tags}>
               <span className={styles.tag}>
-               From <span className={styles.tagDate}>{pickup}</span> - To <span className={styles.tagDate}>{returndate}</span>
+                From <span className={styles.tagDate}>{pickup}</span> - To <span className={styles.tagDate}>{returndate}</span>
               </span>
             </div>
           )}
         </div>
-        
+
 
 
 
@@ -227,8 +242,8 @@ export default function SearchPage() {
             Most Recommended
           </div>
         </div>
-        
-        
+
+
       </div>
 
       {/* Main Layout */}
@@ -250,9 +265,8 @@ export default function SearchPage() {
                 {["SUV", "Sedan", "Hatchback"].map((type) => (
                   <button
                     key={type}
-                    className={`${styles.selectCard} ${
-                      filters.type === type ? styles.selectCardActive : ""
-                    }`}
+                    className={`${styles.selectCard} ${filters.type === type ? styles.selectCardActive : ""
+                      }`}
                     onClick={() =>
                       setFilters(prev => ({
                         ...prev,
@@ -294,9 +308,8 @@ export default function SearchPage() {
                 {["Petrol", "Diesel", "Hybrid"].map((fuel) => (
                   <button
                     key={fuel}
-                    className={`${styles.selectCard} ${
-                      filters.fuel === fuel ? styles.selectCardActive : ""
-                    }`}
+                    className={`${styles.selectCard} ${filters.fuel === fuel ? styles.selectCardActive : ""
+                      }`}
                     onClick={() =>
                       setFilters(prev => ({
                         ...prev,
@@ -317,9 +330,8 @@ export default function SearchPage() {
                 {["Manual", "Automatic"].map((trans) => (
                   <button
                     key={trans}
-                    className={`${styles.selectCard} ${
-                      filters.transmission === trans ? styles.selectCardActive : ""
-                    }`}
+                    className={`${styles.selectCard} ${filters.transmission === trans ? styles.selectCardActive : ""
+                      }`}
                     onClick={() =>
                       setFilters(prev => ({
                         ...prev,
@@ -337,12 +349,11 @@ export default function SearchPage() {
             <div className={styles.block}>
               <h4 className={styles.label}>Seating Capacity</h4>
               <div className={styles.cardsRow}>
-                {[ "5 seater", "8 seater"].map((seats) => (
+                {["5 seater", "8 seater"].map((seats) => (
                   <button
                     key={seats}
-                    className={`${styles.selectCard} ${
-                      filters.seats === seats ? styles.selectCardActive : ""
-                    }`}
+                    className={`${styles.selectCard} ${filters.seats === seats ? styles.selectCardActive : ""
+                      }`}
                     onClick={() =>
                       setFilters(prev => ({
                         ...prev,
@@ -356,7 +367,7 @@ export default function SearchPage() {
               </div>
             </div>
 
-            
+
 
             {/* Price Range */}
             <div className={styles.block}>
@@ -369,7 +380,7 @@ export default function SearchPage() {
                   max={priceRange.max}
                   value={priceValues.min}
                   className={styles.rangeInput}
-                  onChange={(e) => 
+                  onChange={(e) =>
                     handlePriceChange(parseInt(e.target.value), priceValues.max)
                   }
                 />
@@ -379,7 +390,7 @@ export default function SearchPage() {
                   max={priceRange.max}
                   value={priceValues.max}
                   className={styles.rangeInput}
-                  onChange={(e) => 
+                  onChange={(e) =>
                     handlePriceChange(priceValues.min, parseInt(e.target.value))
                   }
                 />
@@ -390,8 +401,8 @@ export default function SearchPage() {
               </div>
             </div>
 
-           
-            
+
+
           </aside>
         )}
 
@@ -399,18 +410,18 @@ export default function SearchPage() {
         <div className={styles.content}>
           <div className={styles.resultCount}>
             {loading ? 'Searching...' : `${cars.length} vehicles in ${city}`}
-          
-          
-         
+
+
+
           </div>
 
           {loading ? (
             <div className={styles.grid}>
               {[1, 2, 3, 4, 5, 6].map((s) => (
                 <div key={s} className={styles.card}>
-                  <div style={{height: '200px', background: '#f0f0f0', borderRadius: '8px', marginBottom: '12px'}}></div>
-                  <div style={{height: '16px', background: '#f0f0f0', marginBottom: '8px'}}></div>
-                  <div style={{height: '14px', background: '#f0f0f0', width: '60%'}}></div>
+                  <div style={{ height: '200px', background: '#f0f0f0', borderRadius: '8px', marginBottom: '12px' }}></div>
+                  <div style={{ height: '16px', background: '#f0f0f0', marginBottom: '8px' }}></div>
+                  <div style={{ height: '14px', background: '#f0f0f0', width: '60%' }}></div>
                 </div>
               ))}
             </div>
@@ -433,58 +444,58 @@ export default function SearchPage() {
                       <h3 className={styles.carTitle}>
                         {car.make} {car.model}
                       </h3>
-                      <p className={styles.carType}>{car.vehicle_type} <span style={{fontSize: '12px', color: '#6b7280', marginLeft: '12px'}}>
+                      <p className={styles.carType}>{car.vehicle_type} <span style={{ fontSize: '12px', color: '#6b7280', marginLeft: '12px' }}>
                         📍 {car.distance_km || `in ${city}`} km away
                       </span></p>
 
                     </div>
                     <span className={styles.starTag}>
-                        <FaStar style={{marginRight: '4px'}} />4.5/5
-                      </span>
+                      <FaStar style={{ marginRight: '4px' }} />4.5/5
+                    </span>
                   </div>
-                  
+
                   <Image
-                    src={"/cars/default.jpg"}
+                    src={getPrimaryImageUrl(car)}
                     alt={`${car.make} ${car.model}`}
                     width={300}
                     height={200}
                     className={styles.carImg}
                   />
-                  
-                  <div style={{display: 'flex', gap: '13px 10px', margin: '1px 5px 8px 12px', flexWrap: 'wrap'}} className={styles.features}>
+
+                  <div style={{ display: 'flex', gap: '13px 10px', margin: '1px 5px 8px 12px', flexWrap: 'wrap' }} className={styles.features}>
                     {car.fuel_type && (
                       <span className={styles.iTag}>
-                        <FaGasPump style={{marginRight: '4px'}} /> {car.fuel_type}
+                        <FaGasPump style={{ marginRight: '4px' }} /> {car.fuel_type}
                       </span>
                     )}
                     {car.transmission_type && (
                       <span className={styles.iiTag}>
-                        <FaCog style={{marginRight: '4px'}} /> {car.transmission_type}
+                        <FaCog style={{ marginRight: '4px' }} /> {car.transmission_type}
                       </span>
                     )}
                     {car.seating_capacity && (
                       <span className={styles.iiiTag} >
-                        <FaStar style={{marginRight: '4px'}} /> {car.seating_capacity} / 5
+                        <FaStar style={{ marginRight: '4px' }} /> {car.seating_capacity} / 5
                       </span>
                     )}
                     {car.transmission_type && (
                       <span className={styles.ivTag}>
-                        <FaPhone style={{marginRight: '4px'}} /> 24/7*
+                        <FaPhone style={{ marginRight: '4px' }} /> 24/7*
                       </span>
                     )}
                     {car.seating_capacity && (
                       <span className={styles.vTag}>
-                        <FaMedal style={{marginRight: '4px'}} /> {car.seating_capacity} year
+                        <FaMedal style={{ marginRight: '4px' }} /> {car.seating_capacity} year
                       </span>
                     )}
                     {car.seating_capacity && (
                       <span className={styles.viTag}>
-                        <FaUsers style={{marginRight: '4px'}} /> {car.seating_capacity} seats
+                        <FaUsers style={{ marginRight: '4px' }} /> {car.seating_capacity} seats
                       </span>
                     )}
-                    
+
                   </div>
-                  
+
                   {/*<div className={styles.price}>
                     ₹{car.hourly_rate}/hour
                     {car.distance_km && (

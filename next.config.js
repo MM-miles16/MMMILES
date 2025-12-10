@@ -4,6 +4,15 @@ const nextConfig = {
     ignoreDuringBuilds: true,
     devIndicators: false,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'tktfsjtlfjxbqfvbcoqr.supabase.co',
+        pathname: '/storage/v1/object/public/**',
+      },
+    ],
+  },
   experimental: {
     serverComponentsExternalPackages: ['jsonwebtoken']
   },
@@ -19,3 +28,5 @@ const nextConfig = {
     return config;
   },
 };
+
+module.exports = nextConfig;

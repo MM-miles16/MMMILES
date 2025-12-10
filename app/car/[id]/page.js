@@ -8,6 +8,15 @@ import { supabase } from "../../../lib/supabaseClient";
 import styles from "./carDetail.module.css";
 import Counter from "../../components/Counter";
 
+// Supabase storage base URL for car images
+const STORAGE_BASE_URL = "https://tktfsjtlfjxbqfvbcoqr.supabase.co/storage/v1/object/public/car-images/";
+
+// Helper to get full image URL
+const getFullImageUrl = (imageUrl) => {
+  if (!imageUrl) return "/cars/default.jpg";
+  return imageUrl.startsWith("http") ? imageUrl : `${STORAGE_BASE_URL}${imageUrl}`;
+};
+
 export default function CarPage() {
   const { id } = useParams();
   const router = useRouter();
@@ -47,10 +56,13 @@ export default function CarPage() {
 
         setCar(parsedVehicle);
         setHost(vehicle.hosts || null);
-        setImages(vehicle.vehicle_images || []);
+        const rawImages = vehicle.vehicle_images || [];
+        // Sort to put primary image first
+        const sortedImages = [...rawImages].sort((a, b) => (b.is_primary ? 1 : 0) - (a.is_primary ? 1 : 0));
+        setImages(sortedImages);
         setCurrentMainMedia(
-          vehicle.vehicle_images?.length
-            ? { src: vehicle.vehicle_images[0].image_url, type: "image" }
+          sortedImages.length
+            ? { src: getFullImageUrl(sortedImages[0].image_url), type: "image" }
             : { src: "/cars/default.jpg", type: "image" }
         );
       } catch (e) {
@@ -120,17 +132,20 @@ export default function CarPage() {
           </div>
 
           <div className={styles.thumbnails}>
-            {images.map((img, i) => (
-              <div
-                key={i}
-                className={`${styles.thumbnail} ${
-                  currentMainMedia?.src === img.image_url ? styles.activeThumbnail : ""
-                }`}
-                onClick={() => setCurrentMainMedia({ src: img.image_url, type: "image" })}
-              >
-                <Image src={img.image_url} alt="thumb" fill style={{ objectFit: "cover" }} />
-              </div>
-            ))}
+            {images.map((img, i) => {
+              const fullUrl = getFullImageUrl(img.image_url);
+              return (
+                <div
+                  key={i}
+                  className={`${styles.thumbnail} ${
+                    currentMainMedia?.src === fullUrl ? styles.activeThumbnail : ""
+                  }`}
+                  onClick={() => setCurrentMainMedia({ src: fullUrl, type: "image" })}
+                >
+                  <Image src={fullUrl} alt="thumb" fill style={{ objectFit: "cover" }} />
+                </div>
+              );
+            })}
           </div>
         </div>
 

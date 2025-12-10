@@ -25,7 +25,7 @@ export async function GET(request) {
     const url = new URL(`${SUPABASE_URL}/rest/v1/vehicles`);
     url.searchParams.set("city", `eq.${city}`);
     url.searchParams.set("trending", "eq.true");
-    url.searchParams.set("select", "*");
+    url.searchParams.set("select", "*,vehicle_images(*)");
     url.searchParams.set("order", "created_at.desc");
     url.searchParams.set("limit", "10"); // Limit to 10 trending cars
 

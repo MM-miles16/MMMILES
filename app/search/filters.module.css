@@ -67,11 +67,7 @@
 
 
 .tags {
-  width: 40%;
-  min-width: 460px;
-  position: absolute;
-  left: 550;
-  top: 85;
+  flex-shrink: 0;
 }
 
 .tag {
@@ -86,17 +82,17 @@
   font-size: 13px;
 }
 
-.tagDate{
+.tagDate {
   font-weight: bold;
   font-size: 13px;
   color: #000;
 }
-.tagpromoted{ 
-  position: absolute;
-  right: 25;
-  top: 80;
+
+.tagpromoted {
+  flex-shrink: 0;
 }
-.promoted{
+
+.promoted {
   background: #ffffff;
   border: 1px solid #e6e9ee;
   border-radius: 10px;
@@ -108,24 +104,20 @@
   font-size: 13px;
 }
 
-.taglocation{ 
-  width: 40%;
-  min-width: 260px;
-  position: absolute;
-  right: -125;
-  top: 79;
+.taglocation {
+  flex-shrink: 0;
 }
 
-.location{
+.location {
   background: #ffffff;
   border: 1px solid #e6e9ee;
   border-radius: 10px;
   padding: 9px 19px 9px;
-  width: 35%;
   cursor: pointer;
   font-weight: 500;
   color: #7c7b77;
   font-size: 13px;
+  white-space: nowrap;
 }
 
 
@@ -257,7 +249,7 @@
   border-radius: 999px;
 }
 
-.switch input:checked + .sliderRound {
+.switch input:checked+.sliderRound {
   background-color: #446dff;
 }
 
@@ -273,7 +265,7 @@
   transition: 0.3s;
 }
 
-.switch input:checked + .sliderRound::before {
+.switch input:checked+.sliderRound::before {
   transform: translateX(20px);
 }
 
@@ -352,19 +344,21 @@
   width: 100%;
   height: 46px;
   background: transparent;
-  pointer-events: none; /* allow clicks to pass to thumbs only */
+  pointer-events: none;
+  /* allow clicks to pass to thumbs only */
 }
 
 .rangeInput::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  pointer-events: auto; /* enable thumb dragging */
+  pointer-events: auto;
+  /* enable thumb dragging */
   width: 18px;
   height: 18px;
   border-radius: 50%;
   background: #fff;
   border: 4px solid #BF9860;
-  
+
   cursor: pointer;
   margin-top: -4px;
 }
@@ -376,7 +370,7 @@
   border-radius: 50%;
   background: #fff;
   border: 4px solid #446dff;
-  box-shadow: 0 4px 16px rgba(68,109,255,0.18);
+  box-shadow: 0 4px 16px rgba(68, 109, 255, 0.18);
   cursor: pointer;
 }
 
@@ -469,7 +463,7 @@
   height: 18px;
   border-radius: 50%;
   border: 2px solid #fff;
-  box-shadow: 0 0 0 1px rgba(0,0,0,0.06) inset;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06) inset;
 }
 
 .colorLabel {
@@ -480,7 +474,7 @@
 .colorActive {
   box-shadow: 0 8px 24px rgba(34, 54, 128, 0.08);
   transform: translateY(-4px);
-  border-color: rgba(68,109,255,0.18);
+  border-color: rgba(68, 109, 255, 0.18);
 }
 
 /* cards row */
@@ -502,12 +496,12 @@
 }
 
 .selectCardActive {
-   background: linear-gradient(to right, #D8B480 0%, #BF9860 100%);
+  background: linear-gradient(to right, #D8B480 0%, #BF9860 100%);
   -webkit-background-clip: text;
   font-weight: 700;
   -webkit-text-fill-color: transparent;
-  border:1.4px solid #000000;
-  
+  border: 1.4px solid #000000;
+
   box-shadow: 0 10px 20px rgba(66, 98, 255, 0.06);
 }
 
@@ -545,8 +539,7 @@
   padding: 13px;
   width: 100%;
   max-width: 370px;
-  height: 97%;
-  max-height: 390px !important;
+  overflow: hidden;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
   cursor: pointer;
   animation: fadeIn 0.4s ease;
@@ -576,9 +569,10 @@
 
 .carImg {
   width: 100%;
-  margin: -12px 0 -20px;
-  max-height: 230px;
-  height: 50% !important;
+  height: 160px;
+  object-fit: contain;
+  border-radius: 8px;
+  margin: 8px 0;
 }
 
 .bookmark {
@@ -596,6 +590,7 @@
   font-size: 10px;
   margin-top: -5px;
 }
+
 /* badge tags */
 .iTag {
   color: #000000;
@@ -608,7 +603,7 @@
 
 .iiTag {
   color: #000000;
-   background: linear-gradient(to bottom right, #f5f5f5, #fafaf7);
+  background: linear-gradient(to bottom right, #f5f5f5, #fafaf7);
   padding: 6px 10px;
   border-radius: 8px;
   font-size: 12px;
@@ -623,6 +618,7 @@
   font-size: 12px;
   margin-bottom: -5px;
 }
+
 .ivTag {
   color: #000000;
   background: linear-gradient(to bottom right, #f5f5f5, #fafaf7);
@@ -633,7 +629,7 @@
 
 .vTag {
   color: #000000;
-   background: linear-gradient(to bottom right, #f5f5f5, #fafaf7);
+  background: linear-gradient(to bottom right, #f5f5f5, #fafaf7);
   padding: 6px 10px;
   border-radius: 8px;
   font-size: 12px;
@@ -657,7 +653,7 @@
   align-items: baseline;
   gap: 3px;
   margin-bottom: 12px;
-  background:linear-gradient(to right bottom, #f0dec3, rgb(223, 223, 213));
+  background: linear-gradient(to right bottom, #f0dec3, rgb(223, 223, 213));
   padding: 8px 10px 8px 18px;
   border-radius: 12px;
 }
@@ -672,7 +668,7 @@
   align-items: baseline;
   gap: 4px;
   margin-bottom: 12px;
-  
+
   padding: 8px 12px;
   border-radius: 12px;
 }
@@ -706,7 +702,7 @@
 
 
 .trendy-reserve-btn:hover {
-  
+
   transform: scale(1.05);
   box-shadow: 0 6px 20px rgba(228, 192, 44, 0.5);
 }
@@ -722,6 +718,7 @@
     opacity: 0;
     transform: translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -733,6 +730,7 @@
   .grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
   .sidebar {
     width: 300px;
   }
@@ -742,17 +740,21 @@
   .main {
     flex-direction: column;
   }
+
   .sidebar {
     width: 100%;
     max-height: none;
   }
+
   .search {
     width: 100%;
   }
+
   .filterSort {
     justify-content: flex-end;
     width: 100%;
   }
+
   .grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -762,6 +764,7 @@
   .search input {
     padding: 10px 36px;
   }
+
   .card {
     padding: 12px;
   }
@@ -814,7 +817,8 @@
   }
 
   .sidebarHeader {
-    display: none; /* Hide Filter title + Reset on mobile */
+    display: none;
+    /* Hide Filter title + Reset on mobile */
   }
 
   .main {

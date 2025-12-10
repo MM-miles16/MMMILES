@@ -8,6 +8,22 @@ import { testAuth } from "../../lib/authTest";
 import { parseDate, formatDateTimeForDB, parseBookingRawDateTime } from "../../lib/dateUtils";
 import styles from "./EnhancedCheckout.module.css";
 
+// Supabase storage base URL for car images
+const STORAGE_BASE_URL = "https://tktfsjtlfjxbqfvbcoqr.supabase.co/storage/v1/object/public/car-images/";
+
+// Helper to get full image URL
+const getFullImageUrl = (imageUrl) => {
+  if (!imageUrl) return "/cars/default.jpg";
+  return imageUrl.startsWith("http") ? imageUrl : `${STORAGE_BASE_URL}${imageUrl}`;
+};
+
+// Helper to get primary image URL from vehicle
+const getPrimaryImageUrl = (car) => {
+  const images = car?.vehicle_images || [];
+  const primaryImage = images.find((img) => img.is_primary) || images[0];
+  return primaryImage?.image_url ? getFullImageUrl(primaryImage.image_url) : "/cars/default.jpg";
+};
+
 /* -------------------------------------------------------------------------- */
 /*                          DATE PARSING HELPERS                               */
 /* -------------------------------------------------------------------------- */
@@ -914,7 +930,7 @@ export default function EnhancedCheckoutPage() {
             <div className={styles.carCard}>
               <div className={styles.carImageStage}>
                 <Image
-                  src={car.vehicle_images?.[0]?.image_url || "/cars/default.jpg"}
+                  src={getPrimaryImageUrl(car)}
                   alt={`${car.make} ${car.model}`}
                   width={400}
                   height={320}

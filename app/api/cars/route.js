@@ -42,7 +42,7 @@ export async function GET(req) {
     // start building query
     let query = supabase
       .from("vehicles")
-      .select("*")
+      .select("*,vehicle_images(*)")
       .eq("city", city)
       .eq("available_status", true);
 
