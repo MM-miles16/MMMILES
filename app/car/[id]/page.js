@@ -30,6 +30,9 @@ export default function CarPage() {
   const [loading, setLoading] = useState(true);
   const [activePlan, setActivePlan] = useState("BASIC");
   const [currentMainMedia, setCurrentMainMedia] = useState(null);
+  
+  // State to hold the transform style for each explore card
+  const [hoveredCard, setHoveredCard] = useState(null);
 
   useEffect(() => {
     async function fetchCar() {
@@ -73,6 +76,29 @@ export default function CarPage() {
     }
     fetchCar();
   }, [id]);
+
+  // Scroll to top when car ID changes (when user selects a new car from explore section)
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [id]);
+
+  // Mouse move handler for magnetic effect on explore cards
+  const handleMouseMove = (e, cardId) => {
+    const card = e.currentTarget;
+    const { top, left, width, height } = card.getBoundingClientRect();
+    const x = (e.clientX - left - width / 2) / 20; // 20 is a sensitivity factor
+    const y = (e.clientY - top - height / 2) / 20; // 20 is a sensitivity factor
+
+    setHoveredCard({
+      id: cardId,
+      transform: `perspective(1000px) rotateX(${y}deg) rotateY(${-x}deg) scale(1.05)`,
+    });
+  };
+
+  // Mouse leave handler
+  const handleMouseLeave = () => {
+    setHoveredCard(null);
+  };
 
   const handleBookNow = () => {
     const token = localStorage.getItem("auth_token");
@@ -251,14 +277,22 @@ export default function CarPage() {
       {/* --- Explore More Cars Section --- */}
       <div className={styles.exploreSection}>
         <h2 className={styles.exploreTitle}>Explore more Cars in {car.city}</h2>
-        <ExploreMoreCars currentCarId={id} city={car.city} pickup={pickup} returnTime={returnTime} />
+        <ExploreMoreCars 
+          currentCarId={id} 
+          city={car.city} 
+          pickup={pickup} 
+          returnTime={returnTime}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+          hoveredCard={hoveredCard}
+        />
       </div>
     </div>
   );
 }
 
 // Component for exploring more cars from the same city
-function ExploreMoreCars({ currentCarId, city, pickup, returnTime }) {
+function ExploreMoreCars({ currentCarId, city, pickup, returnTime, onMouseMove, onMouseLeave, hoveredCard }) {
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -300,6 +334,9 @@ function ExploreMoreCars({ currentCarId, city, pickup, returnTime }) {
           key={vehicle.id}
           href={`/car/${vehicle.id}?pickup=${pickup}&return=${returnTime}`}
           className={styles.exploreCardLink}
+          onMouseMove={(e) => onMouseMove(e, vehicle.id)}
+          onMouseLeave={onMouseLeave}
+          style={hoveredCard && hoveredCard.id === vehicle.id ? { transform: hoveredCard.transform, zIndex: 10 } : null}
         >
           <div className={styles.exploreCard}>
             
