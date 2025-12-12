@@ -28,7 +28,7 @@ export default function EditProfileModal({ closeModal, profileData, onUpdate }) 
     }
   }, [profileData]);
 
-  const allFilled = firstName && lastName && gender && phone && email;
+  const allFilled = firstName && lastName && gender && email;
 
   // Get user ID from JWT token
   const getUserId = () => {
@@ -188,14 +188,17 @@ export default function EditProfileModal({ closeModal, profileData, onUpdate }) 
             <option value="Other">Other</option>
           </select>
 
-          <label>Phone Number</label>
+          <label>Phone Number (Read-only)</label>
           <input
             type="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="XXXXXXXXXX"
+            readOnly
             required
+            style={{ backgroundColor: '#f5f5f5', cursor: 'not-allowed' }}
           />
+          <small style={{ color: '#666', fontSize: '12px', marginBottom: '16px' }}>Phone number cannot be changed as it's your unique identifier</small>
 
           <label>Email</label>
           <input
