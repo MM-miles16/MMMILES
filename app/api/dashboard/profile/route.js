@@ -5,12 +5,12 @@ export async function GET(request) {
   try {
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     );
 
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
-    
+
     if (!userId) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
@@ -50,12 +50,12 @@ export async function POST(request) {
   try {
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     );
 
     const body = await request.json();
     const { userId, profileData } = body;
-    
+
     if (!userId || !profileData) {
       return NextResponse.json({ error: 'User ID and profile data are required' }, { status: 400 });
     }
