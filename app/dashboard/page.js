@@ -190,6 +190,10 @@ export default function Dashboard() {
       last_name: ""
     });
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // Import makeAuthenticatedRequest
+    const { makeAuthenticatedRequest } = require("../../lib/customSupabaseClient");
 
     // Get user ID from JWT token
     const getUserId = () => {
@@ -197,9 +201,16 @@ export default function Dashboard() {
         const token = localStorage.getItem("auth_token");
         if (!token) return null;
         
-        const payload = JSON.parse(
-          atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))
-        );
+        // Handle padding for base64 decode
+        let base64 = token.split(".")[1];
+        if (base64.length % 4 === 2) base64 += "==";
+        else if (base64.length % 4 === 3) base64 += "=";
+        else if (base64.length % 4 === 1) base64 += "===";
+        
+        // Replace URL-safe base64 characters
+        base64 = base64.replace(/-/g, "+").replace(/_/g, "/");
+        
+        const payload = JSON.parse(atob(base64));
         return payload.sub;
       } catch (err) {
         console.error("Error parsing token:", err);
@@ -207,25 +218,58 @@ export default function Dashboard() {
       }
     };
 
-    // Fetch profile data from API
-    useEffect(() => {
-      const fetchProfileData = async () => {
-        const userId = getUserId();
-        if (!userId) return;
+    // Fetch profile data from Supabase
+    const fetchProfileData = async () => {
+      const userId = getUserId();
+      
+      if (!userId) {
+        setError("User not authenticated");
+        setLoading(false);
+        return;
+      }
 
-        try {
-          const response = await fetch(`/api/dashboard/profile?userId=${userId}`);
-          if (response.ok) {
-            const data = await response.json();
-            setProfileData(data);
-          }
-        } catch (error) {
-          console.error('Error fetching profile:', error);
-        } finally {
-          setLoading(false);
+      try {
+        setLoading(true);
+        
+        // Use the same approach as profile page
+        const customerData = await makeAuthenticatedRequest(
+          "GET",
+          `customers?user_id=eq.${userId}&select=*`
+        );
+
+        if (customerData && customerData.length > 0) {
+          const data = customerData[0];
+          setProfileData({
+            name: `${data.first_name || ''} ${data.last_name || ''}`.trim() || "Guest",
+            phone: data.phone || "",
+            email: data.email || "",
+            gender: data.gender || "",
+            address: data.address || "",
+            first_name: data.first_name || "",
+            last_name: data.last_name || ""
+          });
+        } else {
+          // No profile found - user needs to create profile
+          setProfileData({
+            name: "Guest",
+            phone: "",
+            email: "",
+            gender: "",
+            address: "",
+            first_name: "",
+            last_name: ""
+          });
         }
-      };
+      } catch (err) {
+        console.error("Error fetching profile:", err);
+        setError("Failed to load profile data");
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    // Fetch profile data on component mount
+    useEffect(() => {
       fetchProfileData();
     }, []);
 
@@ -309,21 +353,37 @@ export default function Dashboard() {
               </div>
 
               <div className={styles.modalForm}>
-                <label className={styles.formLabel}>Full name</label>
-                <input className={styles.formInput} defaultValue={profileData.name} />
+                <label className={styles.formLabel}>First Name</label>
+                <input className={styles.formInput} defaultValue={profileData.first_name} />
+
+                <label className={styles.formLabel}>Last Name</label>
+                <input className={styles.formInput} defaultValue={profileData.last_name} />
 
                 <label className={styles.formLabel}>Email</label>
                 <input className={styles.formInput} defaultValue={profileData.email} />
 
-                <label className={styles.formLabel}>Phone</label>
-                <input className={styles.formInput} defaultValue={profileData.phone} />
+                <label className={styles.formLabel}>Phone (Read-only)</label>
+                <input 
+                  className={styles.formInput} 
+                  defaultValue={profileData.phone} 
+                  readOnly 
+                  style={{ backgroundColor: '#f5f5f5', cursor: 'not-allowed' }}
+                />
+                <small style={{ color: '#666', fontSize: '12px' }}>Phone number cannot be changed as it's your unique identifier</small>
               </div>
 
               <div className={styles.modalBtns}>
                 <button className={styles.cancelBtn} onClick={() => setShowProfileModal(false)}>
                   Cancel
                 </button>
-                <button className={styles.saveBtn} onClick={() => setShowProfileModal(false)}>
+                <button 
+                  className={styles.saveBtn} 
+                  onClick={() => {
+                    // Implement save functionality here if needed
+                    // For now, just close the modal
+                    setShowProfileModal(false);
+                  }}
+                >
                   Save
                 </button>
               </div>

@@ -18,8 +18,7 @@
 **/downloads/
 **/eggs/
 **/.eggs/
-# Allow project `lib/` folder to be tracked (was ignored by template)
-# **/lib/
+**/lib/
 **/lib64/
 **/parts/
 **/sdist/
@@ -896,3 +895,6 @@
 # uploads/
 # downloads/
 
+# Claude Agent SDK debug files
+**/.claude/debug/
+**/.claude/debug/**
