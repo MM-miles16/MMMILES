@@ -80,6 +80,13 @@ export default function EnhancedCheckoutPage() {
     total: 0,
     hours: 0,
     error: null,
+    serverCalculated: false,
+  });
+
+  const [orderDetails, setOrderDetails] = useState({
+    orderId: null,
+    amount: 0,
+    key: null,
   });
 
   const [lockStatus, setLockStatus] = useState({
@@ -229,16 +236,18 @@ export default function EnhancedCheckoutPage() {
   }, [loggedInUser]);
 
   /* -------------------------------------------------------------------------- */
-  /*                        PRICE CALCULATION (HOURS)                            */
+  /*                    SERVER-SIDE PRICE CALCULATION                            */
   /* -------------------------------------------------------------------------- */
   useEffect(() => {
-    if (!car) return;
+    if (!car || !pickup || !returnTime) return;
 
-    const start = parseDateInput(pickup);
-    const end = parseDateInput(returnTime);
+    // First validate that the dates can be parsed
+    const pickupDate = parseDateInput(pickup);
+    const returnDate = parseDateInput(returnTime);
 
-    if (!start || !end) {
-      return setPriceSummary({
+    if (!pickupDate || !returnDate) {
+      console.error('❌ Invalid dates in URL parameters:', { pickup, returnTime });
+      setPriceSummary({
         rentalCost: 0,
         insuranceCost: 0,
         basePrice: 0,
@@ -246,50 +255,90 @@ export default function EnhancedCheckoutPage() {
         convFee: 100,
         total: 0,
         hours: 0,
-        error: "Invalid datetime",
+        error: "Invalid booking dates. Please select valid pickup and return times.",
+        serverCalculated: false,
       });
+      return;
     }
 
-    const diffMs = end - start;
-    if (diffMs <= 0) {
-      return setPriceSummary({
-        rentalCost: 0,
-        insuranceCost: 0,
-        basePrice: 0,
-        gst: 0,
-        convFee: 100,
-        total: 0,
-        hours: 0,
-        error: "Return must be after pickup",
-      });
+    async function calculatePrice() {
+      try {
+        console.log('🗓️ Calculating price with dates:', { pickup, returnTime });
+
+        // Format dates to ISO format for server compatibility
+        const pickupTimeISO = pickupDate.toISOString();
+        const returnTimeISO = returnDate.toISOString();
+
+        console.log('✅ Dates formatted successfully:', {
+          original: { pickup, returnTime },
+          formatted: { pickupTimeISO, returnTimeISO }
+        });
+
+        const token = localStorage.getItem("auth_token");
+        const response = await fetch('/api/create-order', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            carId: car.id,
+            pickupTime: pickupTimeISO,
+            returnTime: returnTimeISO,
+            plan: plan,
+            discount: discount
+          })
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error('❌ Server price calculation failed:', errorData);
+          throw new Error(errorData.error || 'Failed to calculate price. Please check your booking dates.');
+        }
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Apply discount if any
+          const totalAfterDiscount = Math.max(0, data.pricing.total - discount);
+
+          setPriceSummary({
+            rentalCost: data.pricing.rentalCost,
+            insuranceCost: data.pricing.insuranceCost,
+            basePrice: data.pricing.basePrice,
+            gst: data.pricing.gst,
+            convFee: data.pricing.convFee,
+            total: totalAfterDiscount,
+            hours: data.pricing.hours,
+            error: null,
+            serverCalculated: true,
+          });
+
+          setOrderDetails({
+            orderId: data.orderId,
+            amount: totalAfterDiscount, // Use discounted amount
+            key: data.key,
+          });
+        } else {
+          throw new Error(data.error || 'Price calculation failed');
+        }
+      } catch (error) {
+        console.error('Price calculation error:', error);
+        setPriceSummary({
+          rentalCost: 0,
+          insuranceCost: 0,
+          basePrice: 0,
+          gst: 0,
+          convFee: 100,
+          total: 0,
+          hours: 0,
+          error: error.message,
+          serverCalculated: false,
+        });
+      }
     }
 
-    const hours = Math.ceil(diffMs / 3600000);
-    const hourlyRate = toNumberClean(car.hourly_rate);
-    const insuranceCost =
-      plan === "MAX" ? toNumberClean(car.price_max)
-        : plan === "PLUS" ? toNumberClean(car.price_plus)
-          : toNumberClean(car.price_basic);
-
-    const rentalCost = +(hours * hourlyRate).toFixed(2);
-    const basePrice = +(rentalCost + insuranceCost).toFixed(2);
-    const gst = +(basePrice * 0.18).toFixed(2);
-    const convFee = 100;
-    const subtotal = +(basePrice + gst + convFee).toFixed(2);
-
-    // Apply discount if any
-    const totalAfterDiscount = +(subtotal - discount).toFixed(2);
-
-    setPriceSummary({
-      rentalCost,
-      insuranceCost,
-      basePrice,
-      gst,
-      convFee,
-      total: Math.max(0, totalAfterDiscount),
-      hours,
-      error: null,
-    });
+    calculatePrice();
   }, [car, pickup, returnTime, plan, discount]);
 
   /* -------------------------------------------------------------------------- */
@@ -333,7 +382,7 @@ export default function EnhancedCheckoutPage() {
   /* -------------------------------------------------------------------------- */
   async function checkBookingOverlaps() {
     console.log('🔍 checkBookingOverlaps called', { carId: car?.id, pickup, returnTime });
-    
+
     if (!car?.id) {
       console.log('❌ No car ID found');
       return false;
@@ -344,9 +393,9 @@ export default function EnhancedCheckoutPage() {
     try {
       const start = parseBookingRawDateTime(pickup);
       const end = parseBookingRawDateTime(returnTime);
-      
-      console.log('📅 Parsed dates:', { 
-        pickupRaw: pickup, 
+
+      console.log('📅 Parsed dates:', {
+        pickupRaw: pickup,
         returnRaw: returnTime,
         start: start?.toISOString(),
         end: end?.toISOString()
@@ -359,7 +408,7 @@ export default function EnhancedCheckoutPage() {
 
       const startIso = formatDateTimeForDB(start);
       const endIso = formatDateTimeForDB(end);
-      
+
       console.log('🗄️ Fetching existing bookings for vehicle:', car.id);
 
       const response = await fetch(
@@ -378,12 +427,12 @@ export default function EnhancedCheckoutPage() {
 
       const existingBookings = await response.json();
       console.log('📋 Existing bookings found:', existingBookings.length, existingBookings);
-      
+
       // Check for time overlap using PostgreSQL range logic
       for (const booking of existingBookings) {
         const existingStart = new Date(booking.start_time);
         const existingEnd = new Date(booking.end_time);
-        
+
         console.log('⏰ Checking overlap with booking:', {
           bookingId: booking.id,
           existingStart: existingStart.toISOString(),
@@ -398,21 +447,21 @@ export default function EnhancedCheckoutPage() {
           condition2: `existingStart < end: ${existingStart.toISOString()} < ${end.toISOString()} = ${existingStart < end}`,
           overlapCheck: `start < existingEnd: ${start < existingEnd}, existingStart < end: ${existingStart < end}`
         });
-        
+
         // Two time ranges overlap if: start1 < end2 AND start2 < end1
         const condition1 = start < existingEnd;
         const condition2 = existingStart < end;
-        
+
         console.log('🔍 Detailed overlap analysis:', {
           bookingId: booking.id,
           willOverlap: condition1 && condition2,
           condition1: `${condition1} (${start.toISOString()} < ${existingEnd.toISOString()})`,
           condition2: `${condition2} (${existingStart.toISOString()} < ${end.toISOString()})`
         });
-        
+
         if (condition1 && condition2) {
           console.log('🚫 OVERLAP DETECTED! Blocking payment');
-          
+
           const formatDate = (date) => {
             return date.toLocaleString('en-IN', {
               day: '2-digit',
@@ -589,7 +638,7 @@ export default function EnhancedCheckoutPage() {
   /* -------------------------------------------------------------------------- */
   /*                       CREATE BOOKING AFTER PAYMENT                          */
   /* -------------------------------------------------------------------------- */
-  async function createBooking(paymentId) {
+  async function createBooking(paymentId, orderId) {
     // Use the new parsing function to ensure consistent DD/MM/YYYY interpretation
     const start = parseBookingRawDateTime(pickup);
     const end = parseBookingRawDateTime(returnTime);
@@ -611,6 +660,7 @@ export default function EnhancedCheckoutPage() {
       conv_fee: priceSummary.convFee,
       total_amount: priceSummary.total,
       payment_id: paymentId,
+      razorpay_order_id: orderId,
       pickup_datetime_raw: pickup,
       return_datetime_raw: returnTime,
       start_time: formatDateTimeForDB(start),
@@ -634,10 +684,18 @@ export default function EnhancedCheckoutPage() {
   }
 
   /* -------------------------------------------------------------------------- */
-  /*                          ENHANCED PAYMENT HANDLER                           */
+  /*                          SECURE PAYMENT HANDLER                             */
   /* -------------------------------------------------------------------------- */
   const handlePayment = async () => {
-    if (!priceSummary.total) return alert("Invalid amount");
+    // Step 1: Validate prerequisites
+    if (!priceSummary.total || !priceSummary.serverCalculated) {
+      return alert("Price not calculated or invalid amount");
+    }
+
+    if (!orderDetails.orderId || !orderDetails.key) {
+      return alert("Order details not available. Please refresh the page.");
+    }
+
     if (!agree) return alert("Please accept terms and conditions");
 
     if (!customer.first_name?.trim() || !customer.last_name?.trim() ||
@@ -651,10 +709,10 @@ export default function EnhancedCheckoutPage() {
     }
 
     console.log('🚀 Starting booking overlap check...', { pickup, returnTime, carId: car?.id });
-    
+
     const noOverlaps = await checkBookingOverlaps();
     console.log('📋 Booking overlap check result:', noOverlaps);
-    
+
     if (!noOverlaps) {
       console.log('❌ Booking overlaps detected - blocking payment');
       return; // Booking overlaps detected, block payment
@@ -666,10 +724,12 @@ export default function EnhancedCheckoutPage() {
       return; // User is blocked or error occurred
     }
 
+    // Step 6: Proceed with payment using server-created order
     const options = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-      amount: Math.round(priceSummary.total * 100),
+      key: orderDetails.key,
+      amount: Math.round(orderDetails.amount * 100), // Use server-calculated amount
       currency: "INR",
+      order_id: orderDetails.orderId, // Use server-created order ID
 
       name: "MMmiles Rentals",
       description: `${car.make} ${car.model}`,
@@ -678,19 +738,23 @@ export default function EnhancedCheckoutPage() {
       handler: async (response) => {
         try {
           const pid = response.razorpay_payment_id;
+          const oid = response.razorpay_order_id;
+          const signature = response.razorpay_signature;
+
           alert("Payment Success! Saving booking...");
 
           // Mark step 3 as complete when payment is successful
           setCompletedSteps(prev => new Set([...prev, 3]));
 
-          const booking = await createBooking(pid);
+          const booking = await createBooking(pid, oid);
 
           const bookingId = Array.isArray(booking)
             ? booking[0]?.id
             : booking?.id;
 
+          // Step 7: Handle booking completion with payment verification
           try {
-            await fetch('/api/booking-complete', {
+            const completionResponse = await fetch('/api/booking-complete', {
               method: 'POST',
               headers: {
                 'Authorization': `Bearer ${localStorage.getItem("auth_token")}`,
@@ -699,11 +763,21 @@ export default function EnhancedCheckoutPage() {
               body: JSON.stringify({
                 vehicle_id: car.id,
                 booking_id: bookingId,
-                payment_id: pid
+                payment_id: pid,
+                expected_amount: orderDetails.amount // Server verifies this matches payment
               })
             });
+
+            if (!completionResponse.ok) {
+              const errorData = await completionResponse.json();
+              throw new Error(errorData.error || 'Booking completion failed');
+            }
+
+            console.log('Booking completed successfully with verified payment');
           } catch (completionError) {
-            console.warn('Booking completion handler failed, but payment was successful:', completionError);
+            console.error('Booking completion error:', completionError);
+            alert("Payment verified but booking completion failed. Please contact support.");
+            return;
           }
 
           router.push(
@@ -713,7 +787,7 @@ export default function EnhancedCheckoutPage() {
           );
         } catch (err) {
           console.error(err);
-          alert("Payment succeeded but booking failed.");
+          alert("Payment succeeded but booking failed. Please contact support.");
         }
       },
 
@@ -722,6 +796,13 @@ export default function EnhancedCheckoutPage() {
         email: customer.email,
         contact: customer.phone,
       },
+
+      // Add verification for additional security
+      notes: {
+        vehicle_id: car.id.toString(),
+        user_id: loggedInUser.sub,
+        plan: plan
+      }
     };
 
     new window.Razorpay(options).open();
@@ -1087,6 +1168,8 @@ export default function EnhancedCheckoutPage() {
               className={styles.payBtn}
               disabled={
                 !priceSummary.total ||
+                !priceSummary.serverCalculated ||
+                !orderDetails.orderId ||
                 bookingCheckStatus.checking ||
                 bookingCheckStatus.overlaps ||
                 lockStatus.checking ||
@@ -1095,9 +1178,13 @@ export default function EnhancedCheckoutPage() {
               onClick={() => {
                 console.log('💳 Payment button clicked!', {
                   priceSummary: priceSummary.total,
+                  serverCalculated: priceSummary.serverCalculated,
+                  orderDetails,
                   bookingCheckStatus,
                   lockStatus,
                   disabled: !priceSummary.total ||
+                    !priceSummary.serverCalculated ||
+                    !orderDetails.orderId ||
                     bookingCheckStatus.checking ||
                     bookingCheckStatus.overlaps ||
                     lockStatus.checking ||
@@ -1106,7 +1193,11 @@ export default function EnhancedCheckoutPage() {
                 handlePayment();
               }}
             >
-              {bookingCheckStatus.checking ? (
+              {priceSummary.error ? (
+                "Price Calculation Failed"
+              ) : !priceSummary.serverCalculated ? (
+                "Calculating Price..."
+              ) : bookingCheckStatus.checking ? (
                 "Checking Availability..."
               ) : bookingCheckStatus.overlaps ? (
                 "Time Conflict"

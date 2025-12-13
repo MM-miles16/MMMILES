@@ -2,6 +2,14 @@
 import { NextRequest } from 'next/server';
 import { getUserFromAuthHeader } from '../../../lib/auth.js';
 
+// Razorpay SDK for payment verification
+const Razorpay = require('razorpay');
+
+const razorpay = new Razorpay({
+  key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_SECRET,
+});
+
 // POST /api/booking-complete - Handle post-booking tasks like buffer time and lock conversion
 export async function POST(request) {
   try {
@@ -10,11 +18,11 @@ export async function POST(request) {
       return Response.json({ error: 'Invalid or missing authentication' }, { status: 401 });
     }
 
-    const { vehicle_id, booking_id, payment_id } = await request.json();
-    
+    const { vehicle_id, booking_id, payment_id, expected_amount } = await request.json();
+
     if (!vehicle_id || !booking_id || !payment_id) {
-      return Response.json({ 
-        error: 'vehicle_id, booking_id, and payment_id are required' 
+      return Response.json({
+        error: 'vehicle_id, booking_id, and payment_id are required'
       }, { status: 400 });
     }
 
@@ -43,7 +51,35 @@ export async function POST(request) {
 
     const booking = bookings[0];
 
-    // 1. Get vehicle details to get buffer_hours
+    // 2. Verify payment amount matches expected amount (Security check)
+    if (expected_amount) {
+      try {
+        const payment = await razorpay.payments.fetch(payment_id);
+
+        if (payment.status !== 'captured') {
+          return Response.json({ error: 'Payment not completed' }, { status: 400 });
+        }
+
+        const paidAmount = payment.amount / 100; // Convert from paise to rupees
+        const expectedAmount = parseFloat(expected_amount);
+
+        if (Math.abs(paidAmount - expectedAmount) > 0.01) { // Allow 1 paisa difference for rounding
+          console.error(`Payment verification failed: Paid ${paidAmount}, Expected ${expectedAmount}`);
+          return Response.json({
+            error: 'Payment amount mismatch',
+            paid_amount: paidAmount,
+            expected_amount: expectedAmount
+          }, { status: 400 });
+        }
+
+        console.log(`Payment verified successfully: ${paidAmount} INR`);
+      } catch (paymentError) {
+        console.error('Payment verification error:', paymentError);
+        return Response.json({ error: 'Failed to verify payment' }, { status: 400 });
+      }
+    }
+
+    // 3. Get vehicle details to get buffer_hours
     const vehicleResponse = await fetch(
       `${supabaseUrl}/rest/v1/vehicles?id=eq.${vehicle_id}&select=buffer_hours,current_status`,
       {
@@ -70,7 +106,7 @@ export async function POST(request) {
     const endTime = new Date(booking.end_time);
     const nextAvailable = new Date(endTime.getTime() + (bufferHours * 60 * 60 * 1000));
 
-    // 3. Update vehicle availability with buffer time
+    // 4. Update vehicle availability with buffer time
     const vehicleUpdateResponse = await fetch(
       `${supabaseUrl}/rest/v1/vehicles?id=eq.${vehicle_id}`,
       {
@@ -96,7 +132,7 @@ export async function POST(request) {
       throw new Error('Failed to update vehicle availability');
     }
 
-    // 4. Convert active lock to 'converted' status if exists
+    // 5. Convert active lock to 'converted' status if exists
     const lockUpdateResponse = await fetch(
       `${supabaseUrl}/rest/v1/locks?vehicle_id=eq.${vehicle_id}&user_id=eq.${user.sub}&status=eq.active`,
       {
@@ -118,7 +154,7 @@ export async function POST(request) {
       console.warn('Warning: Failed to convert lock status, but booking was successful');
     }
 
-    // 5. Trigger cleanup of any expired locks
+    // 6. Trigger cleanup of any expired locks
     try {
       await fetch(`${supabaseUrl}/rest/v1/rpc/cleanup_expired_locks`, {
         method: 'POST',
