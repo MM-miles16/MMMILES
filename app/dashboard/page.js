@@ -29,7 +29,7 @@ import {
 export default function Dashboard() {
   const [active, setActive] = useState("announcement");
   const [showProfileModal, setShowProfileModal] = useState(false);
-  const [profileImage, setProfileImage] = useState("/user.png");
+  const [profileImage, setProfileImage] = useState("/user.jpg");
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   // Orders: modal
@@ -1001,7 +1001,7 @@ export default function Dashboard() {
               <EnvelopeIcon className={styles.infoIcon} />
               <div>
                 <b>Email</b>
-                <div className={styles.muted}>support@miles.example</div>
+                <div className={styles.muted}>mmmiles.chennai@gmail.com</div>
               </div>
             </div>
 
@@ -1009,7 +1009,7 @@ export default function Dashboard() {
               <PhoneIcon className={styles.infoIcon} />
               <div>
                 <b>Phone</b>
-                <div className={styles.muted}>+91 1800 123 456</div>
+                <div className={styles.muted}>9096299666</div>
               </div>
             </div>
           </div>
@@ -1053,7 +1053,7 @@ export default function Dashboard() {
       <aside className={styles.sidebar}>
         <div>
           <div className={styles.logo}>
-            <Image src="/logo.png" alt="MM Miles Logo" width={120} height={40} />
+           
           </div>
 
           <nav className={styles.menu}>

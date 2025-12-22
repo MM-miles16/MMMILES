@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 import styles from "./BecomeHost.module.css";
 
 
@@ -17,7 +18,9 @@ export default function BecomeHost() {
             className={styles.HoststepsImage}
             priority
           />
-          <button className={styles.HostFloatingButton}>Become a Host</button>
+          <Link href="/host-registration">
+            <button className={styles.HostFloatingButton}>Become a Host</button>
+          </Link>
 
         </div>
       </div>

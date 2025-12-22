@@ -712,8 +712,8 @@
 
   /* Stepper */
   .stepper {
-    gap: 10px;
-    padding-left: 0;
+    gap: 30px;
+    padding-left: 20px;
     justify-content: flex-start;
   }
 
@@ -733,9 +733,10 @@
 
   /* Main grid becomes single column */
   .mainGrid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
     gap: 22px;
   }
+  
 
   .leftCol {
     gap: 18px;
@@ -893,4 +894,12 @@
   .checkboxLabel {
     font-size: 13px;
   }
+  
+}
+@media (max-width: 600px) {
+    .EnhancedCheckout_stepper__5Gahn {
+        gap: 30px !important;
+        padding-left: 0;
+        justify-content: flex-start;
+    }
 }

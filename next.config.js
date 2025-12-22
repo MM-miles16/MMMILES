@@ -1,9 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // 1. Move experimental packages to the root level (Fixes the Warning)
+  serverExternalPackages: ['jsonwebtoken', 'google-spreadsheet'],
+
   eslint: {
     ignoreDuringBuilds: true,
-    devIndicators: false,
   },
+
   images: {
     remotePatterns: [
       {
@@ -13,9 +16,14 @@ const nextConfig = {
       },
     ],
   },
+
   experimental: {
-    serverComponentsExternalPackages: ['jsonwebtoken']
+    // 2. Increase the Body Size Limit for your image uploads
+    serverActions: {
+      bodySizeLimit: '20mb', 
+    },
   },
+
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {

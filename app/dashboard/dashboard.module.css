@@ -5,7 +5,7 @@
 
 /* CSS Variables Root */
 .root {
-  --bg: #fbf6f2;
+  --bg: #FEF9F5;
   --sidebar: #0f140f;
   --accent: #c79f57;
   --muted: #6b7280;
@@ -23,11 +23,12 @@
   background-color: var(--bg);
   font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   color: #0b1720;
+  
 }
 
 .notesContainer {
   width: 100%;
-  padding: 20px;
+ 
 }
 
 .notesHeader {
@@ -127,13 +128,15 @@
 
 /* Sidebar */
 .sidebar {
-  width: 260px;
-  background-color: var(--sidebar);
+  max-width: 280px;
+  width: 100%;
+  background: #1c1b1b;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 22px;
+  padding: 22px 22px 30px;
   gap: 8px;
+  
   transition: width 0.22s ease;
   flex-shrink: 0;
 }
@@ -210,7 +213,8 @@
 
 .logoutBtn {
   width: 100%;
-  background-color: #d4b879;
+  background: linear-gradient(to right, #d8b480 0%, #bf9860 100%);
+    color: #111;
   padding: 10px;
   border-radius: 10px;
   font-size: 14px;
@@ -232,7 +236,7 @@
 /* Main */
 .main {
   flex: 1;
-  padding: 36px;
+  padding: 25px 36px 30px 26px;
   overflow-y: auto;
 }
 
@@ -382,7 +386,7 @@
 
 /* =============== PROFILE =============== */
 .profileCard {
-  background: linear-gradient(180deg, #fff 0%, #fcfbf8 100%);
+  background: #fff8ef;
   padding: 18px;
   border-radius: 14px;
   display: flex;
@@ -411,13 +415,14 @@
 }
 
 .changeBtn {
-  background: var(--accent);
+  /*background: var(--accent);
   color: white;
   border: none;
   padding: 6px 12px;
   border-radius: 10px;
   cursor: pointer;
-  font-weight: 700;
+  font-weight: 700;*/
+  display: none;
 }
 
 .profileInfoText {
@@ -609,12 +614,12 @@
 
 .statusUpcoming {
   background: #fff6e6;
-  color: #b5741c;
+  color: #1cb53d;
   border: 1px solid rgba(183, 120, 30, 0.08);
 }
 
 .statusCompleted {
-  background: #ecfdf3;
+  background: linear-gradient(180deg, #fff 0%, #fdfbf9 100%);
   color: #0f7f43;
   border: 1px solid rgba(15, 127, 67, 0.06);
 }
@@ -1210,8 +1215,8 @@
 }
 
 .editProfileBtn {
-  background: var(--accent);
-  color: white;
+  background: linear-gradient(to right, #d8b480 0%, #bf9860 100%);
+    color: #111;
   border: none;
   padding: 10px 16px;
   border-radius: 10px;
