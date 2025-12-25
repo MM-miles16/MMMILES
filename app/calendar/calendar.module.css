@@ -1,0 +1,163 @@
+.wrapper {
+  padding: 24px;
+  background: #f8fafc;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.calendarCard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  background: white;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 20px 48px rgba(15,23,42,.1);
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .calendarCard {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* LEFT */
+.monthHeader {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.weekdays,
+.days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.weekdays {
+  font-size: 12px;
+  color: #64748b;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.days {
+  gap: 8px;
+}
+
+.day {
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.day:hover {
+  background: #f1f5f9;
+}
+
+.selected {
+  background: linear-gradient(180deg, #5b5de6, #4f46e5);
+  color: white;
+  box-shadow: 0 8px 20px rgba(79,70,229,.4);
+}
+
+.inRange {
+  background: #eef0ff;
+  color: #3730a3;
+}
+
+/* RIGHT */
+.right {
+  background: #f9fafb;
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.field {
+  margin-bottom: 16px;
+}
+
+.field label {
+  font-size: 13px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+}
+
+.input {
+  flex: 1;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 0 14px;
+}
+
+.time {
+  font-size: 14px;
+  color: #475569;
+}
+
+/* TOGGLE */
+.toggleRow {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.toggle {
+  width: 42px;
+  height: 24px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  padding: 3px;
+  cursor: pointer;
+}
+
+.toggleActive {
+  background: linear-gradient(180deg, #5b5de6, #4f46e5);
+}
+
+.knob {
+  width: 18px;
+  height: 18px;
+  background: white;
+  border-radius: 50%;
+}
+
+/* FOOTER */
+.footer {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.cancel {
+  border: 1px solid #e5e7eb;
+  background: white;
+  padding: 10px 18px;
+  border-radius: 12px;
+}
+
+.primary {
+  background: linear-gradient(180deg, #5b5de6, #4f46e5);
+  color: white;
+  padding: 10px 22px;
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 10px 26px rgba(79,70,229,.45);
+}
