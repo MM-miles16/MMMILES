@@ -7,9 +7,9 @@ import { FaTimes, FaSearch, FaCrosshairs } from "react-icons/fa";
 import styles from "./CitySelector.module.css";
 
 const CITY_DATA = [
-    { name: "Chennai", image: "/icons/chennai.avif" },
-    { name: "Bengaluru", image: "/icons/bengaluru.avif" },
-    { name: "Kochi", image: "/icons/kochi.avif" },
+    { name: "Chennai", image: "/icons/chen.avif" },
+    { name: "Bengaluru", image: "/icons/bang.avif" },
+    { name: "Kochi", image: "/icons/koch.avif" },
     { name: "Hyderabad", image: "/icons/hyd.png" },
     { name: "Mumbai", image: "/icons/mumbai.avif" },
     // Adding Delhi/NCR if you have the icon
