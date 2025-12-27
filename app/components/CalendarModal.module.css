@@ -13,15 +13,16 @@
 .modal {
   background: #fff;
   width: 95%;
-  max-width: 800px;
+  max-width: 760px;
   height: auto;
-  min-height: 400px;
+  min-height: 600px;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   position: relative;
   animation: slideUp 0.3s ease-out;
+  padding: 12px 16px;
 }
 
 .header {
@@ -95,6 +96,19 @@
 .monthContainer {
   flex: 1;
   min-width: 300px;
+  animation: fadeMonth 0.3s ease-out;
+}
+
+@keyframes fadeMonth {
+  from {
+    opacity: 0;
+    transform: translateX(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .monthTitle {
@@ -319,21 +333,88 @@
   }
 }
 
+/* Mobile Responsive */
 @media (max-width: 768px) {
   .modal {
     width: 100%;
     height: 100%;
     max-width: none;
+    min-height: 0;
     border-radius: 0;
+    padding: 16px;
+    justify-content: space-between;
+    /* Distribute space */
+    overflow-y: auto;
+    /* Safety scroll */
+  }
+
+  .header {
+    padding: 12px 0;
+  }
+
+  .dateSummary {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 12px;
+  }
+
+  .dateDisplay {
+    font-size: 15px;
+  }
+
+  .calendarWrapper {
+    justify-content: flex-start;
+    overflow: visible;
+    /* Using pagination, no scroll needed internally */
+    margin-top: 10px;
   }
 
   .monthsRow {
-    flex-direction: column;
-    padding: 20px;
+    flex-direction: row;
+    /* Keep row to maintain structure, but hide 2nd child */
+    padding: 0;
+    gap: 0;
+    width: 100%;
+  }
+
+  .monthContainer {
+    width: 100%;
+    min-width: 0;
+    padding: 0 10px;
+  }
+
+  /* Show only 1 month on mobile */
+  .monthContainer:nth-child(2) {
+    display: none;
   }
 
   .navButton {
-    display: none;
-    /* Scrolling usually better on mobile, or put them top relative */
+    display: flex;
+    top: 0;
+    /* Adjust relative to calendarWrapper or monthTitle */
+    width: 40px;
+    height: 40px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Position arrows nicely around the single month title */
+  .navButton.prev {
+    left: 0;
+  }
+
+  .navButton.next {
+    right: 0;
+  }
+
+  .timeSection {
+    padding: 20px 0;
+    border-top: 1px solid #f0f0f0;
+  }
+
+  .timeSliders {
+    flex-direction: column;
+    gap: 24px;
   }
 }

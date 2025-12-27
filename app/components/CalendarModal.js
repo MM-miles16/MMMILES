@@ -128,7 +128,7 @@ export default function CalendarModal({
     // Render a single month grid
     const renderMonth = (monthDate) => {
         return (
-            <div className={styles.monthContainer}>
+            <div className={styles.monthContainer} key={monthDate.toString()}>
                 <div className={styles.monthTitle}>{format(monthDate, "MMMM ''yy")}</div>
 
                 <div className={styles.weekHeader}>
@@ -180,7 +180,7 @@ export default function CalendarModal({
         );
     };
 
-    if (!mounted || !isOpen) return null;
+    if (!mounted) return null;
 
     return createPortal(
         <div className={styles.overlay} onClick={onClose}>
