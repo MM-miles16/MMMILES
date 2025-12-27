@@ -682,6 +682,7 @@ export default function SearchBar() {
               className={styles.inputWrapper}
               role="button"
               aria-haspopup="dialog"
+              onClick={() => setIsCitySelectorOpen(true)}
             >
               <div className={location === LOCATION_PLACEHOLDER ? styles.placeholderText : styles.selectedText}>
                 {location}

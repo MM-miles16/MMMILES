@@ -7,13 +7,13 @@ import { FaTimes, FaSearch, FaCrosshairs } from "react-icons/fa";
 import styles from "./CitySelector.module.css";
 
 const CITY_DATA = [
-    { name: "Chennai", image: "/icons/chennai.png" },
-    { name: "Bengaluru", image: "/icons/bangalore.png" },
-    { name: "Kochi", image: "/icons/kochi.png" },
-    { name: "Hyderabad", image: "/icons/hyderabad.png" },
-    { name: "Mumbai", image: "/icons/mumbai.png" },
+    { name: "Chennai", image: "/icons/chen.avif" },
+    { name: "Bengaluru", image: "/icons/bang.avif" },
+    { name: "Kochi", image: "/icons/koch.avif" },
+    { name: "Hyderabad", image: "/icons/hyd.png" },
+    { name: "Mumbai", image: "/icons/mumbai.avif" },
     // Adding Delhi/NCR if you have the icon
-    { name: "Delhi-NCR", image: "/icons/delhi.png" },
+    { name: "Delhi-NCR", image: "/icons/ncr.avif" },
 ];
 
 export default function CitySelector({ isOpen, onClose, onSelect, selectedCity }) {
@@ -40,7 +40,7 @@ export default function CitySelector({ isOpen, onClose, onSelect, selectedCity }
         city.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    if (!mounted || !isOpen) return null;
+    if (!mounted) return null;
 
     return createPortal(
         <div className={styles.overlay} onClick={onClose} role="dialog" aria-modal="true">
@@ -82,24 +82,13 @@ export default function CitySelector({ isOpen, onClose, onSelect, selectedCity }
                                 }}
                             >
                                 <div className={styles.cityIconWrapper}>
-                                    <div className={styles.placeholderIcon}>
-                                        {/* Placeholder SVG */}
-                                        <svg
-                                            width="40"
-                                            height="40"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="1.5"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            style={{ color: '#666' }}
-                                        >
-                                            <path d="M3 21h18" />
-                                            <path d="M5 21V7l8-4 8 4v14" />
-                                            <path d="M8 21v-2a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                                        </svg>
-                                    </div>
+                                    <Image
+                                        src={city.image}
+                                        alt={city.name}
+                                        width={40}
+                                        height={40}
+                                        style={{ objectFit: 'contain' }}
+                                    />
                                 </div>
                                 <div className={styles.cityName}>{city.name}</div>
                             </div>
