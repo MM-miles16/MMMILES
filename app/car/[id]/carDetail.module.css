@@ -821,7 +821,7 @@
 }
 
 .exploreCard {
-  background: #FEF9F5;
+  background: #F8F8F8;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.05);
@@ -830,6 +830,7 @@
   flex-direction: column;
   padding: 15px;
   position: relative;
+  box-shadow: 0 2px 8px rgba(29, 23, 16, 0.4);
   transition: box-shadow 0.3s ease, transform 0.3s ease;
   transform-style: preserve-3d;
   backface-visibility: hidden;
@@ -842,16 +843,16 @@
 
 .carRatingBadge {
   position: absolute;
-  top: 30px;
-  right: 0px;
-  background: linear-gradient(to bottom right, #bf9860, #d8b480);
+  top: 18px;
+  right: 20px;
+  background: linear-gradient(to bottom right, #e6cba4, #cab393);
   color: #000;
-  padding: 5px 20px 5px 10px;
-  border-radius: 5px 0 0 5px;
+  padding: 5px 10px 5px 10px;
+  border-radius: 13px;
   font-size: 0.7rem;
   font-weight: 600;
   z-index: 5;
-  box-shadow: 0 2px 8px rgba(191, 152, 96, 0.4);
+  box-shadow: 0 2px 8px rgba(29, 23, 16, 0.4);
   border: 1px solid rgba(191, 152, 96, 0.6);
 }
 
@@ -873,7 +874,7 @@
 }
 
 .exploreCardContent {
-  padding: 5px 5px 5px 5px;
+  padding: 5px 20px 5px 20px;
   text-align: left;
   flex-grow: 1;
 }
@@ -881,11 +882,20 @@
 .exploreCardTitle {
   font-size: 1.2rem;
   font-weight: 700;
+  margin-top: 16px;
   color: #000;
   margin-bottom: 10px;
   line-height: 1.4;
 }
-
+/* Meta */
+.carMetaNew {
+  display: flex;
+  gap: 15px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #686666;
+  margin-bottom: 14px;
+}
 .carActionRow {
   display: flex;
   justify-content: space-between;
@@ -913,13 +923,13 @@
   font-size: 0.85rem;
   color: #555;
   margin-left: 5px;
-  margin-right: 44px;
+  margin-right: 52px;
 }
 
 .bookNowButton {
   background: linear-gradient(to right, #cfb590 0%, #caa572 100%);
   color: #000;
-  padding: 10px 20px;
+  padding: 10px 23px;
   border: none;
   border-radius: 8px;
   font-size: 1rem;
@@ -942,7 +952,6 @@
   color: #666;
   font-size: 1.1rem;
 }
-
 /* --- Loading / Error States --- */
 .loading,
 .error {
@@ -951,6 +960,123 @@
   font-size: 1.3rem;
   color: #555;
 }
+
+@media (max-width: 480px){
+  .container {
+      font-family: "Inter", sans-serif;
+      background: #FEF9F5;
+      min-height: 100vh;
+      padding-bottom: 10px;
+  }
+  .exploreTitle {
+    font-size: 22px;
+    font-weight: 800;
+    color: #333;
+    margin-bottom: 20px !important;
+  }
+  .carMetaNew {
+    display: flex;
+    gap: 15px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #686666;
+    margin-bottom: 14px;
+  }
+  .exploreCardTitle {
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 6px;
+    color: #000;
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+  .exploreCardImageWrapper {
+    position: relative;
+    width: 100%;
+    height: 90px;
+    overflow: hidden;
+  }
+
+  .exploreCardImage {
+    object-fit: contain !important;
+    position: absolute !important;
+    transition: transform 0.3s ease;
+  }
+
+  .carActionRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to bottom right, #f0dec3, #dfdfd5);
+    border-radius: 8px;
+    border: 1px solid rgba(191, 152, 96, 0.2);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  .carPrice {
+    padding: 10px 15px 10px 15px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: baseline;
+  }
+
+  .carPriceAmount {
+    font-size: 18px;
+    font-weight: 700;
+    color: #000;
+  }
+
+  .carPriceUnit {
+    font-size: 13px;
+    color: #141414;
+    margin-left: 5px;
+    margin-right: 33px;
+  }
+
+  .bookNowButton {
+    background: linear-gradient(to right, #cfb590 0%, #caa572 100%);
+    color: #000;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rm;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(191, 152, 96, 0.3);
+    border: 1px solid rgba(191, 152, 96, 0.5);
+  }
+
+  .bookNowButton:hover {
+    background: linear-gradient(to right, #caa572 0%, #cfb590 100%);
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: 0 4px 12px rgba(191, 152, 96, 0.5);
+  }
+}
+
+
+
+
+@media (min-width: 1340px){
+  .carPriceUnit {
+  font-size: 0.85rem;
+  color: #555;
+  margin-left: 5px;
+  margin-right: 43px;
+}
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* --- Responsive --- */
 @media (max-width: 1024px) {
@@ -1008,3 +1134,6 @@
     height: 150px;
   }
 }
+
+
+  

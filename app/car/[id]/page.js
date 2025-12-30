@@ -373,11 +373,13 @@ function ExploreMoreCars({ currentCarId, city, pickup, returnTime, onMouseMove, 
           style={hoveredCard && hoveredCard.id === vehicle.id ? { transform: hoveredCard.transform, zIndex: 10 } : null}
         >
           <div className={styles.exploreCard}>
+
             
             {/* Rating Badge */}
             <div className={styles.carRatingBadge}>
               <span role="img" aria-label="star">★</span> 4.3/5
             </div>
+            
 
             <div className={styles.exploreCardImageWrapper}>
               <Image
@@ -390,11 +392,17 @@ function ExploreMoreCars({ currentCarId, city, pickup, returnTime, onMouseMove, 
                 fill
                 className={styles.exploreCardImage}
               />
+              
             </div>
 
             <div className={styles.exploreCardContent}>
               {/* Car Title */}
               <h3 className={styles.exploreCardTitle}>{vehicle.make} {vehicle.model}</h3>
+              <div className={styles.carMetaNew}>
+                <span>✓ 2022 model</span>
+                <span>✓ 18 mileage km/l</span>
+                <span>✓ 4 seater</span>
+              </div>
 
               {/* Price and Action Section */}
               <div className={styles.carActionRow}>
