@@ -1,6 +1,43 @@
 import "./../styles/reset.css";
-import Footer from "./components/Footer";
+import "./globals.css";
+
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import { Toaster } from "react-hot-toast";
+import { Frank_Ruhl_Libre } from "next/font/google";
+
+const frankRuhl = Frank_Ruhl_Libre({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "700", "900"],
+  variable: "--font-frank-ruhl",
+});
+
+const darkerGrotesque = Darker_Grotesque({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-darker-grotesque",
+});
+
+const sanchez = Sanchez({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-sanchez",
+});
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-poppins",
+});
+
+
+import { 
+  Frank_Ruhl_Libre,
+  Darker_Grotesque,
+  Sanchez,
+  Poppins,
+} from "next/font/google";
+
 
 export const metadata = {
   title: "MM Miles | Car Rentals in Chennai",
@@ -9,12 +46,12 @@ export const metadata = {
   openGraph: {
     title: "MM Miles | Car Rentals in Chennai",
     description:
-      "Rent premium cars like Bentley, BMW, and Audi in Chennai with Urban Drive. Easy booking, great pricing, and top service.",
+      "Rent premium cars like Bentley, BMW, and Audi in Chennai with Urban Drive.",
     url: "https://www.urbandrive.in",
     siteName: "MM Miles",
     images: [
       {
-        url: "/bentley.png", // <-- full path recommended: https://www.urbandrive.in/bentley.png
+        url: "/bentley.png",
         width: 1200,
         height: 630,
         alt: "Bentley luxury car for rent",
@@ -32,15 +69,14 @@ export const metadata = {
   },
 };
 
-
-import { Toaster } from "react-hot-toast";
-
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>
+      <body className={frankRuhl.variable}>
         <Navbar />
+
         {children}
+
         <Toaster
           position="top-center"
           toastOptions={{
@@ -52,9 +88,18 @@ export default function RootLayout({ children }) {
               border: "1px solid #d4a762",
               fontSize: "14px",
               fontWeight: "500",
+              fontFamily: "var(--font-frank-ruhl)",
             },
           }}
         />
+
+          className={`
+    ${frankRuhl.variable}
+    ${darkerGrotesque.variable}
+    ${sanchez.variable}
+    ${poppins.variable}
+  `}
+
         <Footer />
       </body>
     </html>

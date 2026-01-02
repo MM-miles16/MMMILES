@@ -59,11 +59,12 @@
 }
 
 .userrating-reviewText h3 {
-  font-size: 1rem;
+  font-size: 15px;
   font-weight: 600;
   width: 280px;
   margin-bottom: 1rem;
   line-height: 1.4;
+  font-family: Frank Ruhl Libre;
 }
 
 .userrating-reviewBtn {
@@ -73,9 +74,10 @@
   padding: 0.6rem 1.5rem;
   border-radius: 20px;
   cursor: pointer;
-  font-size: 0.8rem;
-  font-weight: 550;
+  font-size: 15px;
+  font-weight: 600;
   transition: background 0.3s ease;
+  font-family: Darker Grotesque;
 }
 .userrating-reviewBtn:hover {
   background: linear-gradient(to right, #BF9860 0%, #D8B480 100%);
@@ -119,7 +121,7 @@
   }
 
   .userrating-reviewText h3 {
-    font-size: 13px;
+    font-size: 14px;
   }
   .userrating-reviewText h3 {
       max-width: 270px;

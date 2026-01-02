@@ -42,6 +42,7 @@
   color: #666;
   cursor: pointer;
   padding: 4px;
+  font-family: Darker Grotesque;
 }
 
 .resetButton {
@@ -51,6 +52,7 @@
   background: none;
   border: none;
   cursor: pointer;
+  font-family: poppins;
 }
 
 .dateSummary {

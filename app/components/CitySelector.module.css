@@ -80,7 +80,8 @@
 .searchIcon {
     color: #bf9860;
     margin-right: 10px;
-    font-size: 1.1rem;
+    font-size: 16px;
+    font-family: Frank Ruhl Libre;
 }
 
 .searchInput {
@@ -98,13 +99,14 @@
 
 /* Popular Cities Section */
 .sectionTitle {
-    font-size: 14px;
+    font-size: 24px;
     color: #666;
     margin-bottom: 16px;
-    font-weight: 500;
+    font-weight: 600;
     text-align: center;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    font-family: Darker Grotesque;
 }
 
 .citiesGrid {
@@ -167,11 +169,13 @@
 }
 
 .cityName {
-    font-size: 13px;
+    font-size: 14px;
+    font-weight: 600;
     color: #333;
     text-align: center;
     font-weight: 400;
     transition: color 0.2s;
+    font-family: sanchez;
 }
 
 .cityItem:hover .cityName {

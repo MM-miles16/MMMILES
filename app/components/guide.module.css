@@ -9,20 +9,18 @@
 .gtitle {
   text-align: center;
   font-size: 40px;
-  font-weight: 500;
+  font-weight: 700;
   margin-bottom: 4px;
-  
-  
-  letter-spacing: 1px;
+  font-family: Frank Ruhl Libre;
 }
 
 .gsubtitle {
   color: #7d7878;
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 24px;
+  font-weight: 600;
   text-align: center;
   margin-bottom: 20px;
-  font-family: Raleway;
+  font-family: Darker Grotesque;
 }
 
 /* Grid layout */
@@ -46,8 +44,8 @@
 }
 
 .gcard p {
-  font-size: 15px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 400;
   margin-bottom: 1px;
   line-height: 1.5;
   color: #444;

@@ -17,12 +17,14 @@
   font-weight: 700;
   color: #111;
   margin-bottom: 8px;
+  font-family: Frank Ruhl Libre;
 }
 
 .Hostsubheading {
   font-size: 1rem;
   color: #444;
   margin-bottom: 24px;
+  font-family: Darker Grotesque;
 }
 
 /* Responsive image wrapper */
@@ -65,13 +67,6 @@
     }
 }
 
-
-
-
-
-
-
-
 .HostimageWrapper {
   position: relative; /* important for button positioning */
   width: 100%;
@@ -101,14 +96,14 @@
     padding: 10px 15px;
     font-size: 16px;
     font-weight: 900;
-    font-family: poppins;
     bottom: 17px;
     right: 50px;
+    font-family: poppins;
   }
 }
 @media (min-width: 1430px) {
   .HostFloatingButton{
-    bottom: 75px;
+    bottom: 70px;
     left: 70px;
     font-size: 1.3rem;
   }

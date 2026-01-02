@@ -35,10 +35,11 @@
 
 
 .label {
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 6px;
-    font-size: 16px;
+    font-size: 15px;
     color: #333;
+    font-family: Frank Ruhl Libre;
 }
 
 /* Key Style: Prominent White Input Box (Applied to all four inputs) */
@@ -59,7 +60,7 @@
 .icon {
     color: #d4a762;
     margin-right: 10px; 
-    font-size: 18px; 
+    font-size: 16px; 
     flex-shrink: 0;
 }
 
@@ -68,7 +69,7 @@
     color: #d4a762;
     margin-left: auto; /* Push to the right */
     transition: transform 0.2s ease;
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .arrowUp {
@@ -79,11 +80,14 @@
 .placeholderText,
 .selectedText {
     flex-grow: 1;
-    font-size: 13px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
     padding: 0; 
     width: 100%;
     /* Ensure the text itself is not clickable to allow the wrapper click handler to work */
     pointer-events: none; 
+    font-family: Darker Grotesque;
 }
 
 .placeholderText {
@@ -100,11 +104,13 @@
     border: none;
     background: transparent;
     outline: none;
-    font-size: 13px;
+    font-size: 16px;
+    font-weight: 700;
     padding: 0; 
     width: 100%;
     color: #a0a0a0; /* Muted placeholder style */
     cursor: default;
+    font-family: Darker Grotesque;
 }
 
 

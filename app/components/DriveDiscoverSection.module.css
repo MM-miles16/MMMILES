@@ -5,19 +5,19 @@
 }
 
 .placebody {
-  font-size: 40px;
-  font-weight: 600;
+  font-size: 30px !important;
+  font-weight: 700;
   padding: 60px 100px;
   background-color: #FEF9F5;
-  font-family: Sanchez;
+  font-family: Frank Ruhl Libre;
 }
 
 .subtitle {
   color: #666;
-  font-size: 18px;
+  font-size: 24px;
   font-weight: 600;
   margin-bottom: 20px;
-  font-family: poppins;
+  font-family: Darker Grotesque;
 }
 
 .slider {
@@ -64,12 +64,12 @@
   bottom: 12px;
   left: 50%;
   transform: translateX(-50%);
-  background: #fff;
+  background: #dedbd9;
   padding: 6px 14px;
   border-radius: 10px;
   font-weight: bold;
-  font-size: 16px;
-  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  font-family: sanchez;
 }
 
 @keyframes scroll {
