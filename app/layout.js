@@ -88,17 +88,12 @@ export default function RootLayout({ children }) {
               border: "1px solid #d4a762",
               fontSize: "14px",
               fontWeight: "500",
-              fontFamily: "var(--font-frank-ruhl)",
+              fontFamily: "Frank Ruhl Libre",
             },
           }}
         />
 
-          className={`
-    ${frankRuhl.variable}
-    ${darkerGrotesque.variable}
-    ${sanchez.variable}
-    ${poppins.variable}
-  `}
+       
 
         <Footer />
       </body>
