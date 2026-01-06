@@ -28,7 +28,7 @@
   max-width: 700px;
   margin: 0 auto;
   line-height: 1.6;
-  font-family: Darker Grotesque;
+  font-family: poppins;
 }
 
 /* === Grid Layout === */
@@ -65,7 +65,7 @@
 /* === Text === */
 .testimonialText {
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 400;
   color: #333;
   line-height: 1.7;
   margin-bottom: 20px;
@@ -95,14 +95,14 @@
   font-weight: 700;
   color: #111;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   font-family: poppins;
 }
 
 .profileRole {
   font-size: 12px;
-  font-weight: 600;
-  font-family: sanchez;
+  font-weight: 500;
+  font-family: poppins;
   color: #777;
 }
 

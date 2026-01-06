@@ -25,7 +25,7 @@
   text-align: center;
   font-size: 24px;
   font-weight: 600;
-  font-family: Darker Grotesque;
+  font-family: poppins;
   background: linear-gradient(to right, #D8B480 0%, #BF9860 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -37,27 +37,27 @@
 }
 
 .terms-section h2 {
-  font-size: 15px;
-  
+  font-size: 14px;
+  font-weight: 500;
   margin-bottom: 10px;
   margin-top: 30px;
   color: #1f1f1f;
-  font-family: Frank Ruhl Libre;
+  font-family: poppins;
 }
 
 .terms-section ul {
   margin-left: 15px;
   font-size: 14px;
- 
+ font-weight: 400;
   font-family: poppins;
   list-style: disc;
 }
 
 .terms-footer {
   margin-top: 39px;
-  font-size: 20px;
-  font-family: Darker Grotesque;
-  font-weight: 600;
+  font-size: 16px;
+  font-family: poppins;
+  font-weight: 500;
   color: #b00;
 }
 

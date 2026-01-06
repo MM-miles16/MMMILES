@@ -10,7 +10,7 @@
 .refund-title {
   text-align: center;
   font-size: 40px !important;
-  font-weight: 800;
+  font-weight: 700;
   font-family: Frank Ruhl Libre;
   background: linear-gradient(to right, #D8B480 0%, #BF9860 100%);
   -webkit-background-clip: text;
@@ -26,7 +26,7 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-weight: 600;
-  font-family: Darker Grotesque;
+  font-family: poppins;
   margin-bottom: 3rem;
 }
 
@@ -36,8 +36,8 @@
 
 .refund-section h2 {
   font-size: 20px;
-  
-  font-family: Frank Ruhl Libre;
+  font-weight: 500;
+  font-family: poppins;
   margin-bottom: 0.5rem;
   color: #201f1f;
 }
@@ -45,6 +45,7 @@
 .refund-section ul {
   list-style-type: disc;
   font-size: 14px;
+  font-weight: 400;
   font-family: poppins;
   margin-left: 1.5rem;
 }
