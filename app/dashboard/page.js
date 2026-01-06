@@ -952,18 +952,10 @@ export default function Dashboard() {
         transition={{ duration: 0.7 }}
         viewport={{ once: true }}
       >
-        <div className={styles.infoLeft}>
-          <motion.img
-            src="/images/hero.png"
-            className={styles.infoImage}
-            initial={{ scale: 0.9 }}
-            whileInView={{ scale: 1 }}
-            transition={{ duration: 0.5 }}
-          />
-        </div>
+        
 
         <div className={styles.infoRight}>
-          <span className={styles.aboutTag}>About The Company</span>
+          
           <h2>Built for hosts. Powered by trust.</h2>
           <p>
             Your safety, control, and earnings come before everything else.
@@ -982,14 +974,11 @@ export default function Dashboard() {
             <p>★ Control Isn’t Optional. It’s Guaranteed.</p>
           </motion.div>
 
+          
+
           <div className={styles.contactRow}>
             <button className={styles.detailsBtn}>More Details</button>
-            <div className={styles.phoneBox}>
-              <strong>Emergency</strong>
-              <p>
-                <a href="tel:+603805550234">📞 +60 (380) 555-0234</a>
-              </p>
-            </div>
+            
           </div>
         </div>
       </motion.div>
@@ -1070,6 +1059,12 @@ export default function Dashboard() {
     window.location.href = "/login";
   };
 
+
+
+
+
+
+  
   return (
     <div className={`${styles.root} ${styles.container} ${isSidebarCollapsed ? styles.sidebarCollapsed : ""}`}>
       <aside className={styles.sidebar}>

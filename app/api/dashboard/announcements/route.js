@@ -10,9 +10,9 @@ export async function GET(request) {
         id: 1,
         date: "12/12/2024",
         title: "Welcome to MM Miles",
-        desc: "Thank you for choosing MM Miles for your car rental needs. We're here to provide you with the best service across India.",
+        desc: "Thank you for choosing MM Miles for your car rental needs. We're here to provide you with the best service.",
         time: "10:30 PM, Monday",
-        color: "#F6E96B",
+        color: "#f3f1dcff",
       },
       {
         id: 2,
@@ -20,7 +20,7 @@ export async function GET(request) {
         title: "Service Update",
         desc: "All our vehicles are regularly sanitized and serviced to ensure your safety and comfort. Book with confidence!",
         time: "10:30 PM, Tuesday",
-        color: "#F2B6B6",
+        color: "#f5d4d4ff",
       },
       {
         id: 3,
@@ -28,7 +28,7 @@ export async function GET(request) {
         title: "Special Offers",
         desc: "Check out our latest offers and discounts on car rentals across major cities in India.",
         time: "09:20 PM, Wednesday",
-        color: "#8DC6E8",
+        color: "#cde3efff",
       },
       {
         id: 4,
@@ -36,7 +36,7 @@ export async function GET(request) {
         title: "24/7 Support",
         desc: "Our customer support team is available round the clock to assist you with any queries.",
         time: "11:15 AM, Thursday",
-        color: "#C7E9B0",
+        color: "#eafcdeff",
       },
       {
         id: 5,
@@ -44,7 +44,7 @@ export async function GET(request) {
         title: "New Cities Added",
         desc: "We're excited to announce car rental services now available in 5 new cities across India.",
         time: "02:45 PM, Friday",
-        color: "#F6E96B",
+        color: "#fae3c8ff",
       }
     ];
 
