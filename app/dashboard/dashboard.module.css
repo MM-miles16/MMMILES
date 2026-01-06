@@ -41,11 +41,13 @@
 .notesHeader h2 {
   font-size: 26px;
   font-weight: 700;
+  background: linear-gradient(to right, #D8B480 0%, #BF9860 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .monthNav span {
-  font-size: 14px;
-  color: #555;
+  display: none;
 }
 
 .tabs {
@@ -57,7 +59,7 @@
 .tabButton {
   background: none;
   border: none;
-  font-size: 16px;
+  font-size: 14px;
   padding-bottom: 5px;
   cursor: pointer;
   opacity: 0.6;
@@ -91,28 +93,27 @@
 }
 
 .noteDate {
-  font-size: 13px;
-  opacity: 0.8;
+  font-size: 11px !important;
+  opacity: 0.5;
 }
 
 .noteEdit {
-  background: #000;
-  color: #fff;
-  padding: 5px;
-  border-radius: 50%;
-  font-size: 12px;
-  cursor: pointer;
+  display: none;
 }
 
 .noteTitle {
   margin: 8px 0;
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 500;
+  color: #3d3737 !important;
+  font-family: poppins;
+  line-height: 1.4;
 }
 
 .noteDesc {
-  font-size: 14px;
-  opacity: 0.9;
+  font-size: 12px;
+  opacity: 0.7;
+  font-family: poppins;
   flex-grow: 1;
 }
 
@@ -121,10 +122,18 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 13px;
+  font-size: 10px !important;
   opacity: 0.9;
 }
 
+/* Floating + Button */
+.floatingAddBtn {
+  display: none;
+}
+
+@media (max-width:480px){
+
+}
 
 
 
@@ -1110,23 +1119,6 @@
 
 
 
-/* Floating + Button */
-.floatingAddBtn {
-  position: fixed;
-  bottom: 40px;
-  right: 40px;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  border: none;
-  font-size: 32px;
-  background: black;
-  color: white;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
 
 /* Modal */
 .modalOverlay {
