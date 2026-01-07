@@ -8,16 +8,15 @@ export async function GET() {
     { path: "/contact", priority: "0.7" },
     { path: "/reviews", priority: "0.6" },
     { path: "/faq", priority: "0.6" },
-    { path: "/login", priority: "0.4" },
-    ];
+  ];
 
   const urls = pages
     .map(
-      (page) => `
+      ({ path, priority }) => `
   <url>
-    <loc>${baseUrl}${page}</loc>
+    <loc>${baseUrl}${path}</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>${priority}</priority>
   </url>`
     )
     .join("");
