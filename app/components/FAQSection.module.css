@@ -73,8 +73,8 @@
 /* Plus/Minus icon using CSS bars */
 .faqIcon {
   position: relative;
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   flex: 0 0 18px;
   transition: transform 0.35s ease;
 }
@@ -153,29 +153,30 @@
 
 @media (max-width: 768px) {
    .faqHeader h2 {
-    font-size: 22px;
+    font-size: 22px !important;
   }
   .faqHeader p {
-    font-size: 14px;
+    font-size: 12px !important;
+    margin-bottom: 12px;
   }
   .faqTrigger {
     padding: 12px 20px 12px;
   }
   .faqQuestion {
-    font-size: 13px;
+    font-size: 10px !important;
     font-weight: 400;
   }
   .faqAnswer {
-    font-size: 13px;
+    font-size: 10px !important;
     font-weight: 400;
     margin-left: -5px;
   }
   .faqIcon {
-    position: relative;
-    width: 6px;
-    height: 6px;
+    
+    width: 4px !important;
+    height: 4px !important;
     flex: 0 0 15px;
-    transition: transform 0.65s ease;
+    
   }
   .faqSection {
   background: #FEF9F5;

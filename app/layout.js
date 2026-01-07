@@ -65,7 +65,7 @@ export const metadata = {
     title: "MM Miles | Car Rentals in Chennai",
     description:
       "Rent cars in Chennai with MMmiles. Easy booking, less pricing, and 24/7 support.",
-    images: ["/bentley.png"],
+    
   },
 };
 

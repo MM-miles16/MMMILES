@@ -10,7 +10,7 @@ const reviews = [
     img: "/profile1.jpg",
   },
   {
-    text: "MM Miles made our family road trip smooth from start to finish. The spacious SUV fit all our luggage, and the customer support was always available.",
+    text: "MM Miles made our family road trip smooth from start to finish. The spacious SUV fit all our luggage, and the customer support was 24/7.",
     name: "Rohan K.",
     title: "Family (5 members)",
     img: "/profile2.jpg",
