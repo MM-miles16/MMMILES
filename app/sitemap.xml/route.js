@@ -2,14 +2,14 @@ export async function GET() {
   const baseUrl = "https://www.mmmiles.com";
 
   const pages = [
-    "",
-    "/about",
-    "/contact",
-    "/reviews",
-    "/faq",
-    "/login",
-    "/car",
-  ];
+    { path: "", priority: "1.0" },
+    { path: "/car", priority: "0.9" },
+    { path: "/about", priority: "0.7" },
+    { path: "/contact", priority: "0.7" },
+    { path: "/reviews", priority: "0.6" },
+    { path: "/faq", priority: "0.6" },
+    { path: "/login", priority: "0.4" },
+    ];
 
   const urls = pages
     .map(
