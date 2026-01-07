@@ -76,8 +76,7 @@
 }
 
 /* Text inside the custom dropdown input wrapper */
-.placeholderText,
-.selectedText {
+.placeholderText{
     flex-grow: 1;
     font-size: 16px;
     font-weight: 700;
@@ -89,8 +88,20 @@
     font-family: Darker Grotesque;
 }
 
+.selectedText {
+    flex-grow: 1;
+    font-size: 16px;
+    font-weight: 700;
+    color: #4d4545;
+    padding: 0; 
+    width: 100%;
+    /* Ensure the text itself is not clickable to allow the wrapper click handler to work */
+    pointer-events: none; 
+    font-family: Darker Grotesque;
+}
+
 .placeholderText {
-    color: #666; 
+    color: #aca4a4; 
 }
 
 
@@ -101,11 +112,11 @@
     border: none;
     background: transparent;
     outline: none;
-    font-size: 14px;
-    font-weight:800 !important;
+    font-size: 15px;
+    font-weight:700 !important;
     padding: 0; 
     width: 100%;
-    color: #807979; /* Muted placeholder style */
+    color: #aca4a4; /* Muted placeholder style */
     cursor: default;
     font-family: Darker Grotesque;
 }
@@ -182,14 +193,13 @@
     align-items: center;
     cursor: pointer;
     transition: transform 0.18s ease, box-shadow 0.18s ease;
-    box-shadow: 0 4px 10px rgba(197, 136, 46, 0.3);
+    
     font-size: 24px;
     flex-shrink: 0; 
 }
 
 .searchButton:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 16px rgba(255, 152, 0, 0.5);
+    
 }
 
 
@@ -297,7 +307,8 @@
   font-size: 16px;
   font-family: Darker Grotesque;
   font-weight: 700;
-  color: #928c8c !important;
+  opacity: 0.7;
+  
 }
 
 .smallButton {
@@ -306,8 +317,8 @@
   color: #d4a762;
   margin-left: 6px;
   border-radius: 8px;
-  width: 38px;
-  height: 38px;
+  width: 27px;
+  height: 27px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -317,7 +328,7 @@
 }
 
 .smallButton:hover {
-  background: #fce4b3;
+  
   transform: scale(1.05);
 }
 

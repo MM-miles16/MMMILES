@@ -5,7 +5,7 @@
 }
 
 .placebody {
-  font-size: 27px !important;
+  font-size: 22px !important;
   font-weight: 700;
   padding: 60px 100px;
   background-color: #FEF9F5;
@@ -14,7 +14,7 @@
 
 .subtitle {
   color: #666;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 500;
   margin-bottom: 25px;
   font-family: poppins;
@@ -80,6 +80,7 @@
     width: 250px;
     height: 160px;
   }
+  
   .slideTrack {
     width: calc(250px * 12);
   }
@@ -90,15 +91,46 @@
 }
 
 @media (max-width: 480px) {
+  .discoverSection {
+    text-align: center;
+    padding: 20px 20px 30px ;
+    background-color: #F9F4EC;
+  }
   .discoverCard {
     width: 200px;
     height: 130px;
   }
+  .placebody {
+  font-size: 14px !important;
+  font-weight: 700;
+  padding: 20px 20px !important;
+  background-color: #FEF9F5;
+  font-family: Frank Ruhl Libre;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 25px;
+  font-family: poppins;
+}
+
   .slideTrack {
     width: calc(200px * 12);
   }
   .placebody {
     padding: 60px 20px;
     background-color: #FEF9F5;
+  }
+  .label {
+    position: absolute;
+    bottom: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #dedbd9;
+    padding: 4px 10px;
+    border-radius: 10px;
+    font-size: 10px;
   }
 }
