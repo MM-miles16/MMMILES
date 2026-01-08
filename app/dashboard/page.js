@@ -515,12 +515,12 @@ export default function Dashboard() {
 
           <div className={styles.profileActions}>
             <button className={styles.editProfileBtn} onClick={() => setShowProfileModal(true)} disabled={loading}>
-              <PencilSquareIcon className={styles.smallIcon} /> Edit Profile
+              <PencilSquareIcon className={styles.smallIcon} /> <span className={styles.editprofile}>Edit Profile</span>
             </button>
           </div>
         </section>
 
-        <section className={styles.infoGrid}>
+        <section className={styles.infoGrid} id={styles.info5}>
           <div className={`${styles.infoBox} ${styles.card}`}>
             <label>Full Name</label>
             <div className={styles.infoContent}>
@@ -919,7 +919,7 @@ export default function Dashboard() {
         viewport={{ once: true }}
       >
         <span className={styles.smallTitle}>Become a Host With <span className={styles.highlighthost}>"Miles"</span> </span>
-        <h2>
+        <h2 className={styles.headhighlight}>
          List your car today <span className={styles.highlight}> Start earning tomorrow.</span>
         </h2>
       </motion.div>
@@ -934,7 +934,7 @@ export default function Dashboard() {
       >
         <picture>
           {/* Mobile Image (shown below 768px) */}
-          <source media="(max-width: 768px)" srcSet="/images/host-steps-dash.png" />
+          <source media="(max-width: 768px)" srcSet="/images/host-dash.png" />
           {/* Desktop Image (default) */}
           <img 
             src="/images/host-dash.png" 
@@ -1006,7 +1006,7 @@ export default function Dashboard() {
       <div className={`${styles.pageWrap} ${styles.pageTransition}`}>
         <h2 className={styles.pageTitle}>Support</h2>
         <div className={`${styles.panel} ${styles.card}`}>
-          <p>If you need help, contact our support team:</p>
+          <p className={styles.supportHeaddash}>If you need help, contact our support team:</p>
           <div className={styles.supportMethods}>
             <div className={`${styles.supportMethod} ${styles.card}`}>
               <EnvelopeIcon className={styles.infoIcon} />

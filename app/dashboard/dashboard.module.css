@@ -63,11 +63,13 @@
   padding-bottom: 5px;
   cursor: pointer;
   opacity: 0.6;
+  color: #2a2929;
 }
 
 .activeTab {
   border-bottom: 2px solid black;
   opacity: 1;
+  color: #0f140f;
   font-weight: 600;
 }
 
@@ -469,6 +471,129 @@
   font-size: 13px;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media (max-width:480px){
+  .main {
+    padding: 14px 16px 0px !important;
+  }
+  .pageWrap {
+    gap: 10px;
+}
+  .profileLeft {
+  display: flex;
+  gap: 15px !important;
+  align-items: center;
+}
+.pageTitle{
+  font-size: 26px !important;
+    font-weight: 700;
+    background: linear-gradient(to right, #D8B480 0%, #BF9860 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.profileCard {
+    background: #fff8ef;
+    padding: 14px !important;
+    border-radius: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid rgba(11, 23, 36, 0.03);
+}
+
+.profileImageWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.infoBox{
+  padding: 10px !important;
+}
+
+.profileImage {
+  border-radius: 9999px;
+  border: 4px solid #f0e7d0;
+  object-fit: cover;
+  width: 70px !important;
+  height: 70px;
+}
+.profileName {
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    margin: 0;
+}
+.profileMeta {
+    color: var(--muted);
+    font-weight: 600 !important;
+}
+.editprofile{
+  display: none !important;
+}
+.editProfileBtn {
+    background: linear-gradient(to right, #d8b480 0%, #bf9860 100%);
+    color: #111;
+    border: none;
+    padding: 10px 12px !important;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+
+
+#info5 {
+  display: flex;
+  flex-direction: column !important;
+}
+.statusUpcoming {
+    background: #fff6e6;
+    color: #22a23b !important;
+    border: 1px solid rgba(183, 120, 30, 0.08);
+}
+.statusBadge {
+    padding: 6px 10px !important;
+    border-radius: 12px;
+    font-weight: 700 !important;
+    font-size: 11px !important;
+}
+.bookingItem {
+    padding: 10px 12px !important;
+    background: #faf9f2 !important;
+    border-radius: 8px;
+    border: 1px solid #a7a9ac;
+}
+
+.bookingCode{
+    font-weight: 700 !important;
+    font-size: 13px !important;
+    color: #374151;
+}
+.bookingInfo {
+    margin-bottom: 0px !important;
+}
+
+}
+
 /* =============== PROFILE =============== */
 .profileCard {
   background: #fff8ef;
@@ -559,6 +684,30 @@
   height: 18px;
   color: var(--accent);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /* =============== ORDERS =============== */
 
@@ -1320,6 +1469,63 @@
     margin: 20px 0 40px 0;
   }
 }
+
+@media (max-width: 480px) {
+  .hostContainer {
+    padding: 10px 10px !important;
+  }
+  .smallTitle{
+    font-size: 16px !important;
+    
+  }
+  .highlighthost{
+    font-size: 18px !important;
+    
+  }
+  .headhighlight{
+    font-size: 22px !important;
+    
+  }
+  .infoRight h2{
+    font-size: 20px !important;
+  }
+  .infoRight p{
+    font-size: 14px !important;
+    font-weight: 400 !important;
+  }
+  .trackingBox{
+    padding: 18px 18px !important;
+    border: #e5e9f1 solid 1px;
+  }
+  .trackingBox h4{
+    font-size: 14px !important;
+  }
+  .trackingBox p{
+    font-size: 14px !important;
+    font-weight: 400 !important;
+  }
+  .supportHeaddash{
+    font-size: 16px;
+    font-weight: 500;
+  }
+  .panel {
+    background: none !important;
+    padding: 10px !important;
+    border-radius: 12px;
+    border: none !important;
+}
+.supportMethod {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    background: #fff8ef;
+    padding: 10px !important;
+    border-radius: 10px;
+    border: 1px #ced4de solid;
+}
+
+}
+
 
 
 
