@@ -1,5 +1,116 @@
 /* Scoped CSS Module for the layout + functional dual price slider */
 /* All selectors are local (CSS Module safe) */
+@media (max-width: 480px) {
+  .grid {
+  display: grid;
+  
+  gap: 22px;
+}
+  .card {
+    background: #fff;
+    border: 1px solid #f1f6fe;
+    border-radius: 12px;
+    padding: 10px 14px !important;
+    width: 100%;
+    max-width: 370px;
+    overflow: hidden;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    cursor: pointer;
+    animation: fadeIn 0.4s ease;
+  }
+  .trendy-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 2px !important;
+  margin-left: 33px;
+  padding: 8px 12px;
+  border-radius: 12px;
+}
+  .container {
+  padding: 25px;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial;
+  background: #fef9f5;
+  min-height: 100vh;
+  color: #111827;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-around !important;
+  align-items: center;
+}
+.carImg {
+  width: 100%;
+  max-height: 150px;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+  margin: 8px 0;
+}
+
+/* badge tags */
+.iTag {
+  color: #000000;
+  background: linear-gradient(to bottom right, #f5f5f5, #fafaf7);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  margin-right: 5px;
+  margin-left: 30px;
+  margin-bottom: -5px;
+}
+
+.iiTag {
+  color: #000000;
+  background: linear-gradient(to bottom right, #f5f5f5, #fafaf7);
+  padding: 6px 10px;
+  border-radius: 8px;
+  margin-right: 1px;
+  font-size: 12px;
+  margin-bottom: -5px;
+}
+
+.iiiTag {
+  color: #000000;
+  background: linear-gradient(to bottom right, #f5f5f5, #fafaf7);
+  padding: 6px 15px;
+  border-radius: 8px;
+  margin-right: 5px;
+  font-size: 12px;
+  margin-bottom: -5px;
+}
+
+.ivTag {
+  color: #000000;
+  background: linear-gradient(to bottom right, #f5f5f5, #fafaf7);
+  padding: 6px 10px;
+  margin-left: 30px;
+  margin-right: 7px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.vTag {
+  color: #000000;
+  background: linear-gradient(to bottom right, #f5f5f5, #fafaf7);
+  padding: 6px 10px;
+  border-radius: 8px;
+  margin-right: 5px;
+  font-size: 12px;
+}
+
+.viTag {
+  color: #000000;
+  background: linear-gradient(to bottom right, #f5f5f5, #fafaf7);
+  padding: 6px 10px;
+  border-radius: 8px;
+  
+  font-size: 12px;
+}
+
+}
 
 .container {
   padding: 18px;
@@ -756,7 +867,7 @@
   }
 
   .grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(1, 1fr);
   }
 }
 
@@ -764,7 +875,7 @@
   .search input {
     padding: 10px 36px;
   }
-
+  
   .card {
     padding: 12px;
   }
