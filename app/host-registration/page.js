@@ -127,61 +127,36 @@ export default function HostLanding() {
   const feedbacks = [
 
     {
-      name: "AJITH",
+      name: "Krunal Iyer",
       role: "Fleet Host",
-      image: "/ganesh.jpeg",
+      image: "/krunal.webp",
       text: `
-        Managing multiple cars is seamless.
-        Insurance processes are well handled.
-        Dedicated support around the clock.
-        Clear visibility into earnings with hosts in mind.
-        Hosting feels structured and secure.
-        Insurance coverage is well explained.
-        Support is proactive and reliable.
-        Earnings are clearly presented.
-        Confidence in every booking.
+        I listed my car on MM Miles a one months ago, and the entire experience has been smooth. Every booking is clearly visible, payments arrive on time, and I always know what's happening with my vehicle. The transparency gave me confidence from day one, making hosting much easier than I expected.
       `,
     },
 
     {
-      name: "MANOJ",
-      role: "Premium Host",
-      image: "/ganesh.jpeg",
+      name: "Nisha Gupta",
+      role: "Bengalore",
+      image: "/nisha.webp",
       text: `
-        Hosting feels structured and secure.
-        Insurance coverage is well explained.
-        Support is proactive and reliable.
-        Earnings are clearly presented.
-        Confidence in every booking.
-        Hosting feels structured and secure.
-        Insurance coverage is well explained.
-        Support is proactive and reliable.
-        Earnings are clearly presented.
-        Confidence in every booking.
+        One thing I really appreciate is the insurance protection provided during bookings. Before joining, I was worried about potential damages, but MM Miles explained everything clearly. Knowing my car is protected has given me peace of mind, allowing me to accept bookings without unnecessary stress.
       `,
     },
 
     {
-      name: "VIJAY",
-      role: "Verified Host",
-      image: "/ganesh.jpeg",
+      name: "Harsha Kanna",
+      role: "Chennai",
+      image: "/kanna.webp",
       text: `
-        A refined platform for car owners.
-        Insurance protection is reassuring.
-        Support team is available anytime.
-        Operations are smooth and transparent.
-        Built for long-term hosting.
-        Hosting feels structured and secure.
-        Insurance coverage is well explained.
-        Support is proactive and reliable.
-        Earnings are clearly presented.Confidence in every booking.
+        The support team has been outstanding whenever I needed assistance. I once had a question about a booking late in the evening, and they responded quickly with a clear solution. Having reliable support available whenever required makes hosting much more comfortable and dependable.
       `,
     },
 
     {
-      name: "RASIC",
-      role: "Verified Host",
-      image: "/ganesh.jpeg",
+      name: "Dayanandh",
+      role: "3 cars hosted",
+      image: "/dayandh.webp",
       text: `
         A refined platform for car owners.
         Insurance protection is reassuring.
@@ -197,38 +172,20 @@ export default function HostLanding() {
     },
 
     {
-      name: "VINOD",
-      role: "Verified Host",
-      image: "/ganesh.jpeg",
+      name: "Anvitha Gowda",
+      role: "Bengalore",
+      image: "/Anvitha.webp",
       text: `
-        A refined platform for car owners.
-        Insurance protection is reassuring.
-        Support team is available anytime.
-        Operations are smooth and transparent.
-        Built for long-term hosting.
-        Hosting feels structured and secure.
-        Insurance coverage is well explained.
-        Support is proactive and reliable.
-        Earnings are clearly presented.
-        Confidence in every booking.
+        My first booking experience exceeded my expectations. The process was simple, communication was smooth, and the trip was completed without any issues. Seeing everything handled professionally gave me confidence to continue hosting and recommend MM Miles to other car owners.
       `,
     },
 
     {
-      name: "HARISHA",
-      role: "Verified Host",
-      image: "/ganesh.jpeg",
+      name: "Zaid Khan",
+      role: "Chennai",
+      image: "/zaid.webp",
       text: `
-        A refined platform for car owners.
-        Insurance protection is reassuring.
-        Support team is available anytime.
-        Operations are smooth and transparent.
-        Built for long-term hosting.
-        Hosting feels structured and secure.
-        Insurance coverage is well explained.
-        Support is proactive and reliable.
-        Earnings are clearly presented.
-        Confidence in every booking.
+        Hosting with MM Miles has become a reliable source of additional income. The combination of transparent operations, professional support, insurance protection, and timely payments makes the platform trustworthy. It feels like a long-term partnership rather than just another vehicle rental service.
       `,
     },
 
