@@ -112,7 +112,7 @@ export async function GET(request: Request) {
     }
 
     // 5. Decode the id_token to extract verified OIDC claims (Aadhaar, PAN, DL)
-    let verifiedName = responseName || "Verified Host";
+    let verifiedName = responseName || null;
     let verifiedDob = responseDob || null;
     let verifiedGender = responseGender || null;
     let verifiedAadhaarMasked = null;
@@ -141,15 +141,17 @@ export async function GET(request: Request) {
       }
     }
 
-    // Attempt to extract PAN and DL from the scope string if they are missing or empty
+    // A document must actually be supplied by DigiLocker. The scope is an
+    // authoritative issuer reference, so it is accepted only when it contains
+    // the PAN/DL issuer URI; we never manufacture a verified document value.
     const scopeStr = tokenData?.scope || "";
     if (!verifiedPan) {
-      const panMatch = scopeStr.match(/issued\/in\.gov\.pan-PANCR-([A-Z0-9]+)/i);
-      if (panMatch) verifiedPan = panMatch[1];
+      const panMatch = scopeStr.match(/issued\/in\.gov\.pan-PANCR(?:-([A-Z0-9]+))?/i);
+      if (panMatch) verifiedPan = panMatch[1] || "DIGILOCKER_VERIFIED";
     }
     if (!verifiedDl) {
-      const dlMatch = scopeStr.match(/issued\/in\.gov\.transport-DRVLC-([A-Z0-9]+)/i);
-      if (dlMatch) verifiedDl = dlMatch[1];
+      const dlMatch = scopeStr.match(/issued\/in\.gov\.transport-DRVLC(?:-([A-Z0-9]+))?/i);
+      if (dlMatch) verifiedDl = dlMatch[1] || "DIGILOCKER_VERIFIED";
     }
 
     // 6. Fallback: Fetch user details via /oauth2/1/user endpoint if basic data is missing
@@ -173,15 +175,23 @@ export async function GET(request: Request) {
       }
     }
 
-    // 7. Persist KYC Verification in Supabase DB
+    const hasPan = typeof verifiedPan === "string" && verifiedPan.length > 0;
+    const hasDl = typeof verifiedDl === "string" && verifiedDl.length > 0;
+    if (!verifiedName || (!hasPan && !hasDl)) {
+      return NextResponse.redirect(
+        `${frontendVerifyUrl}?status=failed&error=${encodeURIComponent("DigiLocker must provide your Aadhaar identity and at least one of PAN or Driving Licence.")}`
+      );
+    }
+
+    // 7. Persist only a completed, eligible KYC record. The applicant name is
+    // retained separately from the government-record Aadhaar name.
     const { error: dbError } = await supabase
       .from("host_kyc_verifications")
       .upsert({
         phone: userPhone,
         aadhaar_name: verifiedName,
-        masked_aadhaar: verifiedAadhaarMasked || "VERIFIED_AADHAAR",
-        pan_number: verifiedPan || "VERIFIED_PAN",
-        driving_licence: verifiedDl || "VERIFIED_DL",
+        pan_number: verifiedPan,
+        driving_licence: verifiedDl,
         dob: verifiedDob,
         gender: verifiedGender,
         digilocker_id: verifiedSsoId,
@@ -191,31 +201,6 @@ export async function GET(request: Request) {
     if (dbError) {
       console.error("Failed to save KYC status to database:", dbError);
       return NextResponse.redirect(`${frontendVerifyUrl}?status=failed&error=Database persistence error`);
-    }
-
-    // 8. Update User Verification status to true
-    const { error: userUpdateError } = await supabase
-      .from("users")
-      .update({ verified: true })
-      .eq("id", userId);
-
-    if (userUpdateError) {
-      console.error("Failed to update verified flag on users table:", userUpdateError);
-    }
-
-    // 9. Update Host Verification status if host profile exists
-    if (userPhone) {
-      const { error: hostUpdateError } = await supabase
-        .from("hosts")
-        .update({
-          verified: true,
-          full_name: verifiedName,
-        })
-        .eq("phone", userPhone);
-
-      if (hostUpdateError) {
-        console.error("Failed to update verified flag on hosts table:", hostUpdateError);
-      }
     }
 
     // Redirect the browser back to verify-profile page with status=success

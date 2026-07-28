@@ -596,6 +596,9 @@
 # PostgreSQL
 **/*.backup
 **/*.sql
+!supabase/
+!supabase/migrations/
+!supabase/migrations/*.sql
 
 # MongoDB
 **/dump/

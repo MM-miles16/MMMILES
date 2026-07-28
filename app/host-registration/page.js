@@ -19,6 +19,22 @@ export default function HostLanding() {
   const [touchEnd, setTouchEnd] = useState(0);
   const [showCallModal, setShowCallModal] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isVerifiedHost, setIsVerifiedHost] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/host/kyc")
+      .then((response) => response.ok ? response.json() : null)
+      .then((status) => setIsVerifiedHost(Boolean(status?.hostRegistered)))
+      .catch(() => setIsVerifiedHost(false));
+  }, []);
+
+  const goToHostArea = () => {
+    if (isVerifiedHost) {
+      window.location.assign("https://host-dashboard.mmmiles.com");
+    } else {
+      router.push("/host-registration-form");
+    }
+  };
 
   const [counts, setCounts] = useState({
     hosts: 0,
@@ -474,9 +490,9 @@ export default function HostLanding() {
       </p>
       <button
         className={styles.hpanelHeroBtn}
-        onClick={() => router.push("/host-registration-form")}
+        onClick={goToHostArea}
       >
-        HOST TODAY
+        {isVerifiedHost ? "VIEW CARS" : "HOST TODAY"}
       </button>
 
     </div>
@@ -677,9 +693,9 @@ export default function HostLanding() {
 
       <button
         className={styles.hpanelRegisterBtn}
-        onClick={() => router.push("/host-registration-form")}
+        onClick={goToHostArea}
       >
-        REGISTER NOW
+        {isVerifiedHost ? "VIEW CARS" : "REGISTER NOW"}
       </button>
 
     </div>

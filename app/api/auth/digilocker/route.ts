@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
+import { createClient } from "@supabase/supabase-js";
+import { getUserFromRequest } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
+const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!);
 
 function base64URLEncode(buffer: Buffer) {
   return buffer
@@ -11,8 +14,22 @@ function base64URLEncode(buffer: Buffer) {
     .replace(/=/g, "");
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const user = getUserFromRequest(request);
+    if (!user?.phone_number) {
+      return NextResponse.redirect(new URL("/login?redirect=/host-registration-form", request.url));
+    }
+    // Prevent direct links from starting an OAuth session without the required
+    // Aadhaar entry and applicant name collected by the application.
+    const { data: preparation } = await supabase
+      .from("host_kyc_verifications")
+      .select("declared_name, masked_aadhaar")
+      .eq("phone", user.phone_number)
+      .maybeSingle();
+    if (!preparation?.declared_name || !preparation?.masked_aadhaar) {
+      return NextResponse.redirect(new URL("/host-registration-form/verify-profile?status=failed&error=Enter%20your%20Aadhaar%20number%20before%20continuing", request.url));
+    }
     const clientId = process.env.DIGILOCKER_CLIENT_ID;
     const redirectUri = process.env.DIGILOCKER_REDIRECT_URI;
 

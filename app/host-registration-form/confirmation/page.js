@@ -36,6 +36,7 @@ export default function ConfirmationPage() {
       .then((data) => {
         if (data.verified && data.kyc) {
           setKycData(data.kyc);
+          setFullName(data.kyc.declared_name || "");
         } else {
           // Edge Case: If user bypassed /verify-profile and visited this page directly, redirect back
           console.warn("Direct access detected: user has not completed KYC verification.");
@@ -62,7 +63,7 @@ export default function ConfirmationPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          fullName: fullName || kycData?.aadhaar_name,
+          fullName: fullName,
           email,
           address,
         }),
@@ -80,8 +81,11 @@ export default function ConfirmationPage() {
       localStorage.removeItem("hreg_address");
 
       // Set user's name in session storage to greet them on the success page
-      sessionStorage.setItem("registered_host_name", fullName || kycData?.aadhaar_name || "Host");
-
+      sessionStorage.setItem("registered_host_name", fullName || "Host");
+      // Replace the confirmation entry with the host landing page, then open
+      // success. Browser Back therefore returns to the host page, never a
+      // completed registration step.
+      window.history.replaceState(null, "", "/host-registration");
       router.push("/host-registration-form/success");
     } catch (err) {
       console.error("Submission error:", err);
@@ -133,12 +137,12 @@ export default function ConfirmationPage() {
                   <input
                     type="text"
                     value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Confirm your name"
+                    readOnly
+                    aria-readonly="true"
                   />
                   {kycData?.aadhaar_name && fullName.toLowerCase() !== kycData.aadhaar_name.toLowerCase() && (
                     <span style={{ fontSize: "11px", color: "#ff8c00", fontWeight: "600" }}>
-                      ⚠️ Aadhaar verified name is: <strong>{kycData.aadhaar_name}</strong>
+                      Your Aadhaar name is: <strong>{kycData.aadhaar_name}</strong>. Your host profile will use the name you entered.
                     </span>
                   )}
                 </div>
