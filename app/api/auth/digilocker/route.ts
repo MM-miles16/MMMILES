@@ -18,26 +18,26 @@ export async function GET(request: Request) {
   try {
     const user = getUserFromRequest(request);
     if (!user?.phone_number) {
-      return NextResponse.redirect(new URL("/login?redirect=/host-registration-form", request.url));
+      return NextResponse.redirect(new URL("/login?redirect=/host-registration-form", request.url), 302);
     }
-    // Prevent direct links from starting an OAuth session without the required
-    // Aadhaar entry and applicant name collected by the application.
+    // Prevent direct links from starting an OAuth session until the applicant
+    // has completed the profile form. Aadhaar is not collected or stored here.
     const { data: preparation } = await supabase
       .from("host_kyc_verifications")
-      .select("declared_name, masked_aadhaar")
+      .select("declared_name")
       .eq("phone", user.phone_number)
       .maybeSingle();
-    if (!preparation?.declared_name || !preparation?.masked_aadhaar) {
-      return NextResponse.redirect(new URL("/host-registration-form/verify-profile?status=failed&error=Enter%20your%20Aadhaar%20number%20before%20continuing", request.url));
+    if (!preparation?.declared_name) {
+      return NextResponse.redirect(new URL("/host-registration-form/verify-profile?status=failed&error=Please%20complete%20your%20host%20profile%20before%20starting%20DigiLocker%20verification", request.url), 302);
     }
     const clientId = process.env.DIGILOCKER_CLIENT_ID;
     const redirectUri = process.env.DIGILOCKER_REDIRECT_URI;
 
     if (!clientId || !redirectUri) {
       console.error("DigiLocker environment variables missing in environment configurations");
-      return NextResponse.json(
-        { error: "DigiLocker auth is currently misconfigured." },
-        { status: 500 }
+      return NextResponse.redirect(
+        new URL("/host-registration-form/verify-profile?status=failed&error=DigiLocker%20is%20temporarily%20unavailable.%20Please%20try%20again%20later.", request.url),
+        302
       );
     }
 
@@ -59,7 +59,9 @@ export async function GET(request: Request) {
     authUrl.searchParams.set("code_challenge", codeChallenge);
     authUrl.searchParams.set("code_challenge_method", "S256");
 
-    const response = NextResponse.redirect(authUrl.toString());
+    // OAuth requires a browser redirect. Use 302 rather than the framework's
+    // default 307 so this behaves consistently with DigiLocker's GET endpoint.
+    const response = NextResponse.redirect(authUrl.toString(), 302);
 
     // Store state in a secure, HttpOnly cookie to validate upon callback redirection
     const cookieOptions = {
@@ -76,6 +78,9 @@ export async function GET(request: Request) {
     return response;
   } catch (error) {
     console.error("Failed to initiate DigiLocker Auth:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.redirect(
+      new URL("/host-registration-form/verify-profile?status=failed&error=We%20could%20not%20start%20DigiLocker%20verification.%20Please%20try%20again.", request.url),
+      302
+    );
   }
 }

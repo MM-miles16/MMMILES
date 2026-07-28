@@ -449,7 +449,7 @@ export default function HostLanding() {
         className={styles.hpanelHeroBtn}
         onClick={goToHostArea}
       >
-        {isVerifiedHost ? "VIEW CARS" : "HOST TODAY"}
+        {isVerifiedHost ? "HOST PANEL" : "HOST TODAY"}
       </button>
 
     </div>
@@ -652,7 +652,7 @@ export default function HostLanding() {
         className={styles.hpanelRegisterBtn}
         onClick={goToHostArea}
       >
-        {isVerifiedHost ? "VIEW CARS" : "REGISTER NOW"}
+        {isVerifiedHost ? "HOST PANEL" : "REGISTER NOW"}
       </button>
 
     </div>

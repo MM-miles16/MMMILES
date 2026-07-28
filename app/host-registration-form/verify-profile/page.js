@@ -11,7 +11,6 @@ function VerifyProfileContent() {
   
   const [verificationStatus, setVerificationStatus] = useState("pending"); // pending, success, failed, verifying
   const [errorMessage, setErrorMessage] = useState("");
-  const [aadharNumber, setAadharNumber] = useState("");
 
   useEffect(() => {
     const status = searchParams.get("status");
@@ -26,24 +25,17 @@ function VerifyProfileContent() {
   }, [searchParams]);
 
   const handleVerifyClick = () => {
-    const normalizedAadhaar = aadharNumber.replace(/\s|-/g, "");
     const declaredName = localStorage.getItem("hreg_full_name") || "";
-    if (!/^\d{12}$/.test(normalizedAadhaar)) {
-      setVerificationStatus("failed");
-      setErrorMessage("Enter a valid 12-digit Aadhaar number to continue.");
-      return;
-    }
     if (!declaredName.trim()) {
       router.replace("/host-registration-form");
       return;
     }
     setVerificationStatus("verifying");
-    // Persist the applicant name and masked Aadhaar before the OAuth redirect.
-    // The API never stores the full Aadhaar number.
+    // Persist only the applicant's host name before the OAuth redirect.
     fetch("/api/host/kyc/prepare", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ aadhaarNumber: normalizedAadhaar, declaredName }),
+      body: JSON.stringify({ declaredName }),
     })
       .then(async (response) => {
         if (!response.ok) {
@@ -86,19 +78,8 @@ function VerifyProfileContent() {
               </div>
               <div>
                 <h2>Verify Profile</h2>
-                <p>Require Govt Identity</p>
+                <p>Verify securely with DigiLocker</p>
               </div>
-            </div>
-
-            <div className={styles.hregField}>
-              <label>Enter Aadhaar Number</label>
-              <input 
-                type="text" 
-                placeholder="Enter 12-digit Aadhaar Number"
-                value={aadharNumber}
-                onChange={(e) => setAadharNumber(e.target.value)}
-                disabled={verificationStatus === "success" || verificationStatus === "verifying"}
-              />
             </div>
 
             <div className={styles.hregDigiLockerBox}>
@@ -112,21 +93,21 @@ function VerifyProfileContent() {
               </div>
 
               <div className={styles.hregDigiLockerRight}>
-                <p>1. Login With OTP</p>
-                <p>2. Verify and Start</p>
+                <p>1. Sign in securely with DigiLocker</p>
+                <p>2. Share PAN or Driving Licence</p>
                 
                 <button 
                   onClick={handleVerifyClick}
                   disabled={verificationStatus === "success" || verificationStatus === "verifying"}
                 >
-                  {verificationStatus === "verifying" ? "Redirecting..." : "Verify"}
+                  {verificationStatus === "verifying" ? "Opening DigiLocker..." : "VERIFY WITH DIGILOCKER"}
                 </button>
               </div>
             </div>
 
             {verificationStatus === "success" && (
               <p className={styles.hregKycText}>
-                ✓ Congratulations! Your KYC verification is complete.
+                ✓ DigiLocker verification is complete. You can continue your host registration.
               </p>
             )}
 
@@ -139,7 +120,7 @@ function VerifyProfileContent() {
 
             {verificationStatus === "verifying" && (
               <p style={{ textAlign: "center", color: "#6c4cff", fontWeight: "500", marginTop: "14px" }}>
-                Connecting to DigiLocker secure portal...
+                Opening the secure DigiLocker portal. Do not close this page.
               </p>
             )}
 

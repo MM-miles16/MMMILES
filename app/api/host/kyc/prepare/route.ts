@@ -9,8 +9,6 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY!
 );
 
-const maskAadhaar = (value: string) => `XXXX XXXX ${value.slice(-4)}`;
-
 export async function POST(request: Request) {
   const user = getUserFromRequest(request);
   if (!user?.sub || !user.phone_number) {
@@ -18,25 +16,20 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { aadhaarNumber, declaredName } = await request.json();
-    const aadhaar = String(aadhaarNumber || "").replace(/\s|-/g, "");
+    const { declaredName } = await request.json();
     const name = String(declaredName || "").trim();
 
-    if (!/^\d{12}$/.test(aadhaar)) {
-      return NextResponse.json({ error: "Enter a valid 12-digit Aadhaar number." }, { status: 400 });
-    }
     if (name.length < 2 || name.length > 120) {
       return NextResponse.json({ error: "Enter the name you want displayed as a host." }, { status: 400 });
     }
 
-    // Aadhaar numbers are sensitive identity data. Persist only the masked value;
-    // DigiLocker remains the source of truth for the identity itself.
+    // DigiLocker is the source of truth for identity documents. We do not ask
+    // for or persist Aadhaar numbers in this application.
     const { error } = await supabase
       .from("host_kyc_verifications")
       .upsert({
         phone: user.phone_number,
         declared_name: name,
-        masked_aadhaar: maskAadhaar(aadhaar),
       }, { onConflict: "phone" });
 
     if (error) {

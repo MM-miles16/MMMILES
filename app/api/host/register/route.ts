@@ -57,7 +57,7 @@ export async function POST(request: Request) {
       }, { status: 403 });
     }
 
-    // The display name is the applicant-provided name, not the Aadhaar name.
+    // The display name is the applicant-provided name, not the DigiLocker name.
     // This is intentionally a server-side decision so the confirmation form
     // cannot substitute a different name after KYC.
     if (fullName.trim() !== kycData.declared_name?.trim()) {

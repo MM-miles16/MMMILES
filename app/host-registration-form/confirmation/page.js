@@ -75,17 +75,15 @@ export default function ConfirmationPage() {
         throw new Error(result.error || "Failed to submit host registration.");
       }
 
-      // Success: Clear localStorage to clean up workspace state
+      // Success: clear temporary inputs. The preceding history entry becomes
+      // Home so Back never exposes a completed KYC/OAuth step.
       localStorage.removeItem("hreg_full_name");
       localStorage.removeItem("hreg_email");
       localStorage.removeItem("hreg_address");
 
       // Set user's name in session storage to greet them on the success page
       sessionStorage.setItem("registered_host_name", fullName || "Host");
-      // Replace the confirmation entry with the host landing page, then open
-      // success. Browser Back therefore returns to the host page, never a
-      // completed registration step.
-      window.history.replaceState(null, "", "/host-registration");
+      window.history.replaceState(null, "", "/");
       router.push("/host-registration-form/success");
     } catch (err) {
       console.error("Submission error:", err);
@@ -142,7 +140,7 @@ export default function ConfirmationPage() {
                   />
                   {kycData?.aadhaar_name && fullName.toLowerCase() !== kycData.aadhaar_name.toLowerCase() && (
                     <span style={{ fontSize: "11px", color: "#ff8c00", fontWeight: "600" }}>
-                      Your Aadhaar name is: <strong>{kycData.aadhaar_name}</strong>. Your host profile will use the name you entered.
+                      Your DigiLocker verified name is: <strong>{kycData.aadhaar_name}</strong>. Your host profile will use the name you entered.
                     </span>
                   )}
                 </div>
@@ -173,10 +171,6 @@ export default function ConfirmationPage() {
                   </p>
                   
                   <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                    <div style={{ fontSize: "12px", display: "flex", justifyContent: "space-between" }}>
-                      <span style={{ color: "#777" }}>Aadhaar Ref:</span>
-                      <span style={{ fontWeight: "600", color: "#333" }}>{kycData?.masked_aadhaar}</span>
-                    </div>
                     <div style={{ fontSize: "12px", display: "flex", justifyContent: "space-between" }}>
                       <span style={{ color: "#777" }}>PAN status:</span>
                       <span style={{ fontWeight: "600", color: "#28a745" }}>{kycData?.pan_number ? "✅ Verified" : "Not Provided"}</span>
