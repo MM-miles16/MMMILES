@@ -9,6 +9,12 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY! // service role to modify hosts
 );
 
+const isDigiLockerDocument = (value: unknown) =>
+  typeof value === "string" &&
+  value.length > 0 &&
+  value !== "VERIFIED_PAN" &&
+  value !== "VERIFIED_DL";
+
 export async function POST(request: Request) {
   try {
     // 1. Authenticate user
@@ -35,7 +41,7 @@ export async function POST(request: Request) {
     // 3. Double-check if this user has indeed completed KYC verification (prevent bypass)
     const { data: kycData, error: kycError } = await supabase
       .from("host_kyc_verifications")
-      .select("id")
+      .select("id, declared_name, aadhaar_name, pan_number, driving_licence")
       .eq("phone", userPhone)
       .maybeSingle();
 
@@ -44,11 +50,18 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Failed to verify KYC status" }, { status: 500 });
     }
 
-    if (!kycData) {
+    if (!kycData || (!isDigiLockerDocument(kycData.pan_number) && !isDigiLockerDocument(kycData.driving_licence))) {
       // Force user to verify profile before submitting registration
       return NextResponse.json({ 
         error: "KYC verification is incomplete. Please complete DigiLocker verification first." 
       }, { status: 403 });
+    }
+
+    // The display name is the applicant-provided name, not the Aadhaar name.
+    // This is intentionally a server-side decision so the confirmation form
+    // cannot substitute a different name after KYC.
+    if (fullName.trim() !== kycData.declared_name?.trim()) {
+      return NextResponse.json({ error: "Your host name changed. Please restart verification to update it." }, { status: 400 });
     }
 
     // 4. Check if host record already exists for this phone number

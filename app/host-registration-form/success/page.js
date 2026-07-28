@@ -8,8 +8,27 @@ import styles from "../HostRegistration.module.css";
 export default function RegistrationSuccess() {
   const router = useRouter();
   const [hostName, setHostName] = useState("Host");
+  const [checking, setChecking] = useState(true);
 
   useEffect(() => {
+    const checkRegistration = async () => {
+      try {
+        const response = await fetch("/api/host/kyc");
+        const status = await response.json();
+        if (!response.ok || !status.verified) {
+          router.replace("/host-registration-form/verify-profile");
+          return;
+        }
+        if (!status.hostRegistered) {
+          router.replace("/host-registration-form/confirmation");
+          return;
+        }
+        setChecking(false);
+      } catch {
+        router.replace("/host-registration");
+      }
+    };
+    checkRegistration();
     if (typeof window !== "undefined") {
       const name = sessionStorage.getItem("registered_host_name");
       if (name) {
@@ -17,6 +36,8 @@ export default function RegistrationSuccess() {
       }
     }
   }, []);
+
+  if (checking) return null;
 
   return (
     <section className={styles.hregSuccessSection}>
@@ -41,7 +62,7 @@ export default function RegistrationSuccess() {
         <div className={styles.hregSuccessButtons}>
           <button
             className={styles.hregExploreBtn}
-            onClick={() => router.push("https://host-dashboard.mmmiles.com")}
+            onClick={() => window.location.assign("https://host-dashboard.mmmiles.com")}
           >
             HOST PANEL
           </button>

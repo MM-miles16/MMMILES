@@ -26,9 +26,36 @@ function VerifyProfileContent() {
   }, [searchParams]);
 
   const handleVerifyClick = () => {
+    const normalizedAadhaar = aadharNumber.replace(/\s|-/g, "");
+    const declaredName = localStorage.getItem("hreg_full_name") || "";
+    if (!/^\d{12}$/.test(normalizedAadhaar)) {
+      setVerificationStatus("failed");
+      setErrorMessage("Enter a valid 12-digit Aadhaar number to continue.");
+      return;
+    }
+    if (!declaredName.trim()) {
+      router.replace("/host-registration-form");
+      return;
+    }
     setVerificationStatus("verifying");
-    // Redirect browser to initiate secure DigiLocker OAuth2 flow
-    window.location.href = "/api/auth/digilocker";
+    // Persist the applicant name and masked Aadhaar before the OAuth redirect.
+    // The API never stores the full Aadhaar number.
+    fetch("/api/host/kyc/prepare", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ aadhaarNumber: normalizedAadhaar, declaredName }),
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          const result = await response.json();
+          throw new Error(result.error || "Could not start verification.");
+        }
+        window.location.assign("/api/auth/digilocker");
+      })
+      .catch((error) => {
+        setVerificationStatus("failed");
+        setErrorMessage(error.message || "Could not start verification.");
+      });
   };
 
   return (
