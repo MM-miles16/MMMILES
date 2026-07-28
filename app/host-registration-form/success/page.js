@@ -11,6 +11,7 @@ export default function RegistrationSuccess() {
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
+    const sendBackToHome = () => window.location.replace("/");
     const checkRegistration = async () => {
       try {
         const response = await fetch("/api/host/kyc");
@@ -29,13 +30,18 @@ export default function RegistrationSuccess() {
       }
     };
     checkRegistration();
+    // OAuth creates several browser history entries. After completion, Back
+    // always returns to Home rather than reopening a completed KYC step.
+    window.history.pushState({ hostRegistrationComplete: true }, "", window.location.href);
+    window.addEventListener("popstate", sendBackToHome);
     if (typeof window !== "undefined") {
       const name = sessionStorage.getItem("registered_host_name");
       if (name) {
         setHostName(name);
       }
     }
-  }, []);
+    return () => window.removeEventListener("popstate", sendBackToHome);
+  }, [router]);
 
   if (checking) return null;
 

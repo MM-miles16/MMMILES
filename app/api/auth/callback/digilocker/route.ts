@@ -11,6 +11,20 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY!
 );
 
+function removeAadhaarAndTokens(value: any): any {
+  if (Array.isArray(value)) return value.map(removeAadhaarAndTokens);
+  if (typeof value === "string") {
+    return value.replace(/\b\d{4}[\s-]?\d{4}[\s-]?\d{4}\b/g, "[REDACTED]");
+  }
+  if (!value || typeof value !== "object") return value;
+
+  return Object.fromEntries(
+    Object.entries(value)
+      .filter(([key]) => !/(aadhaar|eaadhaar|id_token|access_token|refresh_token)/i.test(key))
+      .map(([key, item]) => [key, removeAadhaarAndTokens(item)])
+  );
+}
+
 export async function GET(request: Request) {
   let frontendVerifyUrl = "/host-registration-form/verify-profile";
   
@@ -111,27 +125,28 @@ export async function GET(request: Request) {
       return NextResponse.redirect(`${frontendVerifyUrl}?status=failed&error=Empty access token returned`);
     }
 
-    // 5. Decode the id_token to extract verified OIDC claims (Aadhaar, PAN, DL)
+    // 5. Decode the id_token to extract verified identity, PAN and DL claims.
     let verifiedName = responseName || null;
     let verifiedDob = responseDob || null;
     let verifiedGender = responseGender || null;
-    let verifiedAadhaarMasked = null;
     let verifiedPan = null;
     let verifiedDl = null;
     let verifiedSsoId = digilockerid || null;
-    let rawPayload: any = { tokenData };
+    // Keep diagnostic data without credentials or Aadhaar fields. The original
+    // provider response is useful for support, but identity data must not be
+    // retained simply for debugging.
+    let rawPayload: any = removeAadhaarAndTokens({ tokenData });
 
     if (id_token) {
       try {
         const decodedIdToken: any = jwt.decode(id_token);
         if (decodedIdToken) {
-          rawPayload = { ...rawPayload, idTokenClaims: decodedIdToken };
+          rawPayload = { ...rawPayload, idTokenClaims: removeAadhaarAndTokens(decodedIdToken) };
           
           // Map standard OpenID claims
           verifiedName = decodedIdToken.name || decodedIdToken.given_name || verifiedName;
           verifiedDob = decodedIdToken.birthdate || decodedIdToken.dob || verifiedDob;
           verifiedGender = decodedIdToken.gender || verifiedGender;
-          verifiedAadhaarMasked = decodedIdToken.masked_aadhaar || decodedIdToken.eaadhaar || null;
           verifiedPan = decodedIdToken.pan_number || decodedIdToken.pan || null;
           verifiedDl = decodedIdToken.driving_licence || decodedIdToken.driving_license || null;
           verifiedSsoId = decodedIdToken.user_sso_id || decodedIdToken.sub || verifiedSsoId;
@@ -163,11 +178,10 @@ export async function GET(request: Request) {
         });
         if (profileResponse.ok) {
           const profile = await profileResponse.json();
-          rawPayload = { ...rawPayload, userProfile: profile };
+          rawPayload = { ...rawPayload, userProfile: removeAadhaarAndTokens(profile) };
           verifiedName = profile.name || verifiedName;
           verifiedDob = profile.dob || verifiedDob;
           verifiedGender = profile.gender || verifiedGender;
-          verifiedAadhaarMasked = profile.eaadhaar || verifiedAadhaarMasked;
           verifiedSsoId = profile.digilockerid || verifiedSsoId;
         }
       } catch (profileErr: any) {
@@ -179,17 +193,18 @@ export async function GET(request: Request) {
     const hasDl = typeof verifiedDl === "string" && verifiedDl.length > 0;
     if (!verifiedName || (!hasPan && !hasDl)) {
       return NextResponse.redirect(
-        `${frontendVerifyUrl}?status=failed&error=${encodeURIComponent("DigiLocker must provide your Aadhaar identity and at least one of PAN or Driving Licence.")}`
+        `${frontendVerifyUrl}?status=failed&error=${encodeURIComponent("DigiLocker must provide your verified identity name and at least one of PAN or Driving Licence.")}`
       );
     }
 
     // 7. Persist only a completed, eligible KYC record. The applicant name is
-    // retained separately from the government-record Aadhaar name.
+    // retained separately from the government-record name.
     const { error: dbError } = await supabase
       .from("host_kyc_verifications")
       .upsert({
         phone: userPhone,
         aadhaar_name: verifiedName,
+        masked_aadhaar: null,
         pan_number: verifiedPan,
         driving_licence: verifiedDl,
         dob: verifiedDob,
