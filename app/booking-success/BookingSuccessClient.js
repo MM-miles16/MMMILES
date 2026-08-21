@@ -24,8 +24,13 @@ export default function BookingSuccess() {
       }
 
       try {
-        const token = localStorage.getItem("auth_token");
-        if (!token) {
+        const sessionResponse = await fetch("/api/auth/session", {
+          credentials: "include",
+          cache: "no-store",
+        });
+        const session = sessionResponse.ok ? await sessionResponse.json() : null;
+
+        if (!session?.authenticated) {
           throw new Error("Authentication required");
         }
 
@@ -38,8 +43,8 @@ export default function BookingSuccess() {
           {
             headers: {
               'apikey': apiKey,
-              'Authorization': `Bearer ${token}`,
             },
+            credentials: 'include',
           }
         );
 

@@ -140,16 +140,6 @@ export default function CarPage() {
     ]
   }
 
-  const handleBookNow = () => {
-    const token = localStorage.getItem("auth_token");
-    if (!token) {
-      const redirectUrl = encodeURIComponent(`/car/${id}?pickup=${pickup}&return=${returnTime}`);
-      router.push(`/login?redirect=${redirectUrl}`);
-      return;
-    }
-    router.push(`/checkout?car=${id}&pickup=${pickup}&return=${returnTime}`);
-  };
-
   if (loading) return <Loading fullScreen={true} />;
   if (!car) return (
     <EmptyState 
@@ -557,18 +547,17 @@ function ExploreMoreCars({ currentCarId, city, pickup, returnTime }) {
 
 function BookNowButton({ carId, pickup, returnTime }) {
   const router = useRouter();
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(null);
 
   useEffect(() => {
-    const checkAuth = () => {
-      const token = localStorage.getItem("auth_token");
-      if (!token) return setLoggedIn(false);
+    const checkAuth = async () => {
       try {
-        const payload = JSON.parse(
-          atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))
-        );
-        const now = Math.floor(Date.now() / 1000);
-        setLoggedIn(payload?.exp && payload.exp > now);
+        const response = await fetch("/api/auth/session", {
+          credentials: "include",
+          cache: "no-store",
+        });
+        const session = response.ok ? await response.json() : null;
+        setLoggedIn(session?.authenticated === true);
       } catch {
         setLoggedIn(false);
       }
@@ -580,6 +569,8 @@ function BookNowButton({ carId, pickup, returnTime }) {
   }, []);
 
   const handleClick = () => {
+    if (loggedIn === null) return;
+
     if (!loggedIn) {
       const redirectUrl = encodeURIComponent(`/car/${carId}?pickup=${pickup}&return=${returnTime}`);
       router.push(`/login?redirect=${redirectUrl}`);
@@ -590,8 +581,8 @@ function BookNowButton({ carId, pickup, returnTime }) {
   };
 
   return (
-    <button className={styles.bookBtn} onClick={handleClick}>
-      {loggedIn ? "Book Now" : "Login to Continue"}
+    <button className={styles.bookBtn} onClick={handleClick} disabled={loggedIn === null}>
+      {loggedIn === null ? "Checking Session..." : loggedIn ? "Book Now" : "Login to Continue"}
     </button>
   );
 }
