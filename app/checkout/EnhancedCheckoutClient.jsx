@@ -14,7 +14,6 @@ import {
 import Loading from "../components/Loading";
 import EmptyState from "../components/EmptyState";
 import { makeAuthenticatedRequest } from "../../lib/customSupabaseClient";
-import { testAuth } from "../../lib/authTest";
 import { parseDate, formatDateTimeForDB, parseBookingRawDateTime } from "../../lib/dateUtils";
 import styles from "./EnhancedCheckout.module.css";
 
@@ -235,29 +234,42 @@ export default function EnhancedCheckoutPage() {
   }, []);
 
   /* -------------------------------------------------------------------------- */
-  /*                             AUTH CHECK (JWT)                                */
+  /*                         AUTH CHECK (SESSION COOKIE)                          */
   /* -------------------------------------------------------------------------- */
   useEffect(() => {
-    const token = localStorage.getItem("auth_token");
-    if (!token) {
-      router.push(`/login?redirect=${encodeURIComponent(window.location.href)}`);
-      return;
-    }
+    let active = true;
 
-    try {
-      const base64Url = token.split(".")[1];
-      const base64 = base64Url
-        .replace(/-/g, "+")
-        .replace(/_/g, "/")
-        .padEnd(base64Url.length + (4 - (base64Url.length % 4)) % 4, "=");
+    const checkSession = async () => {
+      try {
+        const response = await fetch("/api/auth/session", {
+          credentials: "include",
+          cache: "no-store",
+        });
+        const session = response.ok ? await response.json() : null;
 
-      const payload = JSON.parse(atob(base64));
-      setLoggedInUser(payload);
+        if (!active) return;
 
-      setTimeout(() => testAuth().then(() => { }), 300);
-    } catch (err) {
-      router.push("/login?redirect=/checkout");
-    }
+        if (!session?.authenticated || !session.user?.id) {
+          router.push(`/login?redirect=${encodeURIComponent(window.location.href)}`);
+          return;
+        }
+
+        setLoggedInUser({
+          sub: session.user.id,
+          phone_number: session.user.phone || "",
+          email: session.user.email || "",
+        });
+      } catch (err) {
+        if (active) {
+          router.push(`/login?redirect=${encodeURIComponent(window.location.href)}`);
+        }
+      }
+    };
+
+    checkSession();
+    return () => {
+      active = false;
+    };
   }, [router]);
 
   /* -------------------------------------------------------------------------- */
@@ -496,13 +508,12 @@ export default function EnhancedCheckoutPage() {
           formatted: { pickupTimeISO, returnTimeISO }
         });
 
-        const token = localStorage.getItem("auth_token");
         const response = await fetch('/api/create-order', {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           },
+          credentials: 'include',
           body: JSON.stringify({
             carId: car.id,
             pickupTime: pickupTimeISO,
@@ -623,13 +634,12 @@ export default function EnhancedCheckoutPage() {
 
     setApplyingCoupon(true);
     try {
-      const token = localStorage.getItem("auth_token");
       const response = await fetch('/api/coupons/validate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
         },
+        credentials: 'include',
         body: JSON.stringify({
           code: couponCode,
           subtotal: priceSummary.basePrice,
@@ -757,8 +767,7 @@ export default function EnhancedCheckoutPage() {
           `${typeof window !== 'undefined' ? '/api/sb' : process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/bookings?vehicle_id=eq.${car.id}&status=eq.confirmed&booking_range=ov.(%5B${startIso},${endWithBufferIso}%29)&select=id`,
           {
             headers: {
-              'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-              'Authorization': `Bearer ${token}`
+              'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
             }
           }
         );
@@ -770,8 +779,7 @@ export default function EnhancedCheckoutPage() {
           `${typeof window !== 'undefined' ? '/api/sb' : process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/maintenance_logs?vehicle_id=eq.${car.id}&start_time=lt.${endWithBufferIso}&end_time=gt.${startIso}&select=id`,
           {
             headers: {
-              'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-              'Authorization': `Bearer ${token}`
+              'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
             }
           }
         );
@@ -810,12 +818,11 @@ export default function EnhancedCheckoutPage() {
     setLockStatus({ checking: true, error: null, lockInfo: null, blocked: false, canProceed: false });
 
     try {
-      const token = localStorage.getItem("auth_token");
       const response = await fetch(`/api/locks?vehicle_id=${car.id}`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
-        }
+        },
+        credentials: 'include'
       });
 
       if (!response.ok) {
@@ -852,9 +859,9 @@ export default function EnhancedCheckoutPage() {
             const extendResponse = await fetch('/api/locks', {
               method: 'PATCH',
               headers: {
-                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
               },
+              credentials: 'include',
               body: JSON.stringify({
                 vehicle_id: car.id
               })
@@ -899,9 +906,9 @@ export default function EnhancedCheckoutPage() {
       const lockCreateResponse = await fetch('/api/locks', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify({
           vehicle_id: car.id,
           start_time: formatDateTimeForDB(start),
@@ -1084,9 +1091,9 @@ export default function EnhancedCheckoutPage() {
             const completionResponse = await fetch('/api/booking-complete', {
               method: 'POST',
               headers: {
-                'Authorization': `Bearer ${localStorage.getItem("auth_token")}`,
                 'Content-Type': 'application/json'
               },
+              credentials: 'include',
               body: JSON.stringify({
                 vehicle_id: car.id,
                 booking_id: bookingId,

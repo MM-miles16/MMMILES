@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { getUserFromRequest } from '../../../../lib/auth.js';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -10,6 +11,14 @@ const supabase = createClient(
       persistSession: false
     }
   }
+);
+
+// This route runs server-side, so use the service role only for the
+// user-specific booking-history lookup after the request JWT is verified.
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY,
+  { auth: { autoRefreshToken: false, persistSession: false } }
 );
 
 export async function POST(request) {
@@ -87,43 +96,39 @@ export async function POST(request) {
     }
 
     // 5. User-Specific Logic (Fetch past bookings)
-    const token = request.headers.get('authorization');
-    if (token) {
+    const user = getUserFromRequest(request);
+    if (user?.sub) {
       try {
-        const { data: { user }, error: authError } = await supabase.auth.getUser(token.replace('Bearer ', ''));
-        if (user && !authError) {
-          
-          // Fetch all confirmed/completed bookings for this user to calculate their history
-          const { data: pastBookings, error: bookingsError } = await supabase
-            .from('bookings')
-            .select('id, applied_coupon')
-            .eq('user_id', user.id)
-            .in('status', ['confirmed', 'completed']);
+        // Fetch all confirmed/completed bookings for this user to calculate their history.
+        const { data: pastBookings, error: bookingsError } = await supabaseAdmin
+          .from('bookings')
+          .select('id, applied_coupon')
+          .eq('user_id', user.sub)
+          .in('status', ['confirmed', 'completed']);
 
-          if (!bookingsError) {
-            const pastCouponsUsedCount = pastBookings.filter(b => b.applied_coupon !== null).length;
-            const pastUsedCodes = pastBookings.map(b => b.applied_coupon).filter(Boolean);
+        if (!bookingsError) {
+          const pastCouponsUsedCount = pastBookings.filter(b => b.applied_coupon !== null).length;
+          const pastUsedCodes = pastBookings.map(b => b.applied_coupon).filter(Boolean);
 
-            // A. Single Use Enforcement
-            if (coupon.is_single_use && pastUsedCodes.includes(coupon.code)) {
-              return NextResponse.json({ 
-                valid: false, 
-                message: 'You have already used this coupon' 
-              }, { status: 400 });
-            }
+          // A. Single Use Enforcement
+          if (coupon.is_single_use && pastUsedCodes.includes(coupon.code)) {
+            return NextResponse.json({
+              valid: false,
+              message: 'You have already used this coupon'
+            }, { status: 400 });
+          }
 
-            // B. Sequence Gating Enforcement
-            const requiredCount = coupon.required_previous_coupons_used;
-            if (requiredCount !== undefined && requiredCount !== null && requiredCount >= 0) {
-              if (pastCouponsUsedCount !== requiredCount) {
-                // Formatting a friendly error message
-                let errorMsg = 'This coupon is not valid for your current sequence';
-                if (requiredCount === 0) errorMsg = 'This coupon is for first-time coupon users only';
-                else if (requiredCount === 1) errorMsg = 'This coupon is unlocked for your second coupon use';
-                else errorMsg = `This coupon requires exactly ${requiredCount} previous coupon uses`;
+          // B. Sequence Gating Enforcement
+          const requiredCount = coupon.required_previous_coupons_used;
+          if (requiredCount !== undefined && requiredCount !== null && requiredCount >= 0) {
+            if (pastCouponsUsedCount !== requiredCount) {
+              // Formatting a friendly error message
+              let errorMsg = 'This coupon is not valid for your current sequence';
+              if (requiredCount === 0) errorMsg = 'This coupon is for first-time coupon users only';
+              else if (requiredCount === 1) errorMsg = 'This coupon is unlocked for your second coupon use';
+              else errorMsg = `This coupon requires exactly ${requiredCount} previous coupon uses`;
 
-                return NextResponse.json({ valid: false, message: errorMsg }, { status: 400 });
-              }
+              return NextResponse.json({ valid: false, message: errorMsg }, { status: 400 });
             }
           }
         }
