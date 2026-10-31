@@ -3,7 +3,7 @@ import { allPosts } from "@/lib/posts/index";
 import styles from "./blog.module.css";
 
 export const metadata = {
-  title: "Self Drive Car Rental Blog | Road Trip Guides | MM Miles",
+  title: "Self Drive Car Rental Blog | Road Trip Guides",
   description:
     "Road trip guides, self drive tips and destination guides from MM Miles. Chennai to Pondicherry, Ooty, Kodaikanal and more.",
   alternates: { canonical: "https://www.mmmiles.com/blog" },

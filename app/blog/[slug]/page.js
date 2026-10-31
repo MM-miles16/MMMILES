@@ -13,7 +13,8 @@ export async function generateMetadata({ params }) {
   const post = getPostBySlug(p.slug);
   if (!post) return { title: "Not Found" };
   return {
-    title: post.metaTitle,
+    // Layout's title template appends "| MM Miles" — drop it here so it isn't doubled
+    title: post.metaTitle.replace(/\s*\|\s*MM Miles$/, ""),
     description: post.metaDescription,
     alternates: { canonical: `https://www.mmmiles.com/blog/${post.slug}` },
     openGraph: {

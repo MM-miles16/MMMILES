@@ -32,7 +32,7 @@ export async function generateMetadata({ params }) {
   const typeData = carTypes.find((t) => t.slug === p.segment);
   if (typeData) {
     return {
-      title: `${typeData.name} Rental in ${city.name} | Self Drive | No Deposit | MM Miles`,
+      title: `${typeData.name} Rental in ${city.name} | Self Drive | No Deposit`,
       description: `Rent ${typeData.name.toLowerCase()} cars in ${city.name}. Zero deposit, unlimited km, home delivery. From ₹${city.priceFrom}/day.`,
       alternates: { canonical: `https://www.mmmiles.com/cities/${city.slug}/${p.segment}` },
       ...cityRobots(city),
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }) {
   const area = getAreaBySlug(p.city, p.segment);
   if (area) {
     return {
-      title: `Car Rental in ${area.name}, ${city.name} | Self Drive | No Deposit | MM Miles`,
+      title: `Car Rental in ${area.name}, ${city.name} | Self Drive | No Deposit`,
       description: `Self drive car rental in ${area.name}, ${city.name}. Home delivery to ${area.name}. Zero deposit, unlimited km. Book in 2 minutes!`,
       keywords: [`car rental ${area.name} ${city.name}`, `self drive car ${area.name}`, `car rental near ${area.name}`].join(", "),
       alternates: { canonical: `https://www.mmmiles.com/cities/${city.slug}/${area.slug}` },
@@ -83,7 +83,6 @@ export default async function SegmentPage({ params }) {
       telephone: city.phone,
       address: { "@type": "PostalAddress", addressLocality: city.name, addressRegion: city.state, addressCountry: "IN" },
       geo: { "@type": "GeoCoordinates", latitude: city.coordinates.lat, longitude: city.coordinates.lng },
-      aggregateRating: { "@type": "AggregateRating", ratingValue: "4.5", reviewCount: "10000" },
       openingHours: "Mo-Su 00:00-23:59", priceRange: "₹₹",
     },
     {

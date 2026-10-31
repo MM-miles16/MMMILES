@@ -30,7 +30,7 @@ export async function generateMetadata({ params }) {
   const city = getCityBySlug(p.city);
   if (!car || !city) return { title: "Not Found" };
   return {
-    title: `${car.name} Rental in ${city.name} | Self Drive | No Deposit | MM Miles`,
+    title: `${car.name} Rental in ${city.name} | Self Drive | No Deposit`,
     description: `Rent ${car.name} in ${city.name} from ₹${car.pricePerDay}/day. Zero deposit, unlimited km, home delivery across ${city.name}. Book in 2 minutes!`,
     keywords: [`${car.name} rental ${city.name}`, `${car.name} self drive ${city.name}`, `rent ${car.name} ${city.name}`].join(", "),
     alternates: { canonical: `https://www.mmmiles.com/rent/${car.slug}/${city.slug}` },

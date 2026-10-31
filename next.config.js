@@ -15,6 +15,10 @@ const nextConfig = {
         destination: "https://www.mmmiles.com/:path*",
         permanent: true,
       },
+
+      // Duplicate area pages merged into one spelling each
+      { source: "/cities/chennai/chrompet", destination: "/cities/chennai/chromepet", permanent: true },
+      { source: "/cities/coimbatore/saravanampatty", destination: "/cities/coimbatore/saravanampatti", permanent: true },
     ];
   },
 

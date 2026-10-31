@@ -107,11 +107,6 @@ export default function HomePage() {
       latitude: 13.0827,
       longitude: 80.2707,
     },
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.5",
-      reviewCount: "10000",
-    },
     openingHours: "Mo-Su 00:00-23:59",
     priceRange: "₹₹",
     currenciesAccepted: "INR",

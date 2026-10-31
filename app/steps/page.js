@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 
 export const metadata = {
-  title: "How to Book Self Drive Car Rental in Chennai | MM Miles",
+  title: "How to Book Self Drive Car Rental in Chennai",
   description:
     "Book self drive car rental in Chennai in 5 easy steps with MM Miles. Select your car, choose dates, upload documents, pay online and get home delivery. Book in 2 minutes!",
   alternates: {

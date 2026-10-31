@@ -6,7 +6,7 @@ export const dynamic = "force-static";
    SEO METADATA
 ========================= */
 export const metadata = {
-  title: "Self Drive Car Rental Chennai | Browse All Cars | MM Miles",
+  title: "Self Drive Car Rental Chennai | Browse All Cars",
   description:
     "Browse all self drive cars available in Chennai at MM Miles. SUVs, sedans, hatchbacks and automatic cars from ₹799/day. Zero deposit, unlimited km, home delivery. Book in 2 minutes!",
   keywords: [
@@ -90,7 +90,7 @@ const areas = [
   { slug: "t-nagar", name: "T Nagar" },
   { slug: "porur", name: "Porur" },
   { slug: "tambaram", name: "Tambaram" },
-  { slug: "chrompet", name: "Chrompet" },
+  { slug: "chromepet", name: "Chromepet" },
   { slug: "adyar", name: "Adyar" },
   { slug: "nungambakkam", name: "Nungambakkam" },
   { slug: "mogappair", name: "Mogappair" },

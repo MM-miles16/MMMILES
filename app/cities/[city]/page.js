@@ -25,7 +25,7 @@ export async function generateMetadata({ params }) {
   const city = getCityBySlug(p.city);
   if (!city) return { title: "Not Found" };
   return {
-    title: `Self Drive Car Rental in ${city.name} | No Deposit, Unlimited KM | MM Miles`,
+    title: `Self Drive Car Rental in ${city.name} | No Deposit, Unlimited KM`,
     description: `Rent self drive cars in ${city.name} from ₹${city.priceFrom}/day. Zero deposit, unlimited km, home delivery across all ${city.name} areas. 10,000+ happy customers.`,
     keywords: [`self drive car rental ${city.name}`, `car rental in ${city.name}`, `rent a car ${city.name}`, `no deposit car rental ${city.name}`].join(", "),
     alternates: { canonical: `https://www.mmmiles.com/cities/${city.slug}` },
@@ -61,7 +61,6 @@ export default async function CityPage({ params }) {
         addressCountry: "IN",
       },
       geo: { "@type": "GeoCoordinates", latitude: city.coordinates.lat, longitude: city.coordinates.lng },
-      aggregateRating: { "@type": "AggregateRating", ratingValue: "4.5", reviewCount: "10000" },
       openingHours: "Mo-Su 00:00-23:59",
       priceRange: "₹₹",
     },

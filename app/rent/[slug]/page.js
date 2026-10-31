@@ -24,7 +24,7 @@ export async function generateMetadata({ params }) {
   const car = getCarBySlug(p.slug);
   if (!car) return { title: "Not Found" };
   return {
-    title: `${car.name} Self Drive Rental in Chennai | No Deposit | MM Miles`,
+    title: `${car.name} Self Drive Rental in Chennai | No Deposit`,
     description: `Rent ${car.name} for self drive from ₹${car.pricePerDay}/day. Zero deposit, unlimited km, fully insured, home delivery. Book in 2 minutes!`,
     keywords: [`${car.name} rental Chennai`, `${car.name} self drive Chennai`, `rent ${car.name} Chennai`].join(", "),
     alternates: { canonical: `https://www.mmmiles.com/rent/${car.slug}` },

@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Self Drive Car Rental FAQs Chennai | MM Miles",
+  title: "Self Drive Car Rental FAQs Chennai",
   description:
     "Answers to all your self drive car rental questions in Chennai. Security deposit, documents needed, unlimited km, home delivery, fuel policy, insurance coverage and more.",
   keywords: [

@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 
 export const metadata = {
-  title: "Top Self Drive Cars in Chennai | Best Rated Rentals | MM Miles",
+  title: "Top Self Drive Cars in Chennai | Best Rated Rentals",
   description:
     "Browse the top rated self drive cars available for rent in Chennai. SUVs, sedans and hatchbacks — best reviewed by 10,000+ customers at MM Miles. Book now!",
   alternates: {
