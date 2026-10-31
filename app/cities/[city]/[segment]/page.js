@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cars, carTypes, getCarsByType } from "@/lib/cars";
-import { getActiveCities, getCityBySlug, getAreaBySlug } from "@/lib/cities";
+import { getActiveCities, getCityBySlug, getAreaBySlug, cityRobots } from "@/lib/cities";
 
 import Hero from "@/app/components/Hero";
 import HomeContent from "@/app/components/HomeContent";
@@ -35,6 +35,7 @@ export async function generateMetadata({ params }) {
       title: `${typeData.name} Rental in ${city.name} | Self Drive | No Deposit | MM Miles`,
       description: `Rent ${typeData.name.toLowerCase()} cars in ${city.name}. Zero deposit, unlimited km, home delivery. From ₹${city.priceFrom}/day.`,
       alternates: { canonical: `https://www.mmmiles.com/cities/${city.slug}/${p.segment}` },
+      ...cityRobots(city),
     };
   }
 
@@ -45,6 +46,7 @@ export async function generateMetadata({ params }) {
       description: `Self drive car rental in ${area.name}, ${city.name}. Home delivery to ${area.name}. Zero deposit, unlimited km. Book in 2 minutes!`,
       keywords: [`car rental ${area.name} ${city.name}`, `self drive car ${area.name}`, `car rental near ${area.name}`].join(", "),
       alternates: { canonical: `https://www.mmmiles.com/cities/${city.slug}/${area.slug}` },
+      ...cityRobots(city),
       openGraph: {
         title: `Car Rental in ${area.name}, ${city.name} | MM Miles`,
         description: `Self drive car rental in ${area.name}, ${city.name}. Zero deposit, home delivery.`,

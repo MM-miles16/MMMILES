@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cars } from "@/lib/cars";
-import { getActiveCities, getCityBySlug } from "@/lib/cities";
+import { getActiveCities, getCityBySlug, cityRobots } from "@/lib/cities";
 
 // ── Exact same imports as your app/page.js ────────────────────────────────────
 import Hero from "@/app/components/Hero";
@@ -29,6 +29,7 @@ export async function generateMetadata({ params }) {
     description: `Rent self drive cars in ${city.name} from ₹${city.priceFrom}/day. Zero deposit, unlimited km, home delivery across all ${city.name} areas. 10,000+ happy customers.`,
     keywords: [`self drive car rental ${city.name}`, `car rental in ${city.name}`, `rent a car ${city.name}`, `no deposit car rental ${city.name}`].join(", "),
     alternates: { canonical: `https://www.mmmiles.com/cities/${city.slug}` },
+    ...cityRobots(city),
     openGraph: {
       title: `Self Drive Car Rental in ${city.name} | MM Miles`,
       description: `Rent self drive cars in ${city.name}. Zero deposit, unlimited km. Book now!`,

@@ -903,6 +903,9 @@
 # uploads/
 # downloads/
 
+# Search Console exports (npm run gsc)
+gsc-data/
+
 # Claude Agent SDK debug files
 **/.claude/debug/
 **/.claude/debug/**

@@ -1,10 +1,11 @@
 import { cars, carTypes } from "@/lib/cars";
-import { cities } from "@/lib/cities";
+import { getIndexableCities } from "@/lib/cities";
 
 const BASE = "https://www.mmmiles.com";
 
 export default function sitemap() {
-  const active = cities.filter((c) => c.active);
+  // Only cities Google may index — noindex cities (Bangalore, Coimbatore) are left out
+  const active = getIndexableCities();
 
   const staticPages = [
     { url: BASE, priority: 1.0, changeFrequency: "weekly" },
