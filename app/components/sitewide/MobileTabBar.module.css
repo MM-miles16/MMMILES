@@ -1,0 +1,77 @@
+/* Mobile tab bar — floating rounded bar, phones only */
+
+.spacer,
+.bar {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  /* keeps the end of every page clear of the bar */
+  .spacer {
+    display: block;
+    height: calc(88px + env(safe-area-inset-bottom));
+  }
+
+  .bar {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+    z-index: 950; /* under the header menu (1000), chat (9999) and the search filters sheet */
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    padding: 6px;
+    border-radius: 24px;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: saturate(160%) blur(16px);
+    -webkit-backdrop-filter: saturate(160%) blur(16px);
+    box-shadow: 0 14px 34px -14px rgba(34, 34, 46, 0.4), 0 0 0 1px rgba(34, 34, 46, 0.06);
+    font-family: var(--mm-font);
+    transition: transform 0.25s, opacity 0.25s;
+  }
+
+  .away {
+    transform: translateY(140%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    height: 54px;
+    border-radius: 18px;
+    color: #8b8b96;
+    font-size: 11px;
+    font-weight: 600;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.2s, color 0.2s, transform 0.15s;
+  }
+
+  .item:active {
+    transform: scale(0.95);
+  }
+
+  /* Active tab: Midnight tile, like the reference's selected date */
+  .active {
+    background: var(--mm-midnight);
+    color: var(--mm-on-dark);
+  }
+
+  .item:focus-visible {
+    outline: 2px solid var(--mm-lavender-deep);
+    outline-offset: 2px;
+  }
+}
+
+@media (max-width: 760px) and (prefers-reduced-motion: reduce) {
+  .bar,
+  .item {
+    transition: none;
+  }
+}

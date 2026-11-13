@@ -1,0 +1,80 @@
+/* Closing CTAs — rent (Midnight) and host (Lavender) side by side */
+
+.section {
+  padding-top: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  overflow: hidden;
+  min-height: 340px;
+  padding: clamp(28px, 4vw, 48px);
+  border-radius: var(--mm-radius-xl);
+}
+
+.dark {
+  background: var(--mm-midnight) url("/landing/topo-dark.svg") right -140px top -100px / 640px auto no-repeat;
+  color: var(--mm-on-dark);
+}
+
+.lavender {
+  background: var(--mm-lavender) url("/landing/topo-light.svg") right -140px top -100px / 640px auto no-repeat;
+  color: var(--mm-ink);
+}
+
+.art {
+  position: absolute;
+  top: clamp(20px, 3vw, 36px);
+  right: clamp(20px, 3vw, 36px);
+  width: clamp(96px, 11vw, 150px);
+  height: auto;
+  filter: drop-shadow(0 20px 24px rgba(0, 0, 0, 0.25));
+}
+
+.title {
+  max-width: 440px;
+  margin: auto 0 0;
+  text-wrap: balance;
+  padding-top: 110px;
+  font-family: var(--mm-font);
+  font-size: clamp(26px, 3vw, 36px);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  color: inherit;
+}
+
+.text {
+  max-width: 400px;
+  margin: 12px 0 28px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.dark .text {
+  color: var(--mm-on-dark-muted);
+}
+
+.lavender .text {
+  color: var(--mm-ink-2);
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .card {
+    min-height: 0;
+  }
+}

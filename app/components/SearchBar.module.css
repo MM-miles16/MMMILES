@@ -1,483 +1,390 @@
-/* components/UnifiedSearchBar.module.css */
+/* Search bar — redesign (tokens in styles/tokens.css).
+   One white card: City | Location | Pick-up & return | Search. */
 
 .container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 2rem ;
-    background: #FEF9F5; 
+  width: 100%;
+  max-width: var(--mm-container);
+  margin: 24px auto;
+  padding: 0 var(--mm-gutter);
+  font-family: var(--mm-font);
 }
 
-/* --- Single Unified Box --- */
 .box {
-    display: flex;
-    align-items: center;
-    gap: 25px; 
-    background: #F9F4EC; 
-    border-radius: 20px;
-    padding: 15px 20px;
-    width: 90%;
-    max-width: 1150px;
-    font-family: "Poppins", sans-serif;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-wrap: wrap; /* quick-date chips take their own row */
+  align-items: stretch;
+  gap: 6px;
+  padding: 10px;
+  background: var(--mm-bg);
+  border-radius: 26px;
+  box-shadow: var(--mm-shadow-lg), 0 0 0 1px rgba(34, 34, 46, 0.04);
 }
 
-
-/* --- Field Structure --- */
+/* ── Fields ── */
 .field {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1; 
-    min-width: 120px;
-    max-width: 290px; 
-    position: relative; /* Crucial for positioning the dropdown list */
+  position: relative; /* anchors the suggestions dropdown */
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  padding: 10px 18px;
+  border-radius: 18px;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
 }
 
+/* The location field gets a little more room */
+.field:has(.textInput) {
+  flex-grow: 1.35;
+}
+
+.field:hover {
+  background: var(--mm-mist);
+}
+
+.field:focus-within {
+  background: var(--mm-mist);
+  box-shadow: inset 0 0 0 2px var(--mm-lavender);
+}
 
 .label {
-    font-weight: 700;
-    margin-bottom: 6px;
-    font-size: 15px !important;
-    color: #333;
-    font-family: Frank Ruhl Libre;
+  display: block;
+  margin: 0 0 4px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--mm-muted);
+  cursor: inherit;
 }
 
-/* Key Style: Prominent White Input Box (Applied to all four inputs) */
 .inputWrapper {
-    display: flex;
-    align-items: center;
-    background: #FEF9F5; 
-    border-radius: 12px; 
-    padding: 12px 14px; 
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04); 
-    height: 100%; 
-    /* Only Location input wrapper is truly interactive */
-    cursor: pointer; 
-}
-
-/* Icon (Marker/Calendar) */
-.icon {
-    color: #d4a762;
-    margin-right: 10px; 
-    font-size: 16px; 
-    flex-shrink: 0;
-}
-
-/* New: Dropdown Arrow (Only visible in Location field) */
-.dropdownArrow {
-    color: #d4a762;
-    margin-left: auto; /* Push to the right */
-    transition: transform 0.2s ease;
-    font-size: 15px;
-}
-
-.arrowUp {
-    transform: rotate(180deg);
-}
-
-/* Text inside the custom dropdown input wrapper */
-.placeholderText{
-    flex-grow: 1;
-    font-size: 16px;
-    font-weight: 700;
-    color: #aca4a4;
-    padding: 0; 
-    width: 100%;
-    /* Ensure the text itself is not clickable to allow the wrapper click handler to work */
-    pointer-events: none; 
-    font-family: Darker Grotesque;
-}
-
-.selectedText {
-    flex-grow: 1;
-    font-size: 16px;
-    font-weight: 700;
-    color: #4d4545;
-    padding: 0; 
-    width: 100%;
-    /* Ensure the text itself is not clickable to allow the wrapper click handler to work */
-    pointer-events: none; 
-    font-family: Darker Grotesque;
-}
-
-.placeholderText {
-    color: #aca4a4; 
-}
-
-
-
-
-/* --- Read-Only Input (Pick Up Field) --- */
-.readOnlyInput {
-    border: none;
-    background: transparent;
-    outline: none;
-    font-size: 15px;
-    font-weight:700 !important;
-    padding: 0; 
-    width: 100%;
-    color: #aca4a4; /* Muted placeholder style */
-    cursor: default;
-    font-family: Darker Grotesque;
-}
-
-
-/* --- Date Picker Inputs --- */
-.dateInput {
-    border: none;
-    background: transparent;
-    outline: none;
-    font-size: 15px;
-    padding: 0; 
-    width: 100%;
-    color: #333;
-    cursor: pointer;
-}
-
-.dateInput::placeholder {
-    color: #a0a0a0;
-}
-
-
-/* --- Custom Dropdown List Styling (ONLY FOR LOCATION) --- */
-.dropdownList {
-    position: absolute;
-    top: 100%; 
-    left: 0;
-    z-index: 100;
-    width: 100%;
-    list-style: none;
-    padding: 0;
-    margin-top: 5px; 
-    background: #fff;
-    border: 1px solid #e08f8f;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    max-height: 200px;
-    overflow-y: auto;
-}
-
-.dropdownItem {
-    padding: 12px 18px;
-    cursor: pointer;
-    font-size: 15px;
-    color: #222;
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-/* Hover Effect */
-.dropdownItem:hover {
-    background-color: #fce4b3; 
-    color: #000;
-}
-
-
-/* Separator Line and Search Button styles remain the same... */
-.separator {
-    width: 1px;
-    background-color: #ddd; 
-    height: 50px;
-    align-self: center;
-    flex-shrink: 0; 
-}
-
-.searchButton {
-    background: linear-gradient(to right, #D8B480 50%, #BF9860 100%);
-    border: none;
-    color: #fff; 
-    border-radius: 50%;
-    width: 60px; 
-    height: 60px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: transform 0.18s ease, box-shadow 0.18s ease;
-    
-    font-size: 24px;
-    flex-shrink: 0; 
-}
-
-.searchButton:hover {
-    
-}
-
-
-
-@media (max-width: 1200px) {
-    .box { flex-wrap: wrap; justify-content: space-between; }
-    .field { min-width: 45%; max-width: unset; }
-    .separator { display: none; }
-}
-
-@media (max-width: 768px) {
-    .box { flex-direction: column; gap: 15px; padding: 15px; }
-    .field { width: 100%; min-width: unset; }
-    .searchButton { width: 100%; height: 50px; border-radius: 10px; }
-}
-
-@media (max-width: 480px) {
-    .box { 
-       flex-direction: column;
-       gap: 15px;
-       padding: 10px 15px;
-       
-       }
-     .container {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          padding: 20px 10px ;
-          background: #FEF9F5; 
-      }
-  
-}   
-.modalOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
-  justify-content: center;
-  z-index: 50;
+  gap: 8px;
+  min-height: 30px;
 }
 
-.modalContent {
-  background: linear-gradient(to right bottom, #f7f5f2, #ffedd7); 
-  color: #333;
-  border-radius: 16px;
-  padding: 2rem;
-  width: 360px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-  text-align: center;
-}
-
-.datePickerInput {
-  width: 100%;
-  margin: 10px 0;
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px solid #000000;
-  font-size: 0.8rem;
-  font-weight: bold;
-  font-family: poppins;
-}
-
-.sliderRow {
-  margin-top: 1rem;
-  text-align: left;
-}
-
-.slider {
-  width: 100%;
-  margin-top: 5px;
-  accent-color: var(--primary-color,  #D8B480);
-}
-
-.modalButtons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 1.5rem;
-}
-
-.confirmBtn {
-  background: linear-gradient(to right, #D8B480 0%, #BF9860 100%);
-  color: white;
-  padding: 0.6rem 1.2rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.cancelBtn {
-  background: transparent;
-  padding: 0.6rem 1.2rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-/* --- Manual Location Search --- */
-.textInput {
-  flex-grow: 1;
-  border: none;
+.inputWrapper:focus-visible {
   outline: none;
-  background: transparent;
-  font-size: 16px;
-  font-family: Darker Grotesque;
-  font-weight: 700;
-  opacity: 0.7;
-  
 }
 
-.smallButton {
-  background: #fff;
-  border: 1px solid #d4a762;
-  color: #d4a762;
-  margin-left: 6px;
-  border-radius: 8px;
-  width: 27px;
-  height: 27px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  transition: background-color 0.15s ease, transform 0.15s ease;
-  flex-shrink: 0;
-}
-
-.smallButton:hover {
-  
-  transform: scale(1.05);
-}
-
-/* --- Suggestion Dropdown (manual search results) --- */
-.suggestionsList {
-  position: absolute;
-  top: 110%;
-  left: 0;
-  width: 100%;
-  background: #fff;
-  border-radius: 12px;
-  border: 1px solid #e8d1a8;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  max-height: 220px;
-  overflow-y: auto;
-  z-index: 150;
-  scrollbar-width: thin;
-  scrollbar-color: #d4a762 #fff;
-}
-
-.suggestionsList::-webkit-scrollbar {
-  width: 6px;
-}
-.suggestionsList::-webkit-scrollbar-thumb {
-  background: #d4a762;
-  border-radius: 4px;
-}
-
-/* Suggestion Item */
-.suggestionItem {
-  padding: 12px 16px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  border-bottom: 1px solid #f4e6c8;
-}
-
-.suggestionItem:hover {
-  background-color: #fce4b3;
-}
-
-.suggestionItem:last-child {
-  border-bottom: none;
-}
-
-/* Disabled / Loading Text */
-.suggestionItemDisabled {
-  padding: 12px 16px;
-  font-size: 14px;
-  color: #999;
-  text-align: center;
-}
-
-/* Suggestion Content (title & meta stacked neatly) */
-.suggestionTitle {
-  font-weight: 500;
-  color: #333;
-}
-
-.suggestionMeta {
-  font-size: 12px;
-  color: #777;
-  margin-top: 2px;
-}
-
-/* --- Detected/Selected Address (small info below field) --- */
-.detectedAddress {
-  font-size: 12px;
-  font-weight: 500;
-  color: #777;
-  margin-top: 4px;
-  padding-left: 4px;
-  max-width: 95%;
-  white-space: nowrap;
+.placeholderText,
+.selectedText {
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
+  font-size: 15px;
+  white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-/* --- Layout Enhancement for Search Input Section --- */
-.field .inputWrapper {
-  flex-wrap: nowrap;
-  padding-right: 8px;
-  gap: 6px;
-}
-
-/* Separate the GPS button visually (segmented look) */
-.field .inputWrapper .smallButton:last-child {
-  margin-left: auto;
-  border-left: 2px solid #f4e6c8;
-  border-radius: 8px;
-  background: transparent;
-}
-
-/* Optional subtle animation for detecting text */
-.loadingText {
-  font-size: 14px;
-  color: #d4a762;
+.placeholderText {
   font-weight: 500;
-  animation: pulse 1.4s infinite ease-in-out;
+  color: #9a9aa4;
 }
 
-@keyframes pulse {
-  0% { opacity: 0.3; }
-  50% { opacity: 1; }
-  100% { opacity: 0.3; }
+.selectedText {
+  font-weight: 600;
+  color: var(--mm-ink);
 }
 
-/* --- Progress/Loading Indicator Text --- */
+.icon {
+  order: -1; /* show the marker/calendar icon first */
+  flex: none;
+  font-size: 15px;
+  color: var(--mm-lavender-deep);
+}
+
+.dropdownArrow {
+  flex: none;
+  font-size: 12px;
+  color: var(--mm-muted);
+}
+
+.separator {
+  flex: none;
+  width: 1px;
+  margin: 14px 0;
+  background: var(--mm-border);
+}
+
+.textInput,
+.readOnlyInput {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--mm-ink);
+  text-overflow: ellipsis;
+  outline: none;
+}
+
+.textInput::placeholder,
+.readOnlyInput::placeholder {
+  font-weight: 500;
+  color: #9a9aa4;
+  opacity: 1;
+}
+
+.readOnlyInput {
+  cursor: pointer;
+}
+
+/* Small square buttons inside the location field (search / clear / GPS) */
+.smallButton {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: var(--mm-mist);
+  color: var(--mm-ink-2);
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.field:hover .smallButton,
+.field:focus-within .smallButton {
+  background: var(--mm-bg);
+}
+
+.smallButton:hover {
+  color: var(--mm-ink);
+}
+
+.smallButton:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.loadingText {
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .progressText {
   margin-top: 6px;
   font-size: 12px;
-  font-weight: 500;
-  color: #d4a762;
-  display: flex;
+  color: var(--mm-muted);
+}
+
+/* ── Search button ── */
+.searchButton {
+  display: inline-flex;
+  flex: none;
   align-items: center;
-  animation: fadeSlide 1.2s ease-in-out infinite;
+  justify-content: center;
+  gap: 10px;
+  min-width: 150px;
+  padding: 0 28px;
+  border: 0;
+  border-radius: 18px;
+  background: var(--mm-midnight);
+  color: var(--mm-on-dark);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
 }
 
-@keyframes fadeSlide {
-  0% { opacity: 0.3; transform: translateY(0px); }
-  50% { opacity: 1; transform: translateY(1px); }
-  100% { opacity: 0.3; transform: translateY(0px); }
+.searchButton:hover {
+  background: var(--mm-midnight-hover);
+  box-shadow: var(--mm-shadow-md);
 }
 
-.dateTimeSection {
+.field:focus-visible,
+.smallButton:focus-visible,
+.searchButton:focus-visible {
+  outline: 2px solid var(--mm-lavender-deep);
+  outline-offset: 2px;
+}
+
+/* ── Quick date chips (Today · Tomorrow · This weekend · Pick dates) ── */
+.quickDates {
+  order: 1; /* desktop/tablet: a row under the fields; phone: stays above the Search button */
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px 2px;
 }
 
-@media (min-width: 600px) {
-  .dateTimeSection {
-    flex-direction: row;
-    justify-content: space-between;
+.quickChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 15px;
+  border: none;
+  border-radius: var(--mm-radius-pill);
+  background: var(--mm-mist);
+  color: var(--mm-ink-2);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+}
+
+.quickChip svg {
+  font-size: 12px;
+}
+
+.quickChip:hover {
+  background: var(--mm-mist-strong);
+  color: var(--mm-ink);
+}
+
+.quickChip:active {
+  transform: scale(0.96);
+}
+
+.quickChipActive,
+.quickChipActive:hover {
+  background: var(--mm-midnight);
+  color: var(--mm-on-dark);
+}
+
+.quickChip:focus-visible {
+  outline: 2px solid var(--mm-lavender-deep);
+  outline-offset: 2px;
+}
+
+/* ── Location suggestions ── */
+.suggestionsList {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  z-index: 60;
+  width: max(100%, 380px);
+  max-width: calc(100vw - 32px);
+  max-height: 320px;
+  margin: 0;
+  padding: 6px;
+  overflow-y: auto;
+  list-style: none;
+  background: var(--mm-bg);
+  border: 1px solid var(--mm-border);
+  border-radius: 18px;
+  box-shadow: var(--mm-shadow-lg);
+  cursor: default;
+}
+
+.suggestionItem {
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.suggestionItem:hover,
+.suggestionItem[aria-selected="true"] {
+  background: var(--mm-mist);
+}
+
+.suggestionTitle {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--mm-ink);
+}
+
+.suggestionMeta {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--mm-muted);
+  text-transform: capitalize;
+}
+
+.suggestionItemDisabled {
+  padding: 10px 12px;
+  font-size: 14px;
+  color: var(--mm-muted);
+}
+
+/* ── Tablet: City | Location, then Dates | Search ── */
+@media (max-width: 1024px) {
+  .box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .separator {
+    display: none;
+  }
+
+  .searchButton {
+    min-height: 60px;
+  }
+
+  .quickDates {
+    grid-column: 1 / -1;
   }
 }
 
-.dateTimeBlock {
-  flex: 1;
-  background: #fffaf3;
-  border-radius: 10px;
-  padding: 1rem;
-  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.08);
+/* ── Phone: stacked fields that look like inputs ── */
+@media (max-width: 760px) {
+  .box {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 22px;
+  }
+
+  .field {
+    padding: 10px 14px;
+    background: var(--mm-mist);
+    border-radius: 16px;
+  }
+
+  .searchButton {
+    width: 100%;
+    min-height: 54px;
+    border-radius: 16px;
+  }
+
+  .suggestionsList {
+    width: 100%;
+  }
+
+  .quickDates {
+    order: 0; /* natural order: right under the date field */
+    padding: 2px 0;
+  }
+
+  .quickChip {
+    height: 38px;
+    background: var(--mm-bg);
+    box-shadow: inset 0 0 0 1px var(--mm-border);
+  }
+
+  /* keep the selected style ahead of the white phone chips above */
+  .quickChipActive,
+  .quickChipActive:hover {
+    background: var(--mm-midnight);
+    box-shadow: none;
+  }
 }
 
-.modalLabel {
-  display: block;
-  font-weight: 500;
-  font-size: 14px;
-  color: #444;
-  margin: 6px 0;
+@media (prefers-reduced-motion: reduce) {
+  .quickChip {
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .field,
+  .smallButton,
+  .searchButton {
+    transition: none;
+  }
 }

@@ -2,9 +2,9 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Add padding to body to account for fixed navbar */
+/* Add padding to body to account for the fixed header (height token in styles/tokens.css) */
 body {
-  padding-top: 60px; /* Height of the fixed navbar */
+  padding-top: var(--mm-header-h, 60px);
 }
 
 .seo-hidden {
@@ -38,6 +38,7 @@ body.hide-footer #global-footer {
 
 /* Hide header and footer for portal */
 body.hide-nav-footer .navbar,
+body.hide-nav-footer #global-header,
 body.hide-nav-footer #global-footer {
   display: none !important;
 }

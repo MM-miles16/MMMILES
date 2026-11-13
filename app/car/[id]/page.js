@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { estimatePrice } from "../../../lib/pricing";
+import { formatDuration, formatINR, tripPrice, WEEKEND_SURGE } from "../../../lib/tripPrice";
 import { supabase } from "../../../lib/supabaseClient";
 import Loading from "../../components/Loading";
 import EmptyState from "../../components/EmptyState";
@@ -154,37 +155,11 @@ export default function CarPage() {
   // Insurance is now calculated automatically based on booking duration tier
   // No user selection needed - insurance is included in the total price
   const baseDailyRate = car.base_daily_rate || 0;
-  let displayHourlyRate = Math.round(baseDailyRate / 24);
-  // Default insurance for 1 day (Tier 1 divisor is ~9.4, but let's use a safe estimate or base it on 24h)
-  // Check pricing.js: TIER_1 (6-12h) divisor 9.4. TIER_2 (12-24h) same. 
-  // Let's use standard assumption for "Starting At" logic or just base rate / 9.4 rounded.
-  let displayInsurance = Math.round(baseDailyRate / 9.4);
-
-  if (pickup && returnTime) {
-      // Parse dates for pricing estimate
-       const parseDateTime = (str) => {
-            if (!str) return null;
-            const parts = str.split(' ');
-            if (parts.length < 2) return null;
-            const [dateStr, timeStr] = parts;
-            const [day, month, year] = dateStr.split('/');
-            const [hour, _] = timeStr.split(':');
-            return new Date(year, month - 1, day, hour, 0);
-        };
-      
-      const start = parseDateTime(pickup);
-      const end = parseDateTime(returnTime);
-      
-      if (start && end && end > start) {
-           const diffMs = end - start;
-           const hours = Math.ceil(diffMs / 3600000);
-           if (hours > 0) {
-               const estimated = estimatePrice(baseDailyRate, hours);
-               displayHourlyRate = estimated.hourlyRate;
-               displayInsurance = estimated.insuranceCost;
-           }
-      }
-  }
+  // All-in price for the selected trip — same calculation as checkout, incl. the weekend rate.
+  // Without valid dates it's a 1-day weekday price.
+  const trip = tripPrice(baseDailyRate, pickup, returnTime);
+  // Insurance doesn't depend on the weekend rate, only on the trip length tier
+  const displayInsurance = baseDailyRate ? estimatePrice(baseDailyRate, trip?.hours || 24).insuranceCost : 0;
 
   const baseHourlyRate = Math.round(baseDailyRate / 24); // Keep for stats if needed, or use displayHourlyRate
 
@@ -236,10 +211,20 @@ export default function CarPage() {
             {car.make} {car.model} {/*({car.model_year})*/}
           </h1>
           <p className={styles.priceTag}>
-            <span className={styles.startingAt}>Starting At</span>
+            <span className={styles.startingAt}>
+              {trip?.isTrip ? `Your trip · ${formatDuration(trip.hours)}` : "Starting at"}
+            </span>
             <br />
-            <span className={styles.priceValue}>₹{displayHourlyRate}</span>
-            <span className={styles.priceUnit}>/hour</span>
+            <span className={styles.priceValue}>{trip ? formatINR(trip.total) : "—"}</span>
+            <span className={styles.priceUnit}>{trip?.isTrip ? " all-in" : "/day all-in"}</span>
+            {trip?.weekendHours > 0 && (
+              <>
+                <br />
+                <span className={styles.startingAt}>
+                  Includes weekend rate (+{Math.round(WEEKEND_SURGE * 100)}%) for {trip.weekendHours} hrs
+                </span>
+              </>
+            )}
           </p>
 
           <p className={styles.description}>{car.description || "TODO: Add car description."}</p>

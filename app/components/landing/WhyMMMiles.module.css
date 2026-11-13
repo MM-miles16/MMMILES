@@ -1,0 +1,154 @@
+/* Why MM Miles — bento grid in the reference's card colours */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: minmax(230px, auto);
+  gap: 20px;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 28px;
+  border-radius: var(--mm-radius-lg);
+}
+
+.sky {
+  background: var(--mm-sky);
+}
+
+.lavender {
+  background: var(--mm-lavender);
+}
+
+.mist {
+  background: var(--mm-mist);
+}
+
+.art {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 22px;
+}
+
+.cardTitle {
+  margin: 0;
+  font-family: var(--mm-font);
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--mm-ink);
+}
+
+.cardText {
+  margin: 8px 0 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--mm-ink-2);
+}
+
+/* ── Big Midnight card ── */
+.big {
+  grid-column: span 2;
+  grid-row: span 2;
+  justify-content: flex-end;
+  padding: clamp(28px, 3.5vw, 44px);
+  background: var(--mm-midnight) url("/landing/topo-dark.svg") left -120px top -80px / 720px auto no-repeat;
+}
+
+.big .cardTitle {
+  font-size: clamp(22px, 2.2vw, 28px);
+  color: var(--mm-on-dark);
+}
+
+.big .cardText {
+  max-width: 440px;
+  font-size: 16px;
+  color: var(--mm-on-dark-muted);
+}
+
+.bigArt {
+  position: absolute;
+  top: clamp(20px, 3vw, 40px);
+  right: clamp(20px, 3vw, 40px);
+  width: clamp(120px, 14vw, 190px);
+  height: auto;
+  transform: rotate(-8deg);
+  filter: drop-shadow(0 24px 30px rgba(0, 0, 0, 0.35));
+}
+
+.stat {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0 0 18px;
+  font-size: clamp(64px, 8vw, 104px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--mm-on-dark);
+}
+
+.stat span {
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--mm-lavender);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chips li {
+  padding: 8px 14px;
+  border-radius: var(--mm-radius-pill);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--mm-on-dark);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+@media (max-width: 1080px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: auto;
+  }
+
+  .big {
+    grid-row: auto;
+    min-height: 420px;
+  }
+}
+
+@media (max-width: 560px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .card {
+    padding: 22px;
+  }
+
+  /* leave room for the wallet above the text (beats the .card padding above) */
+  .card.big {
+    grid-column: auto;
+    min-height: 0;
+    padding-top: 150px;
+  }
+
+  .art {
+    width: 52px;
+    height: 52px;
+    margin-bottom: 14px;
+  }
+}

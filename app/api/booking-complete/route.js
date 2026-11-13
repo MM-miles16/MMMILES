@@ -316,7 +316,8 @@ export async function POST(request) {
           baseDailyRate,
           pickupTime: new Date(booking.start_time),
           returnTime: new Date(booking.end_time),
-          discount: 0 // Get base pricing first
+          discount: 0, // Get base pricing first
+          faceValueTimes: true, // bookings store IST clock time as UTC (formatDateTimeForDB)
         });
 
         rentalCost = pricing.costs.rentalCost;

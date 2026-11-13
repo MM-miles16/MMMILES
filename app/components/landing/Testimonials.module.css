@@ -1,0 +1,110 @@
+/* Testimonials — 3-column cards; first one in Midnight, like the reference's dark card */
+
+.section {
+  background: linear-gradient(180deg, var(--mm-bg) 0%, var(--mm-mist) 100%);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  padding: 28px;
+  border-radius: var(--mm-radius-lg);
+  background: var(--mm-bg);
+  box-shadow: var(--mm-shadow-sm);
+}
+
+.quoteIcon {
+  color: var(--mm-lavender);
+  fill: var(--mm-lavender);
+}
+
+.text {
+  flex: 1;
+  margin: 16px 0 24px;
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--mm-ink);
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+.name {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--mm-ink);
+}
+
+.context {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--mm-muted);
+}
+
+.featured {
+  background: var(--mm-midnight) url("/landing/topo-dark.svg") right -160px bottom -120px / 560px auto no-repeat;
+  box-shadow: var(--mm-shadow-md);
+}
+
+.featured .text,
+.featured .name {
+  color: var(--mm-on-dark);
+}
+
+.featured .context {
+  color: var(--mm-on-dark-muted);
+}
+
+@media (max-width: 1080px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Phone: swipeable row */
+@media (max-width: 640px) {
+  .grid {
+    display: flex;
+    gap: 12px;
+    margin: 0 calc(-1 * var(--mm-gutter));
+    padding: 4px var(--mm-gutter) 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--mm-gutter);
+    scrollbar-width: none;
+  }
+
+  .grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .card {
+    flex: 0 0 82%;
+    padding: 22px;
+    scroll-snap-align: start;
+  }
+
+  .text {
+    font-size: 15px;
+  }
+}

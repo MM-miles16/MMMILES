@@ -2,8 +2,10 @@
 
 import { usePathname } from "next/navigation";
 
-import Navbar from "./Navbar";
-import Footer from "./Footer";
+// Folder is "sitewide", not "site": .gitignore ignores every **/site/ directory
+import SiteHeader from "./sitewide/SiteHeader";
+import SiteFooter from "./sitewide/SiteFooter";
+import MobileTabBar from "./sitewide/MobileTabBar";
 
 export default function LayoutWrapper({ children }) {
 
@@ -14,16 +16,18 @@ export default function LayoutWrapper({ children }) {
     pathname.startsWith("/host-registration-form");
 
   const hideFooter =
-    
+
     pathname.startsWith("/dashboard");
 
   return (
     <>
-      {!hideNavbar && <Navbar />}
+      {!hideNavbar && <SiteHeader />}
 
       {children}
 
-      {!hideFooter && <Footer />}
+      {!hideFooter && <SiteFooter />}
+
+      <MobileTabBar />
     </>
   );
 }

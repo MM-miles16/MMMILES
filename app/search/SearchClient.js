@@ -4,7 +4,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
-import { estimatePrice } from "../../lib/pricing";
+import { formatINR, perPerson, tripPrice } from "../../lib/tripPrice";
 import { FaFilter, FaSearch, FaMapMarkerAlt, FaClock, FaCar, FaGasPump, FaCog, FaUsers, FaCalendarAlt, FaChevronDown, FaStar, FaMedal, FaAirFreshener, FaAirbnb, FaSafari, FaFirstAid, FaUserFriends, FaChair, FaRegSave, FaSatellite, FaPhone, FaHeart, FaRegHeart, FaCrown, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import styles from "./filters.module.css";
 import LocationPickerModal from "../components/LocationPickerModal";
@@ -75,34 +75,11 @@ function CarCard({ car, pickup, returndate, router, city }) {
     // TODO: Call API to toggle wishlist
   };
 
-  // Calculate dynamic price based on duration
-  const baseDailyRate = car.base_daily_rate || 0;
-  let displayHourlyRate = Math.round(baseDailyRate / 24);
-
-  if (pickup && returndate) {
-    // Helper to parse "DD/MM/YYYY HH:MM"
-    const parseDateTime = (str) => {
-        if (!str) return null;
-        const parts = str.split(' ');
-        if (parts.length < 2) return null;
-        const [dateStr, timeStr] = parts;
-        const [day, month, year] = dateStr.split('/');
-        const [hour, _] = timeStr.split(':');
-        return new Date(year, month - 1, day, hour, 0);
-    };
-
-    const start = parseDateTime(pickup);
-    const end = parseDateTime(returndate);
-
-    if (start && end && end > start) {
-        const diffMs = end - start;
-        const hours = Math.ceil(diffMs / 3600000);
-        if (hours > 0) {
-            const estimated = estimatePrice(baseDailyRate, hours);
-            displayHourlyRate = estimated.hourlyRate;
-        }
-    }
-  }
+  // All-in trip price (same calculation as checkout, incl. weekend rate) and the friends split.
+  // Falls back to a 1-day weekday price if the dates are missing or shorter than the 6-hour minimum.
+  const trip = tripPrice(car.base_daily_rate, pickup, returndate);
+  const tripTotal = trip?.total;
+  const split = tripTotal && perPerson(tripTotal, car.seating_capacity);
 
   return (
     <div
@@ -179,10 +156,17 @@ function CarCard({ car, pickup, returndate, router, city }) {
         </div>
 
         <div className={styles.footerRight}>
-          <div className={styles.priceRow}>
-            <span className={styles.priceHour}>₹{displayHourlyRate}</span>
-            <span className={styles.priceUnit}>/hr</span>
-          </div>
+          {tripTotal && (
+            <>
+              <div className={styles.priceRow}>
+                <span className={styles.priceHour}>{formatINR(tripTotal)}</span>
+                <span className={styles.priceUnit}>{trip.isTrip ? "total" : "/day"}</span>
+              </div>
+              <div className={styles.priceSplit}>
+                {formatINR(split.each)} each for {split.people}
+              </div>
+            </>
+          )}
         </div>
       </div>
 
@@ -341,7 +325,10 @@ export default function SearchPage() {
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
   const [brands, setBrands] = useState([]);
+  // Price filter works on the all-in trip price shown on the cards; the range is set from the results
   const [priceRange, setPriceRange] = useState({ min: 0, max: 2000 });
+  const priceTouched = useRef(false);
+  const tripTotalOf = (car) => tripPrice(car.base_daily_rate, pickup, returndate)?.total;
   const [showFilters, setShowFilters] = useState(false); // Start closed on mobile
   const [isMobile, setIsMobile] = useState(false);
 
@@ -387,18 +374,23 @@ export default function SearchPage() {
   };
 
   const handleMinPrice = (val) => {
+    priceTouched.current = true;
     const currentMax = isMobile ? pendingFilters.price.max : filters.price.max;
-    const newMin = Math.min(val, currentMax - 50);
+    const newMin = Math.min(val, currentMax - 100);
     updatePrice({ min: newMin, max: currentMax });
   };
 
   const handleMaxPrice = (val) => {
+    priceTouched.current = true;
     const currentMin = isMobile ? pendingFilters.price.min : filters.price.min;
-    const newMax = Math.max(val, currentMin + 50);
+    const newMax = Math.max(val, currentMin + 100);
     updatePrice({ min: currentMin, max: newMax });
   };
 
   const debouncedFilters = useDebounce(filters, 500);
+  // Price is filtered here on the client (all-in trip price), so it doesn't trigger a refetch
+  const { price: _clientSidePrice, ...serverFilters } = debouncedFilters;
+  const serverFiltersKey = JSON.stringify(serverFilters);
 
   const applyMobileFilters = () => {
     setFilters(pendingFilters);
@@ -407,6 +399,7 @@ export default function SearchPage() {
   };
 
   const resetFilters = () => {
+    priceTouched.current = false;
     const resetState = {
       type: "",
       fuel: "",
@@ -447,11 +440,8 @@ export default function SearchPage() {
         if (pickup) params.append("pickupTime", pickup);
         if (returndate) params.append("returnTime", returndate);
 
-        Object.entries(debouncedFilters).forEach(([key, val]) => {
-          if (key === 'price') {
-             params.append('priceMin', val.min.toString());
-             params.append('priceMax', val.max.toString());
-          } else if (val && val !== false) {
+        Object.entries(serverFilters).forEach(([key, val]) => {
+          if (val && val !== false) {
             params.append(key, val.toString());
           }
         });
@@ -481,6 +471,14 @@ export default function SearchPage() {
         const uniqueBrands = [...new Set(data.map(car => car.make).filter(Boolean))].sort();
         setBrands(uniqueBrands);
 
+        // Slider range = 0 … highest all-in trip price in these results (rounded up to ₹500)
+        const totals = enriched.map(tripTotalOf).filter(Boolean);
+        const maxTotal = totals.length ? Math.ceil(Math.max(...totals) / 500) * 500 : 2000;
+        setPriceRange({ min: 0, max: maxTotal });
+        if (!priceTouched.current) {
+          setFilters((prev) => ({ ...prev, price: { min: 0, max: maxTotal } }));
+        }
+
       } catch (e) {
         console.error("Error fetching cars:", e);
         setCars([]);
@@ -490,9 +488,16 @@ export default function SearchPage() {
     }
 
     fetchCars();
-  }, [city, userLat, userLon, debouncedFilters, pickup, returndate]);
+  }, [city, userLat, userLon, serverFiltersKey, pickup, returndate]);
 
   const uiFilters = isMobile ? pendingFilters : filters;
+
+  // Cars within the selected all-in price range (same number the cards show)
+  const visibleCars = cars.filter((car) => {
+    const total = tripTotalOf(car);
+    return total == null || (total >= filters.price.min && total <= filters.price.max);
+  });
+  const priceIsFiltered = filters.price.min > priceRange.min || filters.price.max < priceRange.max;
 
   const handleLocationSelect = (location) => {
     const newCity = location.city || city;
@@ -627,7 +632,7 @@ export default function SearchPage() {
                 {/* Price Tab */}
                 <div className={styles.tab}>
                   <div className={styles.tabHeader} onClick={() => setExpandedTabs(p => ({...p, price: !p.price}))}>
-                    <span>Total Price</span>
+                    <span>Trip price (all-in)</span>
                     <FaChevronDown style={{ transform: expandedTabs.price ? 'rotate(180deg)' : 'rotate(0deg)' }} />
                   </div>
                   <div className={`${styles.tabContent} ${expandedTabs.price ? styles.open : ''}`}>
@@ -635,10 +640,10 @@ export default function SearchPage() {
                       <div className={styles.rangeLabels}><span>Min Price</span><span>Max Price</span></div>
                       <div className={styles.priceRange}>
                          <div className={styles.rangeTrack} style={{ "--min": ((uiFilters.price.min / priceRange.max) * 100), "--max": ((uiFilters.price.max / priceRange.max) * 100) }}></div>
-                         <input type="range" min={priceRange.min} max={priceRange.max} step={50} value={uiFilters.price.min} className={styles.rangeInput} onChange={(e) => handleMinPrice(parseInt(e.target.value))} />
-                         <input type="range" min={priceRange.min} max={priceRange.max} step={50} value={uiFilters.price.max} className={styles.rangeInput} onChange={(e) => handleMaxPrice(parseInt(e.target.value))} />
+                         <input type="range" min={priceRange.min} max={priceRange.max} step={100} value={uiFilters.price.min} className={styles.rangeInput} aria-label="Minimum trip price" onChange={(e) => handleMinPrice(parseInt(e.target.value))} />
+                         <input type="range" min={priceRange.min} max={priceRange.max} step={100} value={uiFilters.price.max} className={styles.rangeInput} aria-label="Maximum trip price" onChange={(e) => handleMaxPrice(parseInt(e.target.value))} />
                       </div>
-                      <div className={styles.priceValues}><span>₹{uiFilters.price.min}</span><span>₹{uiFilters.price.max}</span></div>
+                      <div className={styles.priceValues}><span>{formatINR(uiFilters.price.min)}</span><span>{formatINR(uiFilters.price.max)}</span></div>
                     </div>
                   </div>
                 </div>
@@ -731,19 +736,22 @@ export default function SearchPage() {
         <div className={styles.content}>
           <div className={styles.secondaryBar}>
             <div className={styles.resultCount}>
-              {loading ? <Skeleton width="180px" height="18px" /> : `${cars.length} vehicles in ${city || 'your area'}`}
+              {loading ? <Skeleton width="180px" height="18px" /> : `${visibleCars.length} vehicles in ${city || 'your area'}`}
             </div>
             <button className={styles.recommendedBtn}>Most Recommended</button>
           </div>
 
           <div className={styles.activeFilters}>
             {Object.entries(filters).map(([key, val]) => {
-              if (!val || (key === 'price' && val.min === 0 && val.max === 2000) || (key==='gps' && !val) || (key==='ac' && !val)) return null;
+              if (!val || (key === 'price' && !priceIsFiltered) || (key==='gps' && !val) || (key==='ac' && !val)) return null;
               return (
                 <div key={key} className={styles.filterChip}>
-                  {key === 'price' ? `₹${val.min} - ₹${val.max}` : val}
+                  {key === 'price' ? `${formatINR(val.min)} - ${formatINR(val.max)}` : val}
                   <button onClick={() => {
-                     if(key === 'price') updateFilter('price', {min: 0, max: 2000});
+                     if (key === 'price') {
+                       priceTouched.current = false;
+                       setFilters((prev) => ({ ...prev, price: priceRange }));
+                     }
                      else updateFilter(key, "");
                   }}>✕</button>
                 </div>
@@ -763,7 +771,7 @@ export default function SearchPage() {
                   </div>
                 ))}
               </div>
-            ) : cars.length === 0 ? (
+            ) : visibleCars.length === 0 ? (
               <EmptyState 
                 icon="🚗"
                 title="No cars available"
@@ -771,8 +779,8 @@ export default function SearchPage() {
               />
             ) : (
                 <div className={styles.grid}>
-                {cars.map((car) => (
-                  <CarCard 
+                {visibleCars.map((car) => (
+                  <CarCard
                     key={car.id} 
                     car={car} 
                     pickup={pickup} 

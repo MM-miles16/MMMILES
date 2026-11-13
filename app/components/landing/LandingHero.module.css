@@ -1,0 +1,325 @@
+/* Landing hero — sky panel with topo lines (from the reference's "My purpose for today" card) */
+
+.hero {
+  padding: clamp(12px, 2vw, 24px) 0 clamp(28px, 4vw, 48px);
+  background: var(--mm-bg);
+  font-family: var(--mm-font);
+}
+
+.panel {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  grid-template-areas:
+    "copy visual"
+    "search search";
+  align-items: center;
+  gap: 8px 24px;
+  padding: clamp(36px, 5vw, 64px) clamp(24px, 4.5vw, 56px) clamp(24px, 3vw, 36px);
+  border-radius: var(--mm-radius-xl);
+  background:
+    url("/landing/topo-light.svg") right -120px top -90px / 820px auto no-repeat,
+    linear-gradient(125deg, #d5eefc 0%, var(--mm-sky) 46%, #cdd5f6 100%);
+}
+
+/* ── Copy ── */
+.copy {
+  grid-area: copy;
+  position: relative;
+  z-index: 1;
+}
+
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 22px;
+  padding: 8px 16px 8px 12px;
+  border-radius: var(--mm-radius-pill);
+  background: rgba(255, 255, 255, 0.75);
+  color: var(--mm-ink);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22a06b;
+  box-shadow: 0 0 0 4px rgba(34, 160, 107, 0.18);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--mm-font);
+  font-size: clamp(2.15rem, 4.2vw, 3.35rem);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: var(--mm-ink);
+  text-wrap: balance;
+}
+
+.title span {
+  color: var(--mm-lavender-deep);
+}
+
+.lead {
+  max-width: 500px;
+  margin: 20px 0 0;
+  font-size: clamp(1rem, 1.35vw, 1.15rem);
+  line-height: 1.65;
+  color: var(--mm-ink-2);
+}
+
+/* ── Visual: hero car + floating cards ── */
+.visual {
+  grid-area: visual;
+  position: relative;
+  align-self: stretch;
+  min-height: 340px;
+}
+
+.halo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 82%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 68%);
+  transform: translate(-50%, -50%);
+}
+
+.car {
+  position: absolute;
+  left: 50%;
+  top: 56%;
+  width: min(118%, 600px);
+  height: auto;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 26px 22px rgba(34, 34, 46, 0.28));
+}
+
+.float {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-radius: 18px;
+  box-shadow: var(--mm-shadow-md);
+  animation: bob 6s ease-in-out infinite;
+}
+
+.floatPrice {
+  top: 6%;
+  right: 2%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 14px 18px;
+  background: var(--mm-midnight) url("/landing/topo-dark.svg") center / 360px auto;
+  color: var(--mm-on-dark-muted);
+  font-size: 13px;
+}
+
+.floatPrice strong {
+  color: var(--mm-on-dark);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.floatPrice small {
+  margin-left: 3px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--mm-on-dark-muted);
+}
+
+.allIn {
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--mm-lavender);
+}
+
+/* sits under the car's rear wheel, clear of the bodywork */
+.floatDeposit {
+  right: 4%;
+  bottom: -4%;
+  padding: 10px 16px 10px 10px;
+  background: var(--mm-bg);
+  animation-delay: -3s;
+}
+
+.floatIcon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: var(--mm-lavender-soft);
+}
+
+.floatText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.floatText strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--mm-ink);
+}
+
+.floatText span {
+  font-size: 12px;
+  color: var(--mm-muted);
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+/* ── Search ── */
+.search {
+  grid-area: search;
+  position: relative;
+  z-index: 3;
+  margin-top: clamp(16px, 2.5vw, 28px);
+  scroll-margin-top: calc(var(--mm-header-h) + 16px);
+}
+
+/* SearchBar's root: inside the hero it shouldn't add its own page gutters */
+.search > div:first-child {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Trust row ── */
+.trust {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px 32px;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.trust li {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--mm-ink-2);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.check {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  background: var(--mm-lavender-soft);
+  color: var(--mm-lavender-deep);
+}
+
+/* ── Tablet ── */
+@media (max-width: 1080px) {
+  .visual {
+    min-height: 280px;
+  }
+
+  .floatDeposit {
+    display: none;
+  }
+}
+
+/* ── Phone ── */
+@media (max-width: 760px) {
+  .panel {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "copy"
+      "visual"
+      "search";
+    gap: 0;
+    padding: 28px 16px 16px;
+    background:
+      url("/landing/topo-light.svg") right -220px top -120px / 640px auto no-repeat,
+      linear-gradient(160deg, #d5eefc 0%, var(--mm-sky) 55%, #cdd5f6 100%);
+  }
+
+  .kicker {
+    margin-bottom: 16px;
+    font-size: 13px;
+  }
+
+  .lead {
+    margin-top: 14px;
+  }
+
+  .visual {
+    min-height: 188px;
+    margin-top: 8px;
+  }
+
+  .car {
+    top: 58%;
+    width: 96%;
+  }
+
+  .floatPrice {
+    top: 4%;
+    right: 0;
+    padding: 10px 14px;
+  }
+
+  .floatPrice strong {
+    font-size: 19px;
+  }
+
+  .search {
+    margin-top: 12px;
+  }
+
+  .trust {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: 10px;
+    margin: 20px calc(-1 * var(--mm-gutter)) 0;
+    padding: 0 var(--mm-gutter) 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .trust::-webkit-scrollbar {
+    display: none;
+  }
+
+  .trust li {
+    flex: none;
+    padding: 8px 14px 8px 8px;
+    border-radius: var(--mm-radius-pill);
+    background: var(--mm-mist);
+    font-size: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .float {
+    animation: none;
+  }
+}

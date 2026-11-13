@@ -369,3 +369,18 @@
   }
 
 }
+/* Phones: sit above the floating tab bar when it's on the page, and take less of the screen */
+@media (max-width: 760px) {
+  :global(body.has-tabbar) .chatFloatingBtn {
+    bottom: calc(96px + env(safe-area-inset-bottom));
+    left: 14px;
+    width: 52px;
+    height: 52px;
+    box-shadow: 0 8px 20px -8px rgba(34, 34, 46, 0.45);
+  }
+
+  :global(body.has-tabbar) .chatFloatingIcon {
+    width: 28px;
+    height: 30px;
+  }
+}

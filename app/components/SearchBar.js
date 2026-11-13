@@ -23,7 +23,69 @@ import CitySelector from "./CitySelector";
 import CalendarModal from "./CalendarModal";
 
 const CITIES = ["Chennai", "Coimbatore", "Bengaluru", "Kochi", "Hyderabad", "Mumbai"];
-const LOCATION_PLACEHOLDER = "Select Your Place";
+const LOCATION_PLACEHOLDER = "Select city";
+
+// ── Quick date presets ──
+// Computed in the browser (they depend on the current time). Each respects the calendar's
+// rules: pickup in the future, at least 6 hours, on the hour.
+const QUICK_LEAD_HOURS = 2; // time to get the car to the customer
+const QUICK_PLACEHOLDERS = [
+  { key: "today", label: "Today" },
+  { key: "tomorrow", label: "Tomorrow" },
+  { key: "weekend", label: "This weekend" },
+];
+
+// "Sat 14 Nov, 9 AM" for the date field — easier to scan than 14/11/2026 09:00
+// (the URL/session format is unchanged)
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const formatFriendly = (date, hour) => {
+  const d = new Date(date);
+  return `${WEEKDAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}, ${hour % 12 || 12} ${hour < 12 ? "AM" : "PM"}`;
+};
+
+const addDays = (d, n) => {
+  const x = new Date(d);
+  x.setDate(x.getDate() + n);
+  return x;
+};
+const atHour = (d, h) => {
+  const x = new Date(d);
+  x.setHours(h, 0, 0, 0);
+  return x;
+};
+
+function buildQuickDates(now) {
+  const options = [];
+  // Next whole hour after the lead time, e.g. 14:20 → 17:00
+  const soonest = new Date(now);
+  soonest.setMinutes(0, 0, 0);
+  soonest.setHours(soonest.getHours() + QUICK_LEAD_HOURS + 1);
+
+  // Today: from the next slot (never before 8 am) for 24 hours, while there's still a slot before 9 pm
+  const todayStart = new Date(Math.max(soonest, atHour(now, 8)));
+  if (todayStart.getDate() === now.getDate() && todayStart.getHours() <= 21) {
+    options.push({ key: "today", label: "Today", start: todayStart, end: new Date(todayStart.getTime() + 24 * 3600000) });
+  }
+
+  // Tomorrow: 9 am to 9 am
+  options.push({ key: "tomorrow", label: "Tomorrow", start: atHour(addDays(now, 1), 9), end: atHour(addDays(now, 2), 9) });
+
+  // Weekend: Saturday 9 am to Sunday 9 pm (from the next slot if it's already Saturday)
+  const day = now.getDay(); // 0 = Sun … 6 = Sat
+  const saturday = day === 0 ? addDays(now, 6) : addDays(now, 6 - day);
+  let start = atHour(saturday, 9);
+  if (day === 6 && soonest > start) {
+    // Already Saturday: next slot if it's still Saturday evening, otherwise Sunday 9 am
+    const stillSaturday = soonest.getDate() === saturday.getDate() && soonest.getHours() <= 21;
+    start = stillSaturday ? soonest : atHour(addDays(saturday, 1), 9);
+  }
+  const end = atHour(addDays(saturday, 1), 21);
+  if (end - start >= 6 * 3600000) {
+    options.push({ key: "weekend", label: day === 0 ? "Next weekend" : "This weekend", start, end });
+  }
+  return options;
+}
 
 // Google Maps API configuration
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || process.env.GOOGLE_MAPS_API_KEY;
@@ -157,6 +219,22 @@ export default function SearchBar() {
     d.setHours(0, 0, 0, 0);
     setToday(d);
   }, []);
+
+  // Quick date chips — real times are filled in after mount (they depend on "now")
+  const [quickDates, setQuickDates] = useState(null);
+  const [activeQuick, setActiveQuick] = useState(null);
+  useEffect(() => {
+    setQuickDates(buildQuickDates(new Date()));
+  }, []);
+
+  const applyQuickDates = (option) => {
+    if (!option.start) return; // not ready yet (before hydration)
+    setPickupDate(option.start);
+    setPickupHour(option.start.getHours());
+    setReturnDate(option.end);
+    setReturnHour(option.end.getHours());
+    setActiveQuick(option.key);
+  };
 
   useEffect(() => {
     const saved = sessionStorage.getItem("lastSearchParams");
@@ -695,7 +773,18 @@ export default function SearchBar() {
       <div className={styles.container}>
         <div className={styles.box} role="search" aria-label="Car and Location Search Bar">
           {/* City Selector */}
-          <div className={styles.field} role="button" onClick={() => setIsCitySelectorOpen(true)} tabIndex={0}>
+          <div
+            className={styles.field}
+            role="button"
+            onClick={() => setIsCitySelectorOpen(true)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                setIsCitySelectorOpen(true);
+              }
+            }}
+            tabIndex={0}
+          >
             <label className={styles.label}>City</label>
             <div
               className={styles.inputWrapper}
@@ -727,7 +816,7 @@ export default function SearchBar() {
             <div className={styles.inputWrapper}>
               <input
                 type="text"
-                placeholder="Type area, landmark or click GPS"
+                placeholder="Area or landmark"
                 value={manualInput}
                 onChange={(e) => {
                   setManualInput(e.target.value);
@@ -834,26 +923,59 @@ export default function SearchBar() {
             <div
               className={styles.inputWrapper}
               onClick={() => setIsModalOpen(true)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setIsModalOpen(true);
+                }
+              }}
               role="button"
+              tabIndex={0}
               aria-haspopup="dialog"
             >
               <FaCalendarAlt className={styles.icon} aria-hidden="true" />
               <input
                 type="text"
                 readOnly
+                tabIndex={-1}
                 value={
                   pickupDate && returnDate
-                    ? `${formatDateTime(pickupDate, pickupHour)} → ${formatDateTime(returnDate, returnHour)}`
-                    : "Select Dates & Time"
+                    ? `${formatFriendly(pickupDate, pickupHour)} → ${formatFriendly(returnDate, returnHour)}`
+                    : ""
                 }
+                placeholder="Select dates & time"
                 className={styles.readOnlyInput}
                 aria-label="Pick-up and return times"
               />
             </div>
           </div>
 
-          <button onClick={handleSearch} className={styles.searchButton} aria-label="Search">
+          {/* Quick dates: one tap instead of the calendar for the most common trips */}
+          <div className={styles.quickDates} role="group" aria-label="Quick dates">
+            {(quickDates || QUICK_PLACEHOLDERS).map((option) => (
+              <button
+                key={option.key}
+                type="button"
+                className={`${styles.quickChip} ${activeQuick === option.key ? styles.quickChipActive : ""}`}
+                aria-pressed={activeQuick === option.key}
+                onClick={() => applyQuickDates(option)}
+              >
+                {option.label}
+              </button>
+            ))}
+            <button
+              type="button"
+              className={`${styles.quickChip} ${pickupDate && returnDate && !activeQuick ? styles.quickChipActive : ""}`}
+              aria-pressed={Boolean(pickupDate && returnDate && !activeQuick)}
+              onClick={() => setIsModalOpen(true)}
+            >
+              <FaCalendarAlt aria-hidden="true" /> Pick dates
+            </button>
+          </div>
+
+          <button onClick={handleSearch} className={styles.searchButton} aria-label="Search cars">
             <FaSearch aria-hidden="true" />
+            <span>Search</span>
           </button>
         </div>
       </div>
@@ -868,6 +990,7 @@ export default function SearchBar() {
             setPickupHour(start.getHours());
             setReturnDate(end);
             setReturnHour(end.getHours());
+            setActiveQuick(null); // custom dates
             setIsModalOpen(false);
           }}
           initialPickupDate={pickupDate}

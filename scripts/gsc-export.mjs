@@ -88,7 +88,10 @@ function explain(err) {
 // ── Helpers ──────────────────────────────────────────────────────────────────
 // Groups a URL into its pSEO page family so rankings can be compared per template
 function family(url) {
-  const seg = new URL(url).pathname.split("/").filter(Boolean);
+  const u = new URL(url);
+  // Google Business Profile traffic: the old http://mmmiles.com link and Maps/Search tracking tokens
+  if (u.protocol === "http:" || u.searchParams.has("rwg_token")) return "maps-listing";
+  const seg = u.pathname.split("/").filter(Boolean);
   if (seg.length === 0) return "home";
   if (seg[0] === "blog") return seg.length > 1 ? "blog-post" : "blog";
   if (seg[0] === "rent") return seg.length > 2 ? "car-city" : "car";

@@ -242,6 +242,7 @@ export async function POST(request) {
             key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
             pricing: {
                 hours: pricing.hours,
+                weekendHours: pricing.weekendHours,
                 tier: pricing.tier,
                 rates: pricing.rates,
                 costs: pricing.costs,

@@ -2,13 +2,13 @@
 
 import { CityProvider } from "../context/CityContext";
 import SearchBar from "../components/SearchBar";
-import TrendingSection from "../components/TrendingSection";
+import FleetSection from "../components/FleetSection";
 
 export default function HomeContent() {
   return (
     <CityProvider>
       <SearchBar />
-      <TrendingSection />
+      <FleetSection />
     </CityProvider>
   );
 }

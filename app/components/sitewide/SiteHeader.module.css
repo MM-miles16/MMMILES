@@ -1,0 +1,254 @@
+/* Site header — redesign. Fixed, matches body padding-top via --mm-header-h */
+
+.header {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 1000;
+  height: var(--mm-header-h);
+  border-bottom: 1px solid transparent;
+  font-family: var(--mm-font);
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+/* Frosted background lives on a pseudo-element: backdrop-filter on the header itself
+   would trap the fixed-position menu backdrop inside the header box */
+.header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: saturate(160%) blur(14px);
+  -webkit-backdrop-filter: saturate(160%) blur(14px);
+  transition: background 0.25s;
+}
+
+.scrolled {
+  border-bottom-color: var(--mm-border);
+  box-shadow: 0 6px 24px -18px rgba(34, 34, 46, 0.35);
+}
+
+.scrolled::before {
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  height: 100%;
+  max-width: var(--mm-container);
+  margin: 0 auto;
+  padding: 0 var(--mm-gutter);
+}
+
+.logo {
+  display: inline-flex;
+  flex: none;
+}
+
+.logo img {
+  height: 28px;
+  width: auto;
+}
+
+/* ── Desktop nav ── */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 auto;
+}
+
+.navLink {
+  padding: 9px 16px;
+  border-radius: var(--mm-radius-pill);
+  color: var(--mm-ink-2);
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s;
+}
+
+.navLink:hover {
+  background: var(--mm-mist);
+  color: var(--mm-ink);
+}
+
+.navLinkActive {
+  background: var(--mm-mist);
+  color: var(--mm-ink);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+}
+
+/* Rounded-square icon buttons, like the reference's bell/menu buttons */
+.iconBtn {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: var(--mm-radius-sm);
+  background: var(--mm-mist);
+  color: var(--mm-ink);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.iconBtn:hover {
+  background: var(--mm-mist-strong);
+}
+
+.accountBtn {
+  height: 44px;
+  padding: 0 22px;
+  border: none;
+  border-radius: var(--mm-radius-sm);
+  background: var(--mm-midnight);
+  color: var(--mm-on-dark);
+  font-family: var(--mm-font);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.accountBtn:hover {
+  background: var(--mm-midnight-hover);
+}
+
+.navLink:focus-visible,
+.iconBtn:focus-visible,
+.accountBtn:focus-visible,
+.logo:focus-visible,
+.sheetLink:focus-visible,
+.sheetAccount:focus-visible {
+  outline: 2px solid var(--mm-midnight);
+  outline-offset: 2px;
+}
+
+.menuBtn {
+  display: none;
+}
+
+/* ── Mobile menu sheet ── */
+.sheet {
+  position: absolute;
+  top: var(--mm-header-h);
+  left: 0;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 12px var(--mm-gutter) 24px;
+  background: var(--mm-bg);
+  border-bottom: 1px solid var(--mm-border);
+  box-shadow: var(--mm-shadow-md);
+  transform: translateY(-8px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+}
+
+.sheetOpen {
+  transform: none;
+  opacity: 1;
+  visibility: visible;
+}
+
+.sheetNav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.sheetLink {
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+  padding: 0 16px;
+  border-radius: var(--mm-radius-sm);
+  background: var(--mm-mist);
+  color: var(--mm-ink);
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.sheetAccount {
+  height: 54px;
+  border: none;
+  border-radius: var(--mm-radius-sm);
+  background: var(--mm-midnight);
+  color: var(--mm-on-dark);
+  font-family: var(--mm-font);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.backdrop {
+  position: fixed;
+  inset: var(--mm-header-h) 0 0 0;
+  z-index: 1;
+  background: rgba(22, 22, 29, 0.35);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, visibility 0.2s;
+}
+
+.backdropOpen {
+  opacity: 1;
+  visibility: visible;
+}
+
+@media (max-width: 1023px) {
+  .nav,
+  .accountBtn {
+    display: none;
+  }
+
+  .menuBtn {
+    display: grid;
+  }
+
+  .actions {
+    margin-left: auto;
+  }
+}
+
+@media (min-width: 1024px) {
+  .sheet,
+  .backdrop {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .logo img {
+    height: 24px;
+  }
+
+  .iconBtn {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header,
+  .sheet,
+  .backdrop {
+    transition: none;
+  }
+}

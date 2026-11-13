@@ -1,17 +1,18 @@
-import Link from "next/link";
-import Navbar from "./components/Navbar";
-import ReviewSection from "./components/ReviewSection";
-import Footer from "./components/Footer";
-import DriveDiscoverSection from "./components/DriveDiscoverSection";
-import FAQSection from "./components/FAQSection";
-import AdvantageSection from "./components/AdvantageSection";
-import Hero from "./components/Hero";
-import ReviewSlider from "./components/ReviewSlider";
-import BookingSteps from "./components/BookingSteps";
-import BecomeHost from "./components/BecomeHost";
-import OffersSection from "./components/OfferSection";
-import HomeContent from "./components/HomeContent";
-import GuidePage from "./components/guide";
+import { CityProvider } from "./context/CityContext";
+import FleetSection from "./components/FleetSection";
+import LandingHero from "./components/landing/LandingHero";
+import HowItWorks from "./components/landing/HowItWorks";
+import WhyMMMiles from "./components/landing/WhyMMMiles";
+import Offers from "./components/landing/Offers";
+import RoadTrips from "./components/landing/RoadTrips";
+import Testimonials from "./components/landing/Testimonials";
+import Faq from "./components/landing/Faq";
+import ClosingCta from "./components/landing/ClosingCta";
+import ExploreLinks from "./components/landing/ExploreLinks";
+import { getFleetSummary, getHomeFaqs } from "@/lib/landing";
+
+// Live "from" prices and fleet links are refreshed hourly
+export const revalidate = 3600;
 
 /* =========================
    SEO METADATA
@@ -61,7 +62,9 @@ export const metadata = {
 /* =========================
    PAGE COMPONENT
 ========================= */
-export default function HomePage() {
+export default async function HomePage() {
+  const summary = await getFleetSummary("Chennai");
+  const faqs = getHomeFaqs(summary);
 
   // ── Schema: Organization ──
   const orgSchema = {
@@ -126,12 +129,15 @@ export default function HomePage() {
             name: "Self Drive Car Rental Chennai",
             description: "Rent self drive cars in Chennai with zero deposit and unlimited km.",
           },
-          priceSpecification: {
-            "@type": "PriceSpecification",
-            price: "799",
-            priceCurrency: "INR",
-            unitText: "DAY",
-          },
+          // Live lowest all-in 1-day price (GST, insurance, fees); omitted if the fleet couldn't be loaded
+          ...(summary && {
+            priceSpecification: {
+              "@type": "PriceSpecification",
+              minPrice: String(summary.from),
+              priceCurrency: "INR",
+              unitText: "DAY",
+            },
+          }),
         },
       ],
     },
@@ -153,60 +159,15 @@ export default function HomePage() {
     },
   };
 
-  // ── Schema: FAQPage ──
+  // ── Schema: FAQPage — same list as the visible FAQ section ──
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: "What is the price for self drive car rental in Chennai?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Self drive car rental in Chennai at MM Miles starts from ₹799/day. Hatchbacks from ₹799, sedans from ₹1,400 and SUVs from ₹1,600/day. No security deposit required.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Is there a security deposit for car rental in Chennai?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "No. MM Miles does not require any security deposit at any stage of the booking or trip. You only pay the rental fee.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Does MM Miles offer home delivery in Chennai?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Yes. MM Miles offers doorstep delivery across all major Chennai areas including Anna Nagar, Velachery, OMR, T Nagar, Adyar, Porur, Tambaram, Ambattur, Sholinganallur and more.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "What documents are needed to rent a self drive car in Chennai?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "You need a valid driving license and an Aadhaar card or government-issued ID. No other documents required.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Are self drive cars available with unlimited km in Chennai?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Most MM Miles cars include unlimited km. Kilometer limits apply only to select premium cars and will be mentioned clearly during booking.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "What is the minimum age to rent a car in Chennai?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "The minimum age to rent a self drive car at MM Miles is 18 years with a valid Indian driving license.",
-        },
-      },
-    ],
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
   };
 
   // ── Schema: BreadcrumbList ──
@@ -233,105 +194,19 @@ export default function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
       <main>
-
-        {/* ── SEO H1 (hidden visually, read by Google) ── */}
-        <h1 className="seo-hidden">
-          Self Drive Car Rental in Chennai | No Deposit, Unlimited KM | MM Miles
-        </h1>
-
-        {/* ── Hidden SEO intro block — keep your design, feed Google ── */}
-        <section className="seo-hidden">
-          <h2>Self Drive Car Rental in Chennai</h2>
-          <p>
-            MM Miles offers premium self drive car rentals in Chennai including SUVs,
-            hatchbacks and sedans for hourly, daily and monthly rental. Zero security
-            deposit, unlimited km and home delivery across Anna Nagar, Velachery, OMR,
-            T Nagar, Adyar, Porur, Tambaram and all Chennai areas. Whether you need a car
-            for office commute, weekend trips or long travel, MM Miles provides affordable
-            and flexible rental options.
-          </p>
-
-          {/* Car type links */}
-          <h3>Explore Self Drive Cars by Type</h3>
-          <ul>
-            <li><Link href="/cities/chennai/suv">SUV Rental Chennai</Link></li>
-            <li><Link href="/cities/chennai/cheap">Budget Car Rental Chennai</Link></li>
-            <li><Link href="/cities/chennai/automatic">Automatic Car Rental Chennai</Link></li>
-            <li><Link href="/cities/chennai/sedan">Sedan Rental Chennai</Link></li>
-            <li><Link href="/cities/chennai/hatchback">Hatchback Rental Chennai</Link></li>
-          </ul>
-
-          {/* Top car model links */}
-          <h3>Popular Self Drive Cars in Chennai</h3>
-          <ul>
-            <li><Link href="/rent/toyota-fortuner">Toyota Fortuner Rental Chennai</Link></li>
-            <li><Link href="/rent/innova-crysta">Innova Crysta Rental Chennai</Link></li>
-            <li><Link href="/rent/tata-harrier">Tata Harrier Rental Chennai</Link></li>
-            <li><Link href="/rent/hyundai-creta">Hyundai Creta Rental Chennai</Link></li>
-            <li><Link href="/rent/mahindra-xuv700">Mahindra XUV700 Rental Chennai</Link></li>
-            <li><Link href="/rent/maruti-fronx">Maruti Fronx Self Drive Chennai</Link></li>
-            <li><Link href="/rent/kia-seltos">Kia Seltos Rental Chennai</Link></li>
-            <li><Link href="/rent/tata-nexon">Tata Nexon Rental Chennai</Link></li>
-            <li><Link href="/rent/hyundai-venue">Hyundai Venue Rental Chennai</Link></li>
-            <li><Link href="/rent/maruti-brezza">Maruti Brezza Rental Chennai</Link></li>
-          </ul>
-
-          {/* Area links */}
-          <h3>Self Drive Car Rental by Area in Chennai</h3>
-          <ul>
-            <li><Link href="/cities/chennai/anna-nagar">Car Rental Anna Nagar, Chennai</Link></li>
-            <li><Link href="/cities/chennai/velachery">Car Rental Velachery, Chennai</Link></li>
-            <li><Link href="/cities/chennai/omr">Car Rental OMR, Chennai</Link></li>
-            <li><Link href="/cities/chennai/t-nagar">Car Rental T Nagar, Chennai</Link></li>
-            <li><Link href="/cities/chennai/adyar">Car Rental Adyar, Chennai</Link></li>
-            <li><Link href="/cities/chennai/porur">Car Rental Porur, Chennai</Link></li>
-            <li><Link href="/cities/chennai/tambaram">Car Rental Tambaram, Chennai</Link></li>
-            <li><Link href="/cities/chennai/nungambakkam">Car Rental Nungambakkam, Chennai</Link></li>
-            <li><Link href="/cities/chennai/guindy">Car Rental Guindy, Chennai</Link></li>
-            <li><Link href="/cities/chennai/mogappair">Car Rental Mogappair, Chennai</Link></li>
-          </ul>
-
-          {/* USP summary */}
-          <h3>Why Choose MM Miles for Self Drive Car Rental in Chennai?</h3>
-          <ul>
-            <li>Zero security deposit — no money blocked</li>
-            <li>Unlimited km — drive anywhere in Tamil Nadu</li>
-            <li>Home delivery across all Chennai areas</li>
-            <li>Fully insured fleet</li>
-            <li>24/7 roadside and customer support</li>
-            <li>4.5★ rated by 10,000+ customers</li>
-            <li>Book online in 2 minutes</li>
-          </ul>
-        </section>
-
-        {/* ── Your existing visual components — untouched ── */}
-        <Hero />
-        <HomeContent />
-        <AdvantageSection />
-        <OffersSection />
-        <DriveDiscoverSection />
-        <BookingSteps />
-        <GuidePage />
-        <ReviewSlider />
-        <ReviewSection />
-        <BecomeHost />
-
-        {/* ── Bottom SEO links (visible, matches your existing pattern) ── */}
-        <section className="seo-hidden">
-          <h2>Lowest Self Drive Cars in Chennai</h2>
-          <ul>
-            <li><Link href="/rent/toyota-fortuner">Toyota Fortuner Rental Chennai</Link></li>
-            <li><Link href="/rent/maruti-fronx">Maruti Fronx Self Drive</Link></li>
-            <li><Link href="/rent/innova-crysta">Innova Crysta Rental Chennai</Link></li>
-            <li><Link href="/rent/tata-harrier">Tata Harrier Rental Chennai</Link></li>
-            <li><Link href="/rent/hyundai-venue">Hyundai Venue Rental Chennai</Link></li>
-            <li><Link href="/rent/tata-nexon">Tata Nexon Rental Chennai</Link></li>
-            <li><Link href="/rent/hyundai-creta">Hyundai Creta Rental Chennai</Link></li>
-          </ul>
-        </section>
-
-        <FAQSection />
-
+        {/* Hero search and fleet share the selected city and dates */}
+        <CityProvider>
+          <LandingHero summary={summary} />
+          <FleetSection />
+        </CityProvider>
+        <HowItWorks rates={summary?.rates} />
+        <WhyMMMiles />
+        <Offers />
+        <RoadTrips />
+        <Testimonials />
+        <Faq faqs={faqs} />
+        <ClosingCta />
+        <ExploreLinks summary={summary} />
       </main>
     </>
   );

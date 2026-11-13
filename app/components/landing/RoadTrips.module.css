@@ -1,0 +1,98 @@
+/* Road trips — horizontal scroll that starts aligned with the page container */
+
+.track {
+  /* % padding resolves against the section width (unlike 100vw, it excludes the scrollbar) */
+  --edge: max(var(--mm-gutter), calc((100% - var(--mm-container)) / 2 + var(--mm-gutter)));
+  display: flex;
+  gap: 18px;
+  margin: 0;
+  padding: 4px var(--edge) 12px;
+  overflow-x: auto;
+  list-style: none;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--edge);
+  scrollbar-width: none;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+.item {
+  flex: 0 0 clamp(240px, 24vw, 300px);
+  scroll-snap-align: start;
+}
+
+.card {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: var(--mm-radius-lg);
+  background: var(--mm-mist);
+  color: var(--mm-on-dark);
+  text-decoration: none;
+}
+
+.photo {
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+a.card:hover .photo {
+  transform: scale(1.05);
+}
+
+a.card:focus-visible {
+  outline: 3px solid var(--mm-lavender-deep);
+  outline-offset: 3px;
+}
+
+.overlay {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 60px 20px 20px;
+  background: linear-gradient(180deg, rgba(22, 22, 29, 0) 0%, rgba(22, 22, 29, 0.78) 100%);
+}
+
+.name {
+  margin: 0 0 10px;
+  font-family: var(--mm-font);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--mm-on-dark);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: var(--mm-radius-pill);
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.guide {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mm-lavender);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .photo {
+    transition: none;
+  }
+}

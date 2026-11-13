@@ -1,4 +1,5 @@
 import "./../styles/reset.css";
+import "./../styles/tokens.css";
 import "./globals.css";
 import LayoutWrapper from "./components/LayoutWrapper";
 import ChatSupport from "./components/ChatSupport";

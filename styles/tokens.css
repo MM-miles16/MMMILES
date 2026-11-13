@@ -1,0 +1,68 @@
+/* ============================================================
+   MM Miles design tokens (redesign)
+   Palette sampled from the approved reference (lavender / sky / midnight
+   on soft whites), set in Poppins. New components use var(--mm-*);
+   old CSS is untouched.
+   ============================================================ */
+
+:root {
+  /* Surfaces */
+  --mm-bg: #ffffff;
+  --mm-mist: #f7f7f9;            /* cards, inputs, icon buttons */
+  --mm-mist-strong: #ececf1;     /* card gradient end, hover */
+  --mm-border: #ebebf0;
+
+  /* Brand */
+  --mm-midnight: #22222e;        /* dark cards, primary buttons, active states */
+  --mm-midnight-hover: #34344a;
+  --mm-lavender: #c5b5ee;
+  --mm-lavender-soft: #eee8fc;
+  --mm-lavender-deep: #6b57c4;   /* accent text/links on white (AA) */
+  --mm-sky: #c3e5fa;
+  --mm-sky-soft: #e9f6fe;
+
+  /* Text */
+  --mm-ink: #16161d;             /* headings */
+  --mm-ink-2: #4f4f5a;           /* body */
+  --mm-muted: #71717a;           /* secondary text (AA on white) */
+  --mm-subtle: #b5b5bd;          /* decorative only */
+  --mm-on-dark: #ffffff;
+  --mm-on-dark-muted: #b4b4c6;
+
+  /* Back-compat names used by the fleet section */
+  --mm-surface: var(--mm-mist);
+  --mm-surface-strong: var(--mm-mist-strong);
+  --mm-on-ink: var(--mm-on-dark);
+
+  /* Radius */
+  --mm-radius-sm: 14px;
+  --mm-radius-md: 20px;
+  --mm-radius-lg: 28px;
+  --mm-radius-xl: 40px;
+  --mm-radius-pill: 999px;
+
+  /* Shadow — soft and wide, like the reference's floating phones */
+  --mm-shadow-sm: 0 2px 8px rgba(34, 34, 46, 0.06);
+  --mm-shadow-md: 0 18px 40px -18px rgba(34, 34, 46, 0.28);
+  --mm-shadow-lg: 0 30px 70px -30px rgba(34, 34, 46, 0.35);
+  --mm-shadow-pill: 0 8px 18px -8px rgba(34, 34, 46, 0.55);
+
+  /* Layout */
+  --mm-container: 1240px;
+  --mm-gutter: clamp(16px, 4vw, 40px);
+  --mm-header-h: 68px;
+  --mm-section-y: clamp(44px, 5.5vw, 80px);
+}
+
+/* Font variables from next/font are set on <body>, so the font token lives here */
+body {
+  --mm-font: var(--font-poppins), system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+@media (max-width: 760px) {
+  :root {
+    --mm-header-h: 60px;
+    --mm-radius-lg: 22px;
+    --mm-radius-xl: 28px;
+  }
+}

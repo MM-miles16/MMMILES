@@ -1,0 +1,122 @@
+/* FAQ — intro on the left, accordion on the right */
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(32px, 6vw, 88px);
+  align-items: start;
+}
+
+.intro {
+  position: sticky;
+  top: calc(var(--mm-header-h) + 32px);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.btnSoft {
+  background: var(--mm-mist);
+  color: var(--mm-ink);
+}
+
+.btnSoft:hover {
+  background: var(--mm-mist-strong);
+}
+
+.list {
+  display: grid;
+  gap: 12px;
+}
+
+.item {
+  border-radius: var(--mm-radius-md);
+  background: var(--mm-mist);
+  transition: background 0.2s;
+}
+
+.item[open] {
+  background: var(--mm-sky-soft);
+}
+
+.question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 22px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--mm-ink);
+  list-style: none;
+  cursor: pointer;
+}
+
+.question::-webkit-details-marker {
+  display: none;
+}
+
+.question:focus-visible {
+  outline: 2px solid var(--mm-lavender-deep);
+  outline-offset: 2px;
+  border-radius: var(--mm-radius-md);
+}
+
+.icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  background: var(--mm-bg);
+  color: var(--mm-ink);
+  transition: transform 0.25s, background 0.25s, color 0.25s;
+}
+
+.item[open] .icon {
+  transform: rotate(45deg);
+  background: var(--mm-midnight);
+  color: var(--mm-on-dark);
+}
+
+.answer {
+  margin: 0;
+  padding: 0 22px 22px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--mm-ink-2);
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .intro {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .question {
+    padding: 16px 16px 16px 18px;
+    font-size: 15px;
+  }
+
+  .answer {
+    padding: 0 18px 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item,
+  .icon {
+    transition: none;
+  }
+}

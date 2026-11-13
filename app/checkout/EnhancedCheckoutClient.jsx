@@ -15,6 +15,7 @@ import Loading from "../components/Loading";
 import EmptyState from "../components/EmptyState";
 import { makeAuthenticatedRequest } from "../../lib/customSupabaseClient";
 import { parseDate, formatDateTimeForDB, parseBookingRawDateTime } from "../../lib/dateUtils";
+import { WEEKEND_SURGE } from "../../lib/pricing";
 import styles from "./EnhancedCheckout.module.css";
 
 // Enforce Chennai/Coimbatore-only logic
@@ -546,6 +547,7 @@ export default function EnhancedCheckoutPage() {
             convFee: data.pricing.costs.convFee,
             total: data.pricing.total,
             hours: data.pricing.hours,
+            weekendHours: data.pricing.weekendHours || 0,
             error: null,
             serverCalculated: true,
           });
@@ -1598,7 +1600,14 @@ export default function EnhancedCheckoutPage() {
                 </div>
 
                 <div className={styles.summaryRow}>
-                  <div className={styles.rowLabel}>Rental Cost</div>
+                  <div className={styles.rowLabel}>
+                    Rental Cost
+                    {priceSummary.weekendHours > 0 && (
+                      <span className={styles.rowNote}>
+                        Includes weekend rate (+{Math.round(WEEKEND_SURGE * 100)}%) for {priceSummary.weekendHours} hrs
+                      </span>
+                    )}
+                  </div>
                   <div className={styles.rowValue}>₹{priceSummary.rentalCost.toLocaleString('en-IN')}</div>
                 </div>
 

@@ -1729,3 +1729,11 @@
   transform: translateY(-2px);
   background: #000;
 }
+/* Small explanation under a summary label (e.g. weekend rate) */
+.rowNote {
+  display: block;
+  margin-top: 2px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #6b57c4;
+}
