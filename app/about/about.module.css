@@ -1,0 +1,2480 @@
+/* About page — built on the landing design system (tokens in styles/tokens.css, shared bits in landing/ui.module.css) */
+
+.page {
+  background: var(--mm-bg);
+  font-family: var(--mm-font);
+  color: var(--mm-ink);
+}
+
+/* Every centred section head uses the same description width */
+.headLead {
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  text-wrap: pretty;
+}
+
+/* Tone helpers shared by stats, values */
+.sky {
+  background: var(--mm-sky);
+}
+
+.lavender {
+  background: var(--mm-lavender);
+}
+
+.mist {
+  background: var(--mm-mist);
+}
+
+.midnight {
+  background: var(--mm-midnight) url("/landing/topo-dark.svg") right -120px top -90px / 520px auto no-repeat;
+  color: var(--mm-on-dark);
+}
+
+/* ───────── Hero ───────── */
+.hero {
+  padding: clamp(24px, 4vw, 56px) 0 clamp(20px, 3vw, 32px);
+  background:
+    radial-gradient(60% 70% at 0% 0%, var(--mm-lavender-soft) 0%, transparent 70%),
+    radial-gradient(50% 60% at 100% 10%, var(--mm-sky-soft) 0%, transparent 70%),
+    var(--mm-bg);
+}
+
+.heroGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  align-items: center;
+  gap: clamp(28px, 5vw, 72px);
+}
+
+.heroTitle {
+  margin: 0;
+  font-size: clamp(2.3rem, 4.6vw, 3.6rem);
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.heroTitle span {
+  color: var(--mm-lavender-deep);
+}
+
+.heroLead {
+  max-width: 540px;
+  margin: 22px 0 0;
+  font-size: clamp(1rem, 1.3vw, 1.125rem);
+  line-height: 1.7;
+  color: var(--mm-ink-2);
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.btnOutline {
+  background: var(--mm-bg);
+  color: var(--mm-ink);
+  box-shadow: inset 0 0 0 1.5px var(--mm-border);
+}
+
+.btnOutline:hover {
+  box-shadow: inset 0 0 0 1.5px var(--mm-ink), var(--mm-shadow-sm);
+}
+
+.cities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cities li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: var(--mm-radius-pill);
+  background: var(--mm-mist);
+  color: var(--mm-ink-2);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Visual: tilted "self-drive pass" on a pastel map, midnight card peeking behind */
+.heroVisual {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: clamp(440px, 44vw, 560px);
+  padding: 100px 0 64px;
+}
+
+/* the pastel "map" the pass sits on */
+.heroVisual::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 4% 8%;
+  border-radius: var(--mm-radius-xl);
+  background:
+    url("/landing/topo-light.svg") center / 720px auto no-repeat,
+    linear-gradient(150deg, var(--mm-sky) 0%, var(--mm-lavender-soft) 55%, var(--mm-lavender) 100%);
+}
+
+/* dark "7 years" chip, top-right — mirrors the light journeys chip bottom-left */
+.passBack {
+  position: absolute;
+  z-index: 3;
+  top: 14px;
+  right: -1%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px 12px 12px;
+  border-radius: 20px;
+  background: var(--mm-midnight) url("/landing/topo-dark.svg") left -80px top -60px / 300px auto no-repeat;
+  color: var(--mm-on-dark);
+  box-shadow: var(--mm-shadow-lg);
+  transform: rotate(3deg);
+}
+
+.passBack img {
+  padding: 6px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.passBackText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.passBack strong {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.passBackText span {
+  font-size: 12.5px;
+  color: var(--mm-on-dark-muted);
+}
+
+.heroSpark {
+  position: absolute;
+  z-index: 3;
+  top: 4%;
+  left: 2%;
+  width: clamp(44px, 5vw, 64px);
+  height: auto;
+  animation: bob 6s ease-in-out infinite;
+}
+
+.pass {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 430px);
+  margin-left: 4%;
+  padding: 24px 26px 22px;
+  border-radius: 28px;
+  background: var(--mm-bg);
+  box-shadow: var(--mm-shadow-lg);
+  transform: rotate(-3deg);
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.heroVisual:hover .pass {
+  transform: rotate(-1deg) translateY(-4px);
+}
+
+.passHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.passBrand {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mm-muted);
+}
+
+.passStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 12px;
+  border-radius: var(--mm-radius-pill);
+  background: var(--mm-lavender-soft);
+  color: var(--mm-lavender-deep);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.route {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  margin: 24px 0 22px;
+}
+
+.route > div {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.route small {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mm-muted);
+}
+
+.route strong {
+  margin-top: 4px;
+  font-size: clamp(19px, 2vw, 24px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--mm-ink);
+}
+
+.route span {
+  margin-top: 2px;
+  font-size: 12.5px;
+  color: var(--mm-ink-2);
+}
+
+.route .routeEnd {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.routeLine {
+  position: relative;
+  width: clamp(70px, 8vw, 104px);
+  height: 48px;
+}
+
+.routeLine::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  border-top: 2px dashed var(--mm-lavender);
+}
+
+.routeCar {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 44px;
+  height: auto;
+  animation: drive 4s ease-in-out infinite;
+}
+
+.perf {
+  position: relative;
+  margin: 0 -26px 18px;
+  border-top: 2px dashed var(--mm-border);
+}
+
+.passFacts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.passFacts > div {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--mm-mist);
+}
+
+.passFacts dt {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mm-muted);
+}
+
+.passFacts dd {
+  margin: 3px 0 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--mm-ink);
+}
+
+.passFacts .passFactHot {
+  background: var(--mm-midnight);
+}
+
+.passFactHot dt {
+  color: var(--mm-on-dark-muted);
+}
+
+.passFacts .passFactHot dd {
+  font-size: 22px;
+  line-height: 1.1;
+  color: var(--mm-on-dark);
+}
+
+.passFoot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: 18px;
+}
+
+/* decorative barcode */
+.barcode {
+  width: 150px;
+  height: 34px;
+  border-radius: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--mm-ink) 0 2px,
+    transparent 2px 4px,
+    var(--mm-ink) 4px 5px,
+    transparent 5px 8px,
+    var(--mm-ink) 8px 11px,
+    transparent 11px 13px,
+    var(--mm-ink) 13px 14px,
+    transparent 14px 17px
+  );
+  opacity: 0.8;
+}
+
+.passKey {
+  width: 56px;
+  height: auto;
+  margin: -12px -6px -8px 0;
+  transform: rotate(-24deg);
+  filter: drop-shadow(0 8px 10px rgba(34, 34, 46, 0.25));
+}
+
+.chip {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px 12px 12px;
+  border-radius: 18px;
+  background: var(--mm-bg);
+  box-shadow: var(--mm-shadow-md);
+  animation: bob 6s ease-in-out infinite;
+}
+
+.chipPeople {
+  left: 0;
+  bottom: 2%;
+  animation-delay: -3s;
+}
+
+.chipText {
+  display: flex;
+  flex-direction: column;
+  font-size: 12.5px;
+  line-height: 1.35;
+  color: var(--mm-ink-2);
+}
+
+.chipText strong {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--mm-ink);
+}
+
+.faces {
+  display: flex;
+}
+
+.faces img {
+  width: 34px;
+  height: 34px;
+  margin-left: -10px;
+  border: 2px solid var(--mm-bg);
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.faces img:first-child {
+  margin-left: 0;
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes drive {
+  0%,
+  100% {
+    transform: translateX(-90%);
+  }
+  50% {
+    transform: translateX(-10%);
+  }
+}
+
+
+/* ───────── Stats: instrument cluster ───────── */
+.statsSection {
+  padding: clamp(20px, 3vw, 32px) 0 0;
+}
+
+.cluster {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(22px, 3vw, 34px) clamp(20px, 3vw, 40px) clamp(26px, 3vw, 38px);
+  border-radius: var(--mm-radius-xl);
+  background:
+    radial-gradient(50% 120% at 50% 120%, rgba(197, 181, 238, 0.22) 0%, transparent 70%),
+    var(--mm-midnight) url("/landing/topo-dark.svg") left -200px top -260px / 900px auto no-repeat;
+  color: var(--mm-on-dark);
+  box-shadow: var(--mm-shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.clusterHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 clamp(14px, 2vw, 22px);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mm-on-dark-muted);
+}
+
+.gauges {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr) minmax(0, 1fr) minmax(0, 1fr);
+  align-items: end;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gauges > li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  padding: 0 clamp(10px, 2vw, 24px);
+  text-align: center;
+}
+
+.gauges > li + li {
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* dial */
+.dial {
+  display: block;
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  overflow: visible;
+}
+
+.dialTrack,
+.dialFill {
+  fill: none;
+  stroke-width: 10;
+  stroke-linecap: round;
+}
+
+.dialTrack {
+  stroke: rgba(255, 255, 255, 0.1);
+}
+
+.dialFill {
+  stroke: var(--accent);
+  filter: drop-shadow(0 0 6px var(--accent));
+}
+
+.tick,
+.tickMajor {
+  stroke: rgba(255, 255, 255, 0.28);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.tickMajor {
+  stroke: rgba(255, 255, 255, 0.55);
+  stroke-width: 3;
+}
+
+.needle {
+  stroke: var(--accent);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.hub {
+  fill: var(--mm-midnight);
+  stroke: var(--accent);
+  stroke-width: 4;
+}
+
+.gaugeValue {
+  margin: 10px 0 0;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+
+.gaugeValue span {
+  margin-left: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--mm-on-dark-muted);
+}
+
+.gaugeLabel,
+.odoLabel {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--mm-on-dark-muted);
+}
+
+/* odometer */
+.odo {
+  position: relative;
+  align-self: stretch;
+  justify-content: center;
+}
+
+.odoTag {
+  margin-bottom: 14px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--mm-lavender);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+}
+
+.odoDigits {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  padding: 8px;
+  border-radius: 16px;
+  background: #15151d;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.odoDigit {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: clamp(36px, 3.6vw, 52px);
+  height: clamp(50px, 5vw, 70px);
+  border-radius: 10px;
+  background: linear-gradient(180deg, #2e2e3c 0%, #262633 48%, #1d1d28 52%, #2a2a37 100%);
+  color: var(--mm-on-dark);
+  font-size: clamp(1.7rem, 3vw, 2.5rem);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+/* the split-flap seam */
+.odoDigit::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.odoPlus {
+  background: var(--mm-lavender);
+  color: var(--mm-ink);
+}
+
+.odoPlus::after {
+  background: rgba(34, 34, 46, 0.15);
+}
+
+.odoLabel {
+  margin-top: 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--mm-on-dark);
+}
+
+.odoLabel span {
+  font-weight: 400;
+  color: var(--mm-on-dark-muted);
+}
+
+/* ───────── Story: sticky chapter cards that stack as you scroll ───────── */
+.deck {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chapterCard {
+  position: sticky;
+  top: calc(var(--mm-header-h, 72px) + 20px + var(--i) * 14px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(20px, 4vw, 56px);
+  min-height: clamp(280px, 30vw, 340px);
+  padding: clamp(26px, 4vw, 52px);
+  overflow: hidden;
+  border-radius: var(--mm-radius-xl);
+  box-shadow: 0 -14px 34px -18px rgba(34, 34, 46, 0.28), inset 0 0 0 1px rgba(34, 34, 46, 0.04);
+}
+
+.chapterCopy {
+  position: relative;
+}
+
+/* big outlined chapter number */
+.chapterNum {
+  display: block;
+  margin-bottom: 14px;
+  font-size: clamp(56px, 7vw, 92px);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  color: transparent;
+  -webkit-text-stroke: 1.6px rgba(34, 34, 46, 0.32);
+}
+
+.chapterKicker {
+  margin: 0 0 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mm-lavender-deep);
+}
+
+.chapterTitle {
+  margin: 0;
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.chapterText {
+  max-width: 46ch;
+  margin: 12px 0 0;
+  font-size: 15.5px;
+  line-height: 1.7;
+  color: var(--mm-ink-2);
+}
+
+.chapterCard.midnight .chapterNum {
+  -webkit-text-stroke-color: rgba(255, 255, 255, 0.35);
+}
+
+.chapterCard.midnight .chapterKicker {
+  color: var(--mm-lavender);
+}
+
+.chapterCard.midnight .chapterText {
+  color: var(--mm-on-dark-muted);
+}
+
+.chapterArt {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  min-height: 220px;
+  border-radius: var(--mm-radius-lg);
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+}
+
+.chapterCard.mist .chapterArt {
+  background: var(--mm-bg);
+}
+
+.chapterCard.midnight .chapterArt {
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.chapterArt svg {
+  width: min(100%, 300px);
+  height: auto;
+  overflow: visible;
+}
+
+/* ── story illustrations ── */
+.saRing {
+  transform-box: view-box;
+  transform-origin: 100px 74px;
+  animation: ringPhone 2.4s ease-in-out infinite;
+}
+
+@keyframes ringPhone {
+  0%,
+  34%,
+  100% {
+    transform: rotate(0deg);
+  }
+  5% {
+    transform: rotate(-6deg);
+  }
+  10% {
+    transform: rotate(6deg);
+  }
+  15% {
+    transform: rotate(-5deg);
+  }
+  20% {
+    transform: rotate(5deg);
+  }
+  26% {
+    transform: rotate(-2deg);
+  }
+}
+
+.saWave {
+  opacity: 0;
+  animation: wave 2.4s ease-out infinite;
+}
+
+.saWave2 {
+  animation-delay: 0.15s;
+}
+
+@keyframes wave {
+  0%,
+  4% {
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  36%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.saDrive {
+  animation: driveIn 4s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+}
+
+@keyframes driveIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-110px);
+  }
+  10% {
+    opacity: 1;
+  }
+  45%,
+  86% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(0);
+  }
+}
+
+.saSpeed {
+  animation: speedFade 4s ease-out infinite;
+}
+
+@keyframes speedFade {
+  0%,
+  35% {
+    opacity: 1;
+  }
+  48%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.saDoor {
+  animation: doorUp 4.5s ease-in-out infinite;
+}
+
+@keyframes doorUp {
+  0%,
+  15% {
+    transform: translateY(0);
+  }
+  45%,
+  85% {
+    transform: translateY(-62px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.saCoin {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: coinUp 4.5s ease-out infinite;
+}
+
+@keyframes coinUp {
+  0%,
+  45% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.6);
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(0) scale(1.1);
+  }
+  60%,
+  82% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  92%,
+  100% {
+    opacity: 0;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.saField rect {
+  animation: fieldFill 5s ease-out infinite;
+}
+
+.saField2 rect {
+  animation-delay: 0.4s;
+}
+
+@keyframes fieldFill {
+  0%,
+  8% {
+    fill: #eee8fc;
+  }
+  16%,
+  90% {
+    fill: #6b57c4;
+  }
+  100% {
+    fill: #eee8fc;
+  }
+}
+
+.saPrice {
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: priceIn 5s ease-out infinite;
+}
+
+@keyframes priceIn {
+  0%,
+  28% {
+    transform: scaleX(0);
+  }
+  36%,
+  90% {
+    transform: scaleX(1);
+  }
+  100% {
+    transform: scaleX(0);
+  }
+}
+
+.saBooked {
+  opacity: 0;
+  animation: booked 5s ease-out infinite;
+}
+
+@keyframes booked {
+  0%,
+  50% {
+    opacity: 0;
+  }
+  56%,
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ───────── Values bento ───────── */
+.valuesSection {
+  padding-top: 0;
+}
+
+.bento {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: minmax(220px, auto);
+  gap: 20px;
+}
+
+.value {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 28px;
+  border-radius: var(--mm-radius-lg);
+}
+
+.valueArt {
+  display: block;
+  width: 76px;
+  height: 76px;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 8px 10px rgba(34, 34, 46, 0.14));
+}
+
+/* ── animated value icons ── */
+.viCoin {
+  animation: coinPop 2.8s ease-in-out infinite;
+}
+
+@keyframes coinPop {
+  0%,
+  100% {
+    transform: translateY(12px);
+  }
+  35%,
+  55% {
+    transform: translateY(-6px);
+  }
+}
+
+.viCarBody {
+  animation: carBob 1.6s ease-in-out infinite;
+}
+
+@keyframes carBob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1.5px);
+  }
+}
+
+.viSpark {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: twinkle 2.4s ease-in-out infinite;
+}
+
+.viSpark2 {
+  animation-delay: -0.8s;
+}
+
+.viSpark3 {
+  animation-delay: -1.6s;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.35) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1) rotate(45deg);
+  }
+}
+
+.viBubble {
+  transform-box: fill-box;
+  transform-origin: 30% 100%;
+  animation: bubble 3s ease-in-out infinite;
+}
+
+@keyframes bubble {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+.viBar {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: talk 0.8s ease-in-out infinite alternate;
+}
+
+.viBar2 {
+  animation-delay: -0.3s;
+}
+
+.viBar3 {
+  animation-delay: -0.55s;
+}
+
+@keyframes talk {
+  from {
+    transform: scaleY(0.35);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+.viHand {
+  transform-box: view-box;
+  transform-origin: 32px 37px;
+  animation: sweep 4s linear infinite;
+}
+
+@keyframes sweep {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.viRing {
+  stroke-dashoffset: 100;
+  animation: ringFill 4s linear infinite;
+}
+
+@keyframes ringFill {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.viButton {
+  transform-box: view-box;
+  transform-origin: 50.5px 14.5px;
+  animation: press 4s ease-in-out infinite;
+}
+
+@keyframes press {
+  0%,
+  6%,
+  100% {
+    transform: translate(0, 0);
+  }
+  3% {
+    transform: translate(-1.6px, 1.6px);
+  }
+}
+
+/* receipt: rows print, total fills, check draws */
+.viRow {
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: rowIn 5s ease-out infinite both;
+  animation-delay: calc(var(--row) * 0.22s);
+}
+
+@keyframes rowIn {
+  0% {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  8%,
+  86% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  94%,
+  100% {
+    opacity: 0;
+    transform: scaleX(1);
+  }
+}
+
+.viBadge {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: badgePop 5s ease-out infinite both;
+  animation-delay: 1.2s;
+}
+
+@keyframes badgePop {
+  0% {
+    transform: scale(0);
+  }
+  6% {
+    transform: scale(1.15);
+  }
+  10%,
+  86% {
+    transform: scale(1);
+  }
+  94%,
+  100% {
+    transform: scale(0);
+  }
+}
+
+.viCheck {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: drawCheck 5s ease-out infinite both;
+  animation-delay: 1.35s;
+}
+
+@keyframes drawCheck {
+  0% {
+    stroke-dashoffset: 100;
+  }
+  8%,
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.valueTitle {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.valueText {
+  margin: 8px 0 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--mm-ink-2);
+}
+
+.valueBig {
+  grid-column: span 2;
+  grid-row: span 2;
+  justify-content: flex-end;
+  padding: clamp(28px, 3.5vw, 44px);
+  background: var(--mm-midnight) url("/landing/topo-dark.svg") left -120px top -80px / 720px auto no-repeat;
+  color: var(--mm-on-dark);
+}
+
+.valueBigArt {
+  position: absolute;
+  top: clamp(20px, 3vw, 40px);
+  right: clamp(20px, 3vw, 40px);
+  width: clamp(110px, 13vw, 170px);
+  height: auto;
+  transform: rotate(-6deg);
+  filter: drop-shadow(0 24px 30px rgba(0, 0, 0, 0.35));
+}
+
+.valueKicker {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--mm-lavender);
+}
+
+.valueBigTitle {
+  max-width: 460px;
+  margin: 0;
+  font-size: clamp(24px, 2.6vw, 32px);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.valueBigText {
+  max-width: 460px;
+  margin: 12px 0 0;
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--mm-on-dark-muted);
+}
+
+.checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.checks li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: var(--mm-radius-pill);
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.checks svg {
+  color: var(--mm-lavender);
+}
+
+/* ───────── Trips strip ───────── */
+.trips {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.trip {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  border-radius: var(--mm-radius-md);
+  background: var(--mm-mist);
+}
+
+/* alternate heights give the strip a gentle rhythm */
+.trip:nth-child(even) {
+  margin-top: 28px;
+}
+
+.tripImg {
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.trip:hover .tripImg {
+  transform: scale(1.06);
+}
+
+.trip::after {
+  content: "";
+  position: absolute;
+  inset: 45% 0 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(22, 22, 29, 0.72) 100%);
+}
+
+.tripName {
+  position: absolute;
+  z-index: 1;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--mm-on-dark);
+}
+
+/* ───────── Mission & vision: two light tiles + infinity badge on the seam ───────── */
+.purposeSection {
+  padding-top: 0;
+}
+
+.purposeGrid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.purposeTile {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(26px, 3.2vw, 40px);
+  border-radius: var(--mm-radius-xl);
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s;
+}
+
+.purposeTile:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--mm-shadow-md);
+}
+
+/* faint contour texture */
+.purposeTile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("/landing/topo-light.svg") right -120px bottom -140px / 620px auto no-repeat;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.purposeTile > * {
+  position: relative;
+}
+
+.purposeMission {
+  --tone-deep: var(--mm-lavender-deep);
+  --tone-mark: rgba(107, 87, 196, 0.24);
+  background: linear-gradient(150deg, #f8f5ff 0%, var(--mm-lavender-soft) 50%, #ddd2fa 100%);
+}
+
+.purposeVision {
+  --tone-deep: #2f7fb8;
+  --tone-mark: rgba(56, 152, 214, 0.26);
+  /* clear room for the badge on the seam */
+  padding-left: calc(clamp(26px, 3.2vw, 40px) + 18px);
+  background: linear-gradient(210deg, #f3fbff 0%, var(--mm-sky-soft) 50%, #cdeafc 100%);
+}
+
+.purposeTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 5px 14px 5px 5px;
+  border-radius: var(--mm-radius-pill);
+  background: var(--mm-bg);
+  color: var(--mm-ink);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: var(--mm-shadow-sm);
+}
+
+.purposeTagIcon {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--mm-radius-pill);
+  background: var(--tone-deep);
+  color: #fff;
+}
+
+.purposeQuote {
+  max-width: 30ch;
+  margin: 18px 0 0;
+  font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+  font-weight: 600;
+  line-height: 1.38;
+  letter-spacing: -0.015em;
+  color: var(--mm-ink);
+  text-wrap: balance;
+}
+
+/* highlighter stroke under the key phrase */
+.purposeQuote mark {
+  padding: 0 2px;
+  background: linear-gradient(transparent 58%, var(--tone-mark) 58%, var(--tone-mark) 92%, transparent 92%);
+  color: inherit;
+}
+
+.purposeText {
+  max-width: 40ch;
+  margin: 12px 0 0;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--mm-ink-2);
+}
+
+/* big faint 01 / 02 */
+.purposeMark {
+  position: absolute;
+  right: clamp(18px, 2.4vw, 30px);
+  bottom: -18px;
+  font-size: clamp(80px, 9vw, 120px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.05em;
+  color: var(--tone-deep);
+  opacity: 0.09;
+  pointer-events: none;
+}
+
+/* the badge that joins the two tiles */
+.purposeBadge {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border: 6px solid var(--mm-bg);
+  border-radius: 50%;
+  background: linear-gradient(160deg, var(--mm-bg) 0%, var(--mm-mist) 100%);
+  box-shadow: var(--mm-shadow-md);
+  transform: translate(-50%, -50%);
+}
+
+.purposeBadge img {
+  width: 48px;
+  height: auto;
+  animation: bob 6s ease-in-out infinite;
+}
+
+/* ───────── Responsibility: SDG tiles ───────── */
+.sdgSection {
+  padding-top: 0;
+}
+
+
+/* Orbit: the shared car in the middle, five goals around it.
+   A highlight walks round the goals (2s each, 10s loop); dashes flow out along the spokes. */
+.orbit {
+  --icon: 104px;
+  --step: 2s;
+  position: relative;
+  width: min(100%, 660px);
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+}
+
+.orbitLines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.orbitLine {
+  stroke: var(--goal);
+  stroke-width: 0.45;
+  stroke-linecap: round;
+  stroke-dasharray: 2 1.6;
+  opacity: 0.35;
+  animation:
+    flow 1.4s linear infinite,
+    spokeGlow calc(var(--step) * 5) ease-in-out infinite;
+  animation-delay: 0s, calc(var(--i) * var(--step));
+}
+
+@keyframes flow {
+  to {
+    stroke-dashoffset: -3.6;
+  }
+}
+
+@keyframes spokeGlow {
+  0%,
+  24%,
+  100% {
+    opacity: 0.35;
+    stroke-width: 0.45;
+  }
+  6%,
+  16% {
+    opacity: 1;
+    stroke-width: 0.8;
+  }
+}
+
+/* hub */
+.hub {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 34%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(197, 181, 238, 0.28) 0%, transparent 60%),
+    var(--mm-midnight) url("/landing/topo-dark.svg") center / 360px auto no-repeat;
+  color: var(--mm-on-dark);
+  box-shadow: var(--mm-shadow-lg);
+  transform: translate(-50%, -50%);
+}
+
+/* slowly turning dashed ring around the hub */
+.hub::before {
+  content: "";
+  position: absolute;
+  inset: -14px;
+  border: 2px dashed var(--mm-lavender);
+  border-radius: 50%;
+  animation: spin 30s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.hubCar {
+  width: 74%;
+  height: auto;
+  margin-top: 6%;
+  overflow: visible;
+}
+
+/* off-roader animation */
+.suv {
+  display: block;
+}
+
+.suvBody {
+  animation: suspension 0.9s ease-in-out infinite;
+}
+
+.suvWheel {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: wheelSpin 0.6s linear infinite;
+}
+
+.suvRoad {
+  stroke: rgba(255, 255, 255, 0.35);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 16 12;
+  animation: roadRun 0.6s linear infinite;
+}
+
+.suvSpeed line {
+  stroke: rgba(197, 181, 238, 0.85);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  animation: speedLine 0.9s ease-out infinite;
+}
+
+.suvSpeed line:nth-child(2) {
+  animation-delay: -0.3s;
+}
+
+.suvSpeed line:nth-child(3) {
+  animation-delay: -0.6s;
+}
+
+@keyframes suspension {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes wheelSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes roadRun {
+  to {
+    stroke-dashoffset: 28;
+  }
+}
+
+@keyframes speedLine {
+  0% {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+}
+
+.hubText {
+  font-size: clamp(13px, 1.4vw, 16px);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* goal nodes: tile centred on its point, text under the tile */
+.nodes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.node {
+  position: absolute;
+  z-index: 2;
+  left: var(--x);
+  top: var(--y);
+  width: var(--icon);
+  transform: translate(-50%, calc(var(--icon) / -2));
+}
+
+.sdgTile {
+  display: flex;
+  flex-direction: column;
+  width: var(--icon);
+  height: var(--icon);
+  padding: calc(var(--icon) * 0.085);
+  border-radius: 22px;
+  background: var(--goal);
+  color: #fff;
+  overflow: hidden;
+  box-shadow: var(--mm-shadow-md);
+  animation: goalGlow calc(var(--step) * 5) ease-in-out infinite;
+  animation-delay: calc(var(--i) * var(--step));
+}
+
+@keyframes goalGlow {
+  0%,
+  24%,
+  100% {
+    transform: none;
+    box-shadow: var(--mm-shadow-md);
+  }
+  6%,
+  16% {
+    transform: translateY(-8px) scale(1.08);
+    box-shadow: 0 22px 36px -12px var(--goal);
+  }
+}
+
+.sdgHead {
+  display: flex;
+  align-items: flex-start;
+  gap: calc(var(--icon) * 0.05);
+  text-align: left;
+}
+
+.sdgNum {
+  flex: none;
+  font-size: calc(var(--icon) * 0.3);
+  font-weight: 600;
+  line-height: 0.82;
+}
+
+.sdgTitle {
+  font-size: calc(var(--icon) * 0.083);
+  font-weight: 500;
+  line-height: 1.13;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.sdgPic {
+  display: block;
+  width: 74%;
+  height: auto;
+  margin: auto auto 0;
+  overflow: visible;
+}
+
+.picFill {
+  fill: #fff;
+}
+
+.picCut {
+  fill: var(--goal);
+}
+
+.picLine,
+.picStroke {
+  fill: none;
+  stroke: #fff;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.picLine {
+  stroke-width: 3;
+  opacity: 0.75;
+}
+
+.picStroke {
+  stroke-width: 3.4;
+}
+
+.nodeText {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  width: max-content;
+  max-width: 170px;
+  padding: 4px 10px 5px;
+  border-radius: 12px;
+  /* spokes pass behind the label */
+  background: var(--mm-bg);
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+.nodeTitle {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--mm-ink);
+}
+
+.nodeLine {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: var(--mm-muted);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ───────── Contact: business card + find us ───────── */
+.contactSection {
+  padding-top: 0;
+}
+
+.contactGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+/* the business card */
+.bizCard {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(26px, 3.6vw, 44px);
+  border-radius: var(--mm-radius-xl);
+  background:
+    radial-gradient(60% 50% at 100% 0%, rgba(197, 181, 238, 0.2) 0%, transparent 70%),
+    var(--mm-midnight) url("/landing/topo-dark.svg") right -180px top -140px / 760px auto no-repeat;
+  color: var(--mm-on-dark);
+  box-shadow: var(--mm-shadow-lg);
+}
+
+.bizHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bizLogo {
+  width: 124px;
+  height: auto;
+}
+
+.bizTag {
+  padding: 6px 14px;
+  border-radius: var(--mm-radius-pill);
+  background: rgba(197, 181, 238, 0.16);
+  color: var(--mm-lavender);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.bizList {
+  margin: 0;
+}
+
+.bizRow {
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  padding: 18px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.bizRow dt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mm-on-dark-muted);
+}
+
+.bizIcon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--mm-lavender);
+}
+
+.bizRow dd {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-height: 38px;
+  justify-content: center;
+  margin: 0;
+}
+
+.bizValue {
+  font-size: 16.5px;
+  font-weight: 600;
+  color: var(--mm-on-dark);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+a.bizValue:hover {
+  color: var(--mm-lavender);
+}
+
+.bizNote {
+  font-size: 13px;
+  color: var(--mm-on-dark-muted);
+}
+
+.bizAddress {
+  font-size: 14.5px;
+  font-style: normal;
+  line-height: 1.6;
+  color: var(--mm-on-dark);
+}
+
+.bizActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 26px;
+}
+
+.btnWhatsapp {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--mm-on-dark);
+  box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.18);
+}
+
+.btnWhatsapp:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+/* right column */
+.findCol {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.findCard {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  border-radius: var(--mm-radius-xl);
+  background: var(--mm-mist);
+}
+
+.officeMap {
+  position: relative;
+  flex: 1;
+  min-height: 200px;
+  overflow: hidden;
+  background:
+    url("/landing/topo-light.svg") center / 640px auto no-repeat,
+    linear-gradient(160deg, var(--mm-sky-soft) 0%, var(--mm-lavender-soft) 100%);
+}
+
+/* two white "roads" crossing under the label */
+.officeMap::before,
+.officeMap::after {
+  content: "";
+  position: absolute;
+  background: var(--mm-bg);
+  box-shadow: 0 0 0 1px rgba(34, 34, 46, 0.05);
+}
+
+.officeMap::before {
+  left: -10%;
+  right: -10%;
+  top: 56%;
+  height: 16px;
+  transform: rotate(-9deg);
+}
+
+.officeMap::after {
+  top: -10%;
+  bottom: -10%;
+  left: 44%;
+  width: 12px;
+  transform: rotate(14deg);
+}
+
+.mapLabel {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 50%;
+  padding: 12px 20px;
+  border-radius: var(--mm-radius-pill);
+  background: var(--mm-midnight);
+  color: var(--mm-on-dark);
+  box-shadow: var(--mm-shadow-lg);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  transform: translate(-50%, -50%);
+}
+
+.findBody {
+  padding: clamp(22px, 3vw, 32px);
+}
+
+.findTitle {
+  margin: 0;
+  font-size: clamp(20px, 2vw, 24px);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.findText {
+  margin: 8px 0 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--mm-ink-2);
+}
+
+.findActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.socialCard {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 20px;
+  padding: 20px clamp(22px, 3vw, 32px);
+  border-radius: var(--mm-radius-lg);
+  background: var(--mm-lavender-soft);
+}
+
+.socialTitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.socialLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.socialLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 18px;
+  border-radius: var(--mm-radius-pill);
+  background: var(--mm-bg);
+  color: var(--mm-ink);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: var(--mm-shadow-sm);
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.socialLink:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--mm-shadow-md);
+}
+
+.socialLink:focus-visible,
+.bizValue:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+/* ───────── Tablet ───────── */
+@media (max-width: 1080px) {
+  /* odometer on top, three gauges below */
+  .gauges {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    row-gap: 26px;
+  }
+
+  .gauges > li.odo {
+    grid-column: 1 / -1;
+    order: -1;
+    padding-bottom: 26px;
+    border-left: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .bento {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: auto;
+  }
+
+  .valueBig {
+    grid-row: auto;
+    min-height: 400px;
+  }
+
+  .trips {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .trip:nth-child(even) {
+    margin-top: 0;
+  }
+
+  .orbit {
+    --icon: 92px;
+    width: min(100%, 580px);
+  }
+}
+
+/* ───────── Goals: hub on top, goals in a centred grid ───────── */
+@media (max-width: 760px) {
+  .orbit {
+    --icon: 88px;
+    width: 100%;
+    aspect-ratio: auto;
+  }
+
+  .orbitLines {
+    display: none;
+  }
+
+  .hub {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: 168px;
+    margin: 14px auto 40px;
+    transform: none;
+  }
+
+  .nodes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 28px 18px;
+  }
+
+  .node {
+    position: static;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: calc(50% - 9px);
+    transform: none;
+  }
+
+  .nodeText {
+    position: static;
+    width: auto;
+    margin-top: 12px;
+    transform: none;
+  }
+
+  /* too small to read at this size — the short title sits right under the tile */
+  .sdgTitle {
+    display: none;
+  }
+
+  .sdgNum {
+    font-size: calc(var(--icon) * 0.34);
+  }
+}
+
+@media (max-width: 900px) {
+  .heroGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .heroVisual {
+    max-width: 560px;
+    margin: 8px auto 0;
+    width: 100%;
+  }
+
+  .contactGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .officeMap {
+    flex: none;
+    min-height: 180px;
+  }
+}
+
+/* ───────── Mission & vision stack; the badge sits on the horizontal seam ───────── */
+@media (max-width: 760px) {
+  /* story cards: illustration on top, copy below, tighter stack */
+  .chapterCard {
+    top: calc(var(--mm-header-h, 60px) + 12px + var(--i) * 10px);
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+    min-height: 0;
+    padding: 18px 18px 24px;
+  }
+
+  .chapterArt {
+    order: -1;
+    min-height: 0;
+    height: 170px;
+  }
+
+  .chapterArt svg {
+    width: auto;
+    height: 150px;
+  }
+
+  .chapterCopy {
+    padding: 0 6px;
+  }
+
+  .chapterNum {
+    position: absolute;
+    top: -4px;
+    right: 6px;
+    margin: 0;
+    font-size: 48px;
+  }
+
+  .chapterText {
+    font-size: 14.5px;
+  }
+
+  .purposeGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .purposeVision {
+    padding-left: clamp(26px, 3.2vw, 40px);
+    padding-top: calc(clamp(26px, 3.2vw, 40px) + 18px);
+  }
+
+  .purposeMission {
+    padding-bottom: calc(clamp(26px, 3.2vw, 40px) + 18px);
+  }
+
+  .purposeBadge {
+    width: 72px;
+    height: 72px;
+  }
+
+  .purposeBadge img {
+    width: 40px;
+  }
+}
+
+/* ───────── Phone ───────── */
+@media (max-width: 560px) {
+  /* business card rows stack: label above value */
+  .bizRow {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    padding: 16px 0;
+  }
+
+  .bizActions :global(a),
+  .findActions :global(a) {
+    flex: 1 1 100%;
+  }
+
+  .heroActions :global(a) {
+    flex: 1 1 100%;
+  }
+
+  .heroVisual {
+    min-height: 0;
+    padding: 64px 0 76px;
+  }
+
+  .heroVisual::before {
+    inset: 0;
+  }
+
+  .pass {
+    width: calc(100% - 28px);
+    margin-left: 0;
+    padding: 20px 18px 18px;
+    border-radius: 22px;
+  }
+
+  .perf {
+    margin: 0 -18px 16px;
+  }
+
+  .passBrand {
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+  }
+
+  .route {
+    margin: 18px 0;
+  }
+
+  .routeLine {
+    width: 52px;
+  }
+
+  .routeCar {
+    width: 36px;
+  }
+
+  .passFacts dd {
+    font-size: 13.5px;
+  }
+
+  .barcode {
+    width: 110px;
+    height: 28px;
+  }
+
+  .passKey {
+    width: 46px;
+  }
+
+  .passBack {
+    top: 12px;
+    right: 8px;
+    gap: 10px;
+    padding: 9px 14px 9px 9px;
+    border-radius: 16px;
+  }
+
+  .passBack img {
+    width: 34px;
+    height: 34px;
+    padding: 4px;
+    border-radius: 10px;
+  }
+
+  .passBack strong {
+    font-size: 15px;
+  }
+
+  .passBackText span {
+    font-size: 11px;
+  }
+
+  .heroSpark {
+    top: 14px;
+    left: 14px;
+    width: 40px;
+  }
+
+  .chip {
+    left: 10px;
+    bottom: 10px;
+    padding: 10px 12px 10px 10px;
+    gap: 10px;
+  }
+
+  .chipText {
+    font-size: 11.5px;
+  }
+
+  .chipText strong {
+    font-size: 13.5px;
+  }
+
+  .faces img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .faces img:nth-child(n + 4) {
+    display: none;
+  }
+
+  .gauges > li {
+    padding: 0 6px;
+  }
+
+  .gaugeValue {
+    margin-top: 6px;
+    font-size: 1.35rem;
+  }
+
+  .gaugeValue span {
+    margin-left: 3px;
+    font-size: 11px;
+  }
+
+  .gaugeLabel {
+    font-size: 11.5px;
+  }
+
+  .odoDigit {
+    width: 46px;
+    height: 62px;
+  }
+
+  .bento {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .value {
+    padding: 22px;
+  }
+
+  /* room for the check-mark above the text */
+  .value.valueBig {
+    grid-column: auto;
+    min-height: 0;
+    padding-top: 150px;
+  }
+
+  .valueArt {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 14px;
+  }
+
+  /* trips become a swipeable row */
+  .trips {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    margin: 0 calc(-1 * var(--mm-gutter));
+    padding: 0 var(--mm-gutter) 6px;
+    scrollbar-width: none;
+  }
+
+  .trips::-webkit-scrollbar {
+    display: none;
+  }
+
+  .trip {
+    flex: 0 0 62%;
+    scroll-snap-align: start;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* value icons rest in their finished state */
+  .viCheck {
+    stroke-dashoffset: 0;
+  }
+
+  .viRing {
+    stroke-dashoffset: 30;
+  }
+
+  /* story illustrations rest in their "done" frame */
+  .saDoor {
+    transform: translateY(-62px);
+  }
+
+  .saWave,
+  .saCoin,
+  .saBooked {
+    opacity: 1;
+  }
+
+  .saRing,
+  .saWave,
+  .saDrive,
+  .saSpeed,
+  .saDoor,
+  .saCoin,
+  .saField rect,
+  .saPrice,
+  .saBooked,
+  .viCoin,
+  .viCarBody,
+  .viSpark,
+  .viBubble,
+  .viBar,
+  .viHand,
+  .viRing,
+  .viButton,
+  .viRow,
+  .viBadge,
+  .viCheck,
+  .purposeBadge img,
+  .chip,
+  .heroSpark,
+  .routeCar,
+  .orbitLine,
+  .hub::before,
+  .hubCar,
+  .suvBody,
+  .suvWheel,
+  .suvRoad,
+  .suvSpeed line,
+  .sdgTile {
+    animation: none;
+  }
+
+  .tripImg,
+  .pass {
+    transition: none;
+  }
+
+  .trip:hover .tripImg {
+    transform: none;
+  }
+
+  .heroVisual:hover .pass {
+    transform: rotate(-3deg);
+  }
+}
+
