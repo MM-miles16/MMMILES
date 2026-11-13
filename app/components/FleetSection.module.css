@@ -216,22 +216,7 @@
   color: var(--mm-lavender-deep);
 }
 
-.go {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  border-radius: var(--mm-radius-pill);
-  background: var(--mm-midnight);
-  color: var(--mm-on-dark);
-  font-size: 18px;
-  transition: transform 0.3s;
-}
 
-.card:hover .go {
-  transform: rotate(45deg);
-}
 
 .itemSmall .card {
   padding: 14px 16px 16px;
@@ -241,11 +226,6 @@
   font-size: 16px;
 }
 
-.itemSmall .go {
-  width: 36px;
-  height: 36px;
-  font-size: 16px;
-}
 
 /* ── Footer of the section ── */
 .note {
@@ -357,10 +337,6 @@
     display: none;
   }
 
-  /* ...and drop the arrow (the whole card is tappable) so the name and price get the full width */
-  .item:not(:first-child) .go {
-    display: none;
-  }
 
   .tag {
     padding: 4px 10px;
@@ -376,18 +352,11 @@
     font-size: 13px;
   }
 
-  .go,
-  .itemSmall .go {
-    width: 32px;
-    height: 32px;
-    font-size: 15px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .card,
   .image,
-  .go,
   .pill {
     transition: none;
   }

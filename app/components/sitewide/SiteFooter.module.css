@@ -13,7 +13,7 @@
   margin: 0 auto;
   padding: clamp(40px, 6vw, 72px) clamp(20px, 5vw, 64px) 28px;
   border-radius: var(--mm-radius-xl);
-  background: var(--mm-midnight) url("/landing/topo-dark.svg") right -80px top -60px / 760px auto no-repeat;
+  background: var(--mm-midnight);
   color: var(--mm-on-dark-muted);
 }
 

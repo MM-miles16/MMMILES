@@ -120,7 +120,7 @@
   align-items: flex-start;
   gap: 2px;
   padding: 14px 18px;
-  background: var(--mm-midnight) url("/landing/topo-dark.svg") center / 360px auto;
+  background: var(--mm-midnight);
   color: var(--mm-on-dark-muted);
   font-size: 13px;
 }

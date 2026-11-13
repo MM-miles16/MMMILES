@@ -14,9 +14,10 @@
 }
 
 /* ── Section heading: eyebrow pill + title + lead ── */
+/* Wide enough that the one-line descriptions stay on one line from tablets up */
 .head {
-  max-width: 720px;
-  margin: 0 auto clamp(36px, 5vw, 56px);
+  max-width: 880px;
+  margin: 0 auto clamp(24px, 3.5vw, 40px);
   text-align: center;
 }
 
@@ -38,7 +39,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin: 0 0 14px;
+  margin: 0 0 10px;
   padding: 6px 14px;
   border-radius: var(--mm-radius-pill);
   background: var(--mm-lavender-soft);
@@ -51,18 +52,18 @@
 .title {
   margin: 0;
   font-family: var(--mm-font);
-  font-size: clamp(1.85rem, 3.6vw, 2.9rem);
+  font-size: clamp(1.7rem, 3vw, 2.4rem);
   font-weight: 600;
-  line-height: 1.14;
+  line-height: 1.12;
   letter-spacing: -0.025em;
   color: var(--mm-ink);
   text-wrap: balance;
 }
 
 .lead {
-  margin: 16px 0 0;
-  font-size: clamp(1rem, 1.3vw, 1.125rem);
-  line-height: 1.65;
+  margin: 8px 0 0;
+  font-size: clamp(0.95rem, 1.2vw, 1.0625rem);
+  line-height: 1.5;
   color: var(--mm-ink-2);
 }
 

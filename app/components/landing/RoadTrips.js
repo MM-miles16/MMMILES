@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Clock, MapPin } from "lucide-react";
+import { Clock, MapPin } from "lucide-react";
 import { getRoadTrips } from "@/lib/landing";
 import ui from "./ui.module.css";
 import styles from "./RoadTrips.module.css";
@@ -20,7 +20,7 @@ export default function RoadTrips() {
             </h2>
           </div>
           <Link href="/blog" className={ui.textLink}>
-            Travel guides <ArrowRight size={16} />
+            Travel guides
           </Link>
         </div>
       </div>
@@ -40,7 +40,7 @@ export default function RoadTrips() {
                     <Clock size={14} aria-hidden="true" /> {t.time}
                   </span>
                 </div>
-                {t.href && <span className={styles.guide}>Read the guide →</span>}
+                {t.href && <span className={styles.guide}>Read the guide</span>}
               </div>
             </>
           );

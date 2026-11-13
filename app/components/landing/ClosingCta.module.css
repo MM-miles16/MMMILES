@@ -1,80 +1,203 @@
-/* Closing CTAs — rent (Midnight) and host (Lavender) side by side */
+/* Become a host — one compact, fully clickable lavender panel.
+   Laptops and up: pitch and chips on the left; a "you keep 80%+" card and the button on the right.
+   Phones: app-style — stacked, chips wrap, full-width button. Light motion: the panel lifts on hover,
+   the "you keep" bar fills as it scrolls in. */
 
-.section {
-  padding-top: 0;
+.section.section {
+  padding-block: clamp(32px, 4vw, 56px);
 }
 
-.grid {
+.panel {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 20px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(24px, 4vw, 56px);
+  padding: clamp(26px, 3.5vw, 44px);
+  border-radius: var(--mm-radius-xl);
+  background:
+    radial-gradient(circle at 90% 10%, rgba(255, 255, 255, 0.55), transparent 40%),
+    linear-gradient(160deg, #e9e2fb 0%, #d9cdf6 100%);
+  color: inherit;
+  text-decoration: none;
+  transition:
+    transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.35s;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.card {
-  position: relative;
+@media (hover: hover) {
+  .panel:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 30px 60px -38px rgba(34, 34, 46, 0.6);
+  }
+
+  .panel:hover .cta {
+    background: var(--mm-midnight-hover);
+  }
+}
+
+.panel:active {
+  scale: 0.99;
+}
+
+.panel:focus-visible {
+  outline: 2px solid var(--mm-lavender-deep);
+  outline-offset: 4px;
+}
+
+.content {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  overflow: hidden;
-  min-height: 340px;
-  padding: clamp(28px, 4vw, 48px);
-  border-radius: var(--mm-radius-xl);
 }
 
-.dark {
-  background: var(--mm-midnight) url("/landing/topo-dark.svg") right -140px top -100px / 640px auto no-repeat;
-  color: var(--mm-on-dark);
-}
-
-.lavender {
-  background: var(--mm-lavender) url("/landing/topo-light.svg") right -140px top -100px / 640px auto no-repeat;
-  color: var(--mm-ink);
-}
-
-.art {
-  position: absolute;
-  top: clamp(20px, 3vw, 36px);
-  right: clamp(20px, 3vw, 36px);
-  width: clamp(96px, 11vw, 150px);
-  height: auto;
-  filter: drop-shadow(0 20px 24px rgba(0, 0, 0, 0.25));
+.eyebrow.eyebrow {
+  background: rgba(255, 255, 255, 0.7);
 }
 
 .title {
-  max-width: 440px;
-  margin: auto 0 0;
-  text-wrap: balance;
-  padding-top: 110px;
+  margin: 0;
+  color: var(--mm-ink);
   font-family: var(--mm-font);
-  font-size: clamp(26px, 3vw, 36px);
+  font-size: clamp(1.7rem, 3vw, 2.4rem);
   font-weight: 600;
-  line-height: 1.15;
+  line-height: 1.12;
   letter-spacing: -0.025em;
-  color: inherit;
+  text-wrap: balance;
 }
 
-.text {
-  max-width: 400px;
-  margin: 12px 0 28px;
-  font-size: 16px;
-  line-height: 1.6;
-}
-
-.dark .text {
-  color: var(--mm-on-dark-muted);
-}
-
-.lavender .text {
+.lead {
+  max-width: 560px;
+  margin-top: 8px;
   color: var(--mm-ink-2);
+  font-size: clamp(0.95rem, 1.2vw, 1.0625rem);
+  line-height: 1.5;
 }
 
-@media (max-width: 900px) {
-  .grid {
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 13px;
+  border-radius: var(--mm-radius-pill);
+  background: rgba(255, 255, 255, 0.75);
+  color: var(--mm-ink);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.chip svg {
+  color: var(--mm-lavender-deep);
+}
+
+/* ── "You keep 80%+" card + button ── */
+.side {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+  width: 260px;
+}
+
+.keep {
+  display: flex;
+  flex-direction: column;
+  padding: 18px 18px 16px;
+  border-radius: 22px;
+  background: var(--mm-bg);
+  box-shadow: 0 24px 48px -32px rgba(34, 34, 46, 0.55);
+}
+
+.keep small {
+  color: var(--mm-muted);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.keep b {
+  color: var(--mm-ink);
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.split {
+  display: flex;
+  overflow: hidden;
+  height: 26px;
+  margin-top: 12px;
+  border-radius: 9px;
+}
+
+.splitYou {
+  flex: 0 0 80%;
+  background: var(--mm-midnight);
+  transform-origin: left;
+}
+
+.splitUs {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  background: var(--mm-lavender-soft);
+  color: var(--mm-lavender-deep);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.cta {
+  width: 100%;
+}
+
+/* The "you keep" bar fills as the panel scrolls in */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .splitYou {
+      animation: fillBar linear both;
+      animation-timeline: view();
+      animation-range: entry 20% cover 40%;
+    }
+  }
+}
+
+@keyframes fillBar {
+  from {
+    transform: scaleX(0.25);
+  }
+}
+
+/* ── Phones: app structure ── */
+@media (max-width: 760px) {
+  .panel {
     grid-template-columns: minmax(0, 1fr);
-    gap: 12px;
+    gap: 18px;
+    padding: 22px 18px;
+    border-radius: 28px;
   }
 
-  .card {
-    min-height: 0;
+  .side {
+    width: auto;
+  }
+
+  .cta {
+    height: 52px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    transition: none;
+  }
+
+  .panel:hover {
+    transform: none;
   }
 }

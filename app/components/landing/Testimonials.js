@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { ArrowUpRight, Quote } from "lucide-react";
+import { Quote } from "lucide-react";
 import ui from "./ui.module.css";
 import styles from "./Testimonials.module.css";
 
@@ -57,7 +57,7 @@ export default function Testimonials() {
             </h2>
           </div>
           <a href={GOOGLE_REVIEW_URL} target="_blank" rel="noopener noreferrer" className={ui.textLink}>
-            Write a review on Google <ArrowUpRight size={16} />
+            Write a review on Google
           </a>
         </div>
 

@@ -1466,7 +1466,7 @@ export default function EnhancedCheckoutPage() {
               disabled={!isCustomerDataComplete()}
               onClick={handleStep1Next}
             >
-              Review Journey →
+              Review Journey
             </button>
           </div>
         </div>

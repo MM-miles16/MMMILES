@@ -1,1570 +1,470 @@
-/* How it works — five compact step cards.
-   Each tile is a size container, so its little app screen is drawn in cqi units
-   (1cqi = 1% of the tile's width) and scales with the card on every screen size.
-   Inactive tiles show the finished state; the active tile plays its moment from the start. */
+/* How it works — a car drives a winding road and each step lights up when the car reaches it.
+   Wide screens: the road snakes across the row (SVG units: 1160 × 260, mapped with cqi).
+   Phones and tablets: an app-style card — a short road with numbered stops on top, and the step
+   the car has reached shown large below it (swipe or tap a stop to jump). */
 
 /* ── Section + heading ── */
 .section.section {
   padding-block: clamp(36px, 4.5vw, 64px);
 }
 
-.headRow.headRow {
+/* Centred heading above the road */
+.head.head {
+  margin-bottom: clamp(20px, 3vw, 32px);
+}
+
+/* "Start booking" below the road */
+.cta {
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(20px, 3vw, 32px);
+}
+
+/* ── Road ── */
+.roadBox {
   position: relative;
-  margin-bottom: 0;
+  max-width: 440px;
+  margin-inline: auto;
 }
 
-.headRow .title {
-  font-size: clamp(1.7rem, 3vw, 2.4rem);
-}
-
-.headRow .lead {
-  max-width: 520px;
-  margin-top: 10px;
-  font-size: clamp(0.95rem, 1.2vw, 1.0625rem);
-  text-wrap: pretty;
-}
-
-.actions {
-  display: flex;
-  flex: none;
-  align-items: center;
-  gap: 20px;
-}
-
-.playPause {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  height: 40px;
-  padding: 0 16px 0 14px;
-  border: 0;
-  border-radius: var(--mm-radius-pill);
-  background: var(--mm-mist);
-  color: var(--mm-ink);
-  font-family: var(--mm-font);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.playPause:hover {
-  background: var(--mm-mist-strong);
-}
-
-.playPause:focus-visible {
-  outline: 2px solid var(--mm-lavender-deep);
-  outline-offset: 2px;
-}
-
-.playPause svg {
-  width: 15px;
-  height: 15px;
-}
-
-.playPause[hidden] {
+.wideRoad {
+  position: absolute;
+  top: 0;
+  left: 0;
   display: none;
+  overflow: visible;
 }
 
-/* ── Rail: a swipeable row on phones and tablets, a five-column grid on wide screens ── */
-.journey {
-  --gap: 12px;
-  --room: 62px; /* space above the tiles where the traveller stands (his hop stays inside it) */
-  --lift: 4px; /* how far the active tile rises */
-  --man: 40px;
-  --hop-h: 20px;
-  --card-w: min(272px, 74vw);
+.roadBase,
+.roadTrail,
+.roadLine {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-.rail {
-  margin-inline: calc(-1 * var(--mm-gutter));
-  padding-inline: var(--mm-gutter);
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory;
-  scroll-padding-inline: var(--mm-gutter);
-  scrollbar-width: none;
+.roadBase {
+  stroke: var(--mm-mist-strong);
+  stroke-width: 14;
 }
 
-.rail::-webkit-scrollbar {
-  display: none;
+.roadTrail {
+  stroke: var(--mm-lavender);
+  stroke-width: 14;
 }
 
-.track {
+.roadLine {
+  stroke: #ffffff;
+  stroke-width: 1.5;
+  stroke-dasharray: 6 8;
+}
+
+.finish {
+  fill: var(--mm-midnight);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.finishOn {
+  animation: finishPulse 1.2s ease-out infinite;
+}
+
+@keyframes finishPulse {
+  0%,
+  100% {
+    scale: 1;
+  }
+  40% {
+    scale: 1.45;
+  }
+}
+
+.car {
+  will-change: transform;
+}
+
+/* ── Phone card ── */
+.appCard {
   position: relative;
-  width: max-content;
-  padding-top: var(--room);
-}
-
-.cards {
-  display: flex;
-  gap: var(--gap);
-  margin: 0;
-  padding: 0 0 6px;
-  list-style: none;
-}
-
-.cards > li {
-  flex: none;
-  width: var(--card-w);
-  scroll-snap-align: start;
-}
-
-/* ── Step cards ── */
-.card {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: inherit;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
+  padding: 16px 18px 24px;
+  overflow: hidden;
+  border-radius: 28px;
+  background: linear-gradient(180deg, #f5f2fe 0%, #ffffff 55%);
+  box-shadow:
+    0 24px 48px -30px rgba(34, 34, 46, 0.45),
+    inset 0 0 0 1px var(--mm-border);
+  touch-action: pan-y;
+  user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
 
-.card:focus-visible {
-  outline: none;
-}
-
-.card:focus-visible .tile {
-  outline: 2px solid var(--mm-lavender-deep);
-  outline-offset: 3px;
-}
-
-.tile {
-  position: relative;
+.cardRoad {
   display: block;
-  overflow: hidden;
-  aspect-ratio: 100 / 91;
-  container-type: inline-size;
-  border-radius: var(--mm-radius-lg);
-  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.45s;
+  width: 100%;
+  height: auto;
+  overflow: visible;
 }
 
-.card:hover .tile {
-  transform: translateY(-2px);
+.cardRoad .roadBase,
+.cardRoad .roadTrail {
+  stroke-width: 10;
 }
 
-.cardOn .tile,
-.cardOn:hover .tile {
-  transform: translateY(calc(-1 * var(--lift)));
-  box-shadow: 0 26px 44px -26px rgba(34, 34, 46, 0.55);
+.cardRoad .roadLine {
+  stroke-width: 1.2;
+  stroke-dasharray: 4 5;
 }
 
-.toneSky {
-  background: linear-gradient(165deg, #d9effd 0%, var(--mm-sky) 100%);
+.stop {
+  cursor: pointer;
 }
 
-.toneLavender {
-  background: linear-gradient(165deg, #dcd2f6 0%, var(--mm-lavender) 100%);
+.stop circle {
+  fill: #ffffff;
+  stroke: #dcdce4;
+  stroke-width: 1.5;
+  transition: fill 0.3s, stroke 0.3s;
 }
 
-.toneMist {
-  background: linear-gradient(165deg, #f7f7fa 0%, #e6e6ee 100%);
+.stop text {
+  fill: var(--mm-muted);
+  font-family: var(--mm-font);
+  font-size: 10px;
+  font-weight: 600;
+  pointer-events: none;
 }
 
-.toneSkySoft {
-  background: linear-gradient(165deg, #f3faff 0%, #d7ecfb 100%);
+.stopOn circle {
+  fill: var(--mm-lavender-deep);
+  stroke: var(--mm-lavender-deep);
 }
 
-.toneMidnight {
-  background: radial-gradient(130% 95% at 50% 100%, #3d3763 0%, var(--mm-midnight) 62%);
+.stopOn text {
+  fill: #ffffff;
 }
 
-.meta {
+.stopNow circle {
+  animation: stopPulse 1.3s ease-out infinite;
+}
+
+@keyframes stopPulse {
+  0% {
+    stroke: rgba(107, 87, 196, 0.9);
+    stroke-width: 1.5;
+  }
+  100% {
+    stroke: rgba(107, 87, 196, 0);
+    stroke-width: 14;
+  }
+}
+
+/* The step the car has reached, shown big; a new step slides in */
+.slide {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
-  padding: 14px 2px 0;
+  align-items: center;
+  margin-top: 14px;
+  text-align: center;
+  animation: slideIn 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.stepNo {
-  padding: 3px 10px;
-  border-radius: var(--mm-radius-pill);
-  background: var(--mm-lavender-soft);
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    translate: 24px 0;
+  }
+}
+
+.bigIcon {
+  display: grid;
+  place-items: center;
+  width: 104px;
+  height: 104px;
+  border-radius: 32px;
+  background: #f1f1f5;
+  transition: background 0.45s, box-shadow 0.45s;
+}
+
+.bigIcon.on {
+  background: var(--tone);
+  box-shadow: 0 16px 30px -18px rgba(34, 34, 46, 0.55);
+}
+
+.bigIcon .sketch {
+  width: 58%;
+}
+
+.stepOf {
+  margin-top: 16px;
   color: var(--mm-lavender-deep);
   font-size: 12px;
   font-weight: 600;
-  line-height: 1.4;
-  transition: background 0.3s, color 0.3s;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
-.cardOn .stepNo {
-  background: var(--mm-midnight);
-  color: var(--mm-on-dark);
+.slideTitle {
+  margin-top: 4px;
+  color: var(--mm-ink);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.slideDesc {
+  max-width: 290px;
+  margin-top: 6px;
+  color: var(--mm-ink-2);
+  font-size: 14px;
+  line-height: 1.5;
+  text-wrap: balance;
+}
+
+/* ── Step list (wide screens; on phones it stays for screen readers and search engines) ── */
+.steps {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  list-style: none;
+}
+
+.step {
+  position: relative;
+}
+
+.circle {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #f1f1f5;
+  box-shadow: inset 0 0 0 1px var(--mm-border);
+  transition: background 0.4s, box-shadow 0.4s;
+}
+
+/* Sketched icon: dashed pencil outline first, coloured strokes draw in when the car arrives */
+.sketch {
+  width: 64%;
+  height: auto;
+  overflow: visible;
+}
+
+.sketch path {
+  fill: none;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ghost {
+  transition: opacity 0.5s 0.5s;
+}
+
+.ghost path {
+  stroke: #c9c9d3;
+  stroke-dasharray: 2.4 3.2;
+}
+
+.ink path {
+  stroke: var(--ink);
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  opacity: 0.4;
+  transition: opacity 0.4s, translate 0.4s;
+}
+
+.num {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--mm-lavender-deep);
 }
 
 .stepTitle {
-  min-height: 2.7em; /* two lines, so the progress bars line up */
   font-size: 16px;
   font-weight: 600;
-  line-height: 1.35;
+  line-height: 1.3;
   color: var(--mm-ink);
   text-wrap: balance;
 }
 
-/* Progress: the active bar's animationend advances the story */
-.bar {
-  position: relative;
-  align-self: stretch;
-  height: 3px;
-  overflow: hidden;
-  border-radius: 3px;
-  background: var(--mm-mist-strong);
+/* Reached: pastel circle, icon drawn in its ink colour (like the reference's line icons) */
+.toneSky {
+  --tone: #dceffc;
+  --ink: #1f6fb2;
 }
 
-.bar i {
-  position: absolute;
-  inset: 0;
-  background: var(--mm-midnight);
-  transform: scaleX(0);
-  transform-origin: left;
+.toneLavender {
+  --tone: #e7e0fb;
+  --ink: #6b57c4;
 }
 
-.cardDone .bar i {
-  transform: scaleX(1);
+.tonePeach {
+  --tone: #ffe9d6;
+  --ink: #d0701c;
 }
 
-.cardOn .bar i {
-  animation: fill var(--step-ms) linear forwards;
+.toneMint {
+  --tone: #dcf3e7;
+  --ink: #1d8a5c;
 }
 
-.hold .cardOn .bar i {
-  animation-play-state: paused;
+.toneMidnight {
+  --tone: var(--mm-midnight);
+  --ink: #c5b5ee;
 }
 
-@keyframes fill {
-  to {
-    transform: scaleX(1);
-  }
+.on .circle {
+  background: var(--tone);
+  box-shadow: 0 12px 24px -14px rgba(34, 34, 46, 0.55);
+  animation: pop 0.5s cubic-bezier(0.3, 1.5, 0.5, 1);
 }
 
-.paused *,
-.paused *::before,
-.paused *::after {
-  animation-play-state: paused !important;
-}
-
-/* ── Shared scene pieces ── */
-.scene {
-  position: absolute;
-  inset: 0;
-  display: block;
-  color: var(--mm-ink);
-  font-size: 4cqi;
-  line-height: 1.25;
-}
-
-.scene svg {
-  flex: none;
-}
-
-.ui {
-  position: absolute;
-  display: flex;
-  flex-direction: column;
-  border-radius: 5cqi;
-  background: #ffffff;
-  box-shadow:
-    0 4cqi 9cqi -4cqi rgba(34, 34, 46, 0.35),
-    0 0.3cqi 1cqi rgba(34, 34, 46, 0.06);
-}
-
-.sticker {
-  position: absolute;
-  z-index: 2;
-  width: 22cqi;
-  height: auto;
-  filter: drop-shadow(0 2.4cqi 2.2cqi rgba(34, 34, 46, 0.28));
-}
-
-/* A finger tap: a ripple that plays at --at */
-.tap {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  display: block;
-  width: 12cqi;
-  height: 12cqi;
-  margin: -6cqi 0 0 -6cqi;
-  border-radius: 50%;
-  background: rgba(107, 87, 196, 0.45);
+.on .ghost {
   opacity: 0;
-  pointer-events: none;
 }
 
-.cardOn .tap {
-  animation: tap 0.6s var(--at, 0.3s) ease-out forwards;
+.on .ink path {
+  stroke-dashoffset: 0;
+  animation: draw 0.7s ease-out backwards;
+  animation-delay: calc(0.15s + var(--i) * 0.14s);
 }
 
-@keyframes tap {
-  0% {
-    opacity: 1;
-    transform: scale(0.2);
+@keyframes draw {
+  from {
+    stroke-dashoffset: 1;
   }
-  100% {
-    opacity: 0;
-    transform: scale(1.6);
-  }
+}
+
+.on .text {
+  opacity: 1;
+}
+
+/* The step the car is at: a soft ring pulses around it */
+.now .circle::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border: 2px solid var(--mm-lavender-deep);
+  border-radius: 50%;
+  animation: ring 1.3s ease-out infinite;
 }
 
 @keyframes pop {
   0% {
-    transform: scale(0);
-  }
-  65% {
-    transform: scale(1.15);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-@keyframes popIn {
-  from {
-    opacity: 0;
-    transform: translateY(2cqi) scale(0.92);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes bob {
-  0%,
-  100% {
-    translate: 0 0;
-  }
-  40% {
-    translate: 0 -2.4cqi;
-  }
-}
-
-@keyframes press {
-  0%,
-  100% {
-    scale: 1;
-  }
-  50% {
-    scale: 0.95;
-  }
-}
-
-/* ── 1 · Search & pick your dates ── */
-.sSearch .ui {
-  top: 15cqi;
-  right: 7cqi;
-  left: 7cqi;
-  padding: 5cqi;
-}
-
-.loc {
-  display: flex;
-  align-items: center;
-  gap: 1.6cqi;
-  font-size: 4.6cqi;
-  font-weight: 600;
-}
-
-.loc svg {
-  width: 5cqi;
-  height: 5cqi;
-  color: var(--mm-lavender-deep);
-}
-
-.days {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 1.6cqi;
-  margin-top: 3.6cqi;
-}
-
-.day {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5cqi;
-  padding: 2.2cqi 0;
-  border-radius: 3cqi;
-  background: var(--mm-mist);
-}
-
-.day small {
-  font-size: 3.3cqi;
-  font-weight: 500;
-  color: var(--mm-muted);
-}
-
-.day b {
-  font-size: 5cqi;
-  font-weight: 600;
-}
-
-.daySel {
-  background: var(--mm-midnight);
-  color: var(--mm-on-dark);
-}
-
-.daySel small {
-  color: var(--mm-on-dark-muted);
-}
-
-.chips {
-  display: flex;
-  gap: 1.6cqi;
-  margin-top: 3.6cqi;
-}
-
-.chip {
-  position: relative;
-  padding: 1.9cqi 3.4cqi;
-  border-radius: 99px;
-  background: var(--mm-mist);
-  font-size: 3.7cqi;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.chipSel {
-  background: var(--mm-midnight);
-  color: var(--mm-on-dark);
-}
-
-.chipSel > .tap {
-  --at: 0.3s;
-}
-
-.searchBtn {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1.6cqi;
-  height: 11cqi;
-  margin-top: 3.6cqi;
-  border-radius: 3.4cqi;
-  background: var(--mm-midnight);
-  color: var(--mm-on-dark);
-  font-size: 4.3cqi;
-  font-weight: 600;
-}
-
-.searchBtn svg {
-  width: 4.4cqi;
-  height: 4.4cqi;
-}
-
-.searchBtn > .tap {
-  --at: 1.75s;
-}
-
-.sSearch .sticker {
-  top: 4cqi;
-  right: 4cqi;
-  rotate: 12deg;
-}
-
-/* Tap "This weekend", Sat and Sun fill in, then "Search cars" */
-.cardOn .chipSel {
-  animation: selDark 0.3s 0.45s both;
-}
-
-.cardOn .daySel {
-  animation:
-    selDark 0.3s calc(0.65s + var(--n) * 0.16s) both,
-    press 0.3s calc(0.65s + var(--n) * 0.16s) both;
-}
-
-.cardOn .daySel small {
-  animation: selMuted 0.3s calc(0.65s + var(--n) * 0.16s) both;
-}
-
-.cardOn .searchBtn {
-  animation: press 0.3s 1.8s both;
-}
-
-.cardOn .sSearch .sticker {
-  animation: bob 0.7s 2.1s both;
-}
-
-@keyframes selDark {
-  from {
-    background: var(--mm-mist);
-    color: var(--mm-ink);
-  }
-  to {
-    background: var(--mm-midnight);
-    color: var(--mm-on-dark);
-  }
-}
-
-@keyframes selMuted {
-  from {
-    color: var(--mm-muted);
-  }
-  to {
-    color: var(--mm-on-dark-muted);
-  }
-}
-
-/* ── 2 · Choose your car ── */
-.sCar .ui {
-  padding: 3cqi;
-}
-
-.carBack {
-  top: 7cqi;
-  right: 5cqi;
-  left: 22cqi;
-  opacity: 0.55;
-  rotate: 6deg;
-}
-
-.carFront {
-  top: 12cqi;
-  right: 17cqi;
-  left: 8cqi;
-  outline: 0.8cqi solid var(--mm-lavender-deep);
-}
-
-.carPhoto {
-  display: grid;
-  place-items: center;
-  height: 25cqi;
-  overflow: hidden;
-  border-radius: 3.4cqi;
-  background: linear-gradient(180deg, #f3f0fc, #fbfbfe);
-}
-
-.carPhoto img {
-  width: 86%;
-  height: auto;
-}
-
-.carName {
-  display: block;
-  margin-top: 2.8cqi;
-  font-size: 4.8cqi;
-  font-weight: 600;
-}
-
-.carMeta {
-  display: block;
-  margin-top: 0.6cqi;
-  font-size: 3.3cqi;
-  color: var(--mm-muted);
-}
-
-.carPrice {
-  display: block;
-  margin-top: 2.2cqi;
-  font-size: 5.8cqi;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-
-.carPrice small {
-  font-size: 3.3cqi;
-  font-weight: 500;
-  letter-spacing: 0;
-  color: var(--mm-muted);
-}
-
-.split {
-  display: inline-flex;
-  align-self: flex-start;
-  align-items: center;
-  gap: 1.2cqi;
-  margin-top: 1.8cqi;
-  padding: 1.4cqi 2.6cqi;
-  border-radius: 99px;
-  background: var(--mm-lavender-soft);
-  color: var(--mm-lavender-deep);
-  font-size: 3.3cqi;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.split svg {
-  width: 3.8cqi;
-  height: 3.8cqi;
-}
-
-.carCheck {
-  position: absolute;
-  top: 5cqi;
-  right: 5cqi;
-  display: grid;
-  place-items: center;
-  width: 8cqi;
-  height: 8cqi;
-  border-radius: 50%;
-  background: var(--mm-lavender-deep);
-  color: #ffffff;
-  box-shadow: 0 1cqi 2.4cqi rgba(107, 87, 196, 0.45);
-}
-
-.carCheck svg {
-  width: 4.6cqi;
-  height: 4.6cqi;
-  stroke-width: 3;
-}
-
-.carFront > .tap {
-  --at: 1.05s;
-  top: 38%;
-}
-
-/* The list fans out, the Venue is tapped and picked, then its per-person price pops */
-.cardOn .carBack {
-  animation: fanBack 0.55s both;
-}
-
-.cardOn .carFront {
-  animation:
-    riseFront 0.55s both,
-    ringOn 0.3s 1.2s both;
-}
-
-.cardOn .carCheck {
-  animation: pop 0.4s 1.2s both;
-}
-
-.cardOn .split {
-  animation: popIn 0.4s 1.55s both;
-}
-
-@keyframes fanBack {
-  from {
-    opacity: 0;
-    rotate: 0deg;
-    translate: -10cqi 5cqi;
-  }
-  to {
-    opacity: 0.55;
-    rotate: 6deg;
-    translate: 0 0;
-  }
-}
-
-@keyframes riseFront {
-  from {
-    opacity: 0.3;
-    translate: 0 6cqi;
-  }
-  to {
-    opacity: 1;
-    translate: 0 0;
-  }
-}
-
-@keyframes ringOn {
-  from {
-    outline-color: transparent;
-  }
-  to {
-    outline-color: var(--mm-lavender-deep);
-  }
-}
-
-/* ── 3 · Pay securely ── */
-.sPay .ui {
-  top: 17cqi;
-  right: 7cqi;
-  left: 7cqi;
-  padding: 5cqi;
-}
-
-.payLabel {
-  display: block;
-  font-size: 3.4cqi;
-  font-weight: 500;
-  color: var(--mm-muted);
-}
-
-.payTotal {
-  display: block;
-  margin-top: 0.6cqi;
-  font-size: 8.4cqi;
-  font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-}
-
-.methods {
-  display: flex;
-  gap: 1.6cqi;
-  margin-top: 3.8cqi;
-}
-
-.method {
-  display: inline-flex;
-  align-items: center;
-  gap: 1cqi;
-  padding: 1.6cqi 2.4cqi;
-  border-radius: 99px;
-  background: var(--mm-mist);
-  font-size: 3.4cqi;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.method svg {
-  width: 3.8cqi;
-  height: 3.8cqi;
-}
-
-.methodSel {
-  background: var(--mm-lavender-soft);
-  color: var(--mm-lavender-deep);
-  box-shadow: inset 0 0 0 0.5cqi var(--mm-lavender-deep);
-}
-
-.payBtn {
-  position: relative;
-  display: grid;
-  place-items: center;
-  height: 11.5cqi;
-  margin-top: 4cqi;
-  overflow: hidden;
-  border-radius: 3.4cqi;
-  background: #1f9d55;
-  color: #ffffff;
-}
-
-.payBtn > span {
-  display: flex;
-  grid-area: 1 / 1;
-  align-items: center;
-  gap: 1.4cqi;
-  font-size: 4.2cqi;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.payBtn svg {
-  width: 4.4cqi;
-  height: 4.4cqi;
-}
-
-.payIdle {
-  opacity: 0;
-}
-
-.spinner {
-  grid-area: 1 / 1;
-  width: 5.4cqi;
-  height: 5.4cqi;
-  border: 0.7cqi solid rgba(255, 255, 255, 0.35);
-  border-top-color: #ffffff;
-  border-radius: 50%;
-  opacity: 0;
-}
-
-.payBtn > .tap {
-  --at: 0.85s;
-}
-
-.secure {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1cqi;
-  margin-top: 2.8cqi;
-  font-size: 3.1cqi;
-  color: var(--mm-muted);
-}
-
-.secure svg {
-  width: 3.4cqi;
-  height: 3.4cqi;
-}
-
-.sPay .sticker {
-  top: 5cqi;
-  right: 4cqi;
-  width: 24cqi;
-  rotate: -10deg;
-}
-
-/* Tap Pay, a moment of processing, then payment successful */
-.cardOn .payBtn {
-  animation: payBtn 2s both;
-}
-
-.cardOn .payIdle {
-  animation: payIdle 2s both;
-}
-
-.cardOn .spinner {
-  animation:
-    spinShow 2s both,
-    spin 0.7s linear infinite;
-}
-
-.cardOn .payDone {
-  animation: payDone 2s both;
-}
-
-.cardOn .sPay .sticker {
-  animation: bob 0.7s 2s both;
-}
-
-@keyframes payBtn {
-  0% {
-    background: var(--mm-midnight);
-    scale: 1;
-  }
-  45% {
-    scale: 1;
-  }
-  48% {
-    scale: 0.96;
-  }
-  52% {
-    scale: 1;
-  }
-  90% {
-    background: var(--mm-midnight);
-  }
-  96%,
-  100% {
-    background: #1f9d55;
-    scale: 1;
-  }
-}
-
-@keyframes payIdle {
-  0%,
-  50% {
-    opacity: 1;
-  }
-  56%,
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes spinShow {
-  0%,
-  54% {
-    opacity: 0;
-  }
-  58%,
-  88% {
-    opacity: 1;
-  }
-  92%,
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes spin {
-  to {
-    rotate: 360deg;
-  }
-}
-
-@keyframes payDone {
-  0%,
-  90% {
-    opacity: 0;
-    transform: scale(0.85);
-  }
-  100% {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-/* ── 4 · Doorstep delivery or host pickup ── */
-.sHand .ui {
-  top: 10cqi;
-  right: 6cqi;
-  left: 6cqi;
-  padding: 3cqi;
-}
-
-.seg {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  height: 10cqi;
-  padding: 0.9cqi;
-  border-radius: 99px;
-  background: var(--mm-mist);
-}
-
-.segThumb {
-  position: absolute;
-  top: 0.9cqi;
-  bottom: 0.9cqi;
-  left: 0.9cqi;
-  width: calc(50% - 0.9cqi);
-  border-radius: 99px;
-  background: #ffffff;
-  box-shadow: 0 0.6cqi 1.8cqi rgba(34, 34, 46, 0.16);
-}
-
-.segOpt {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1cqi;
-  font-size: 3.5cqi;
-  font-weight: 600;
-  color: var(--mm-muted);
-  white-space: nowrap;
-}
-
-.segOpt svg {
-  width: 3.8cqi;
-  height: 3.8cqi;
-}
-
-.segDoor {
-  color: var(--mm-ink);
-}
-
-.segDoor > .tap {
-  --at: 1.45s;
-}
-
-.map {
-  position: relative;
-  display: block;
-  height: 31cqi;
-  margin-top: 3cqi;
-  overflow: hidden;
-  border-radius: 3.4cqi;
-}
-
-.map svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.route {
-  fill: none;
-  stroke: var(--mm-lavender-deep);
-  stroke-width: 3.2;
-  stroke-linecap: round;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 0;
-}
-
-.pulse {
-  fill: rgba(107, 87, 196, 0.25);
-  opacity: 0;
-  transform-box: fill-box;
-  transform-origin: center;
-}
-
-.pinHome {
-  transform-box: fill-box;
-  transform-origin: center;
-}
-
-.handInfo {
-  position: relative;
-  display: grid;
-  margin-top: 3cqi;
-}
-
-.info {
-  display: flex;
-  grid-area: 1 / 1;
-  align-items: center;
-  gap: 2.4cqi;
-}
-
-.infoIcon {
-  display: grid;
-  flex: none;
-  place-items: center;
-  width: 9cqi;
-  height: 9cqi;
-  border-radius: 50%;
-  background: var(--mm-lavender-soft);
-  color: var(--mm-lavender-deep);
-}
-
-.infoIcon svg {
-  width: 4.4cqi;
-  height: 4.4cqi;
-}
-
-.info b {
-  display: block;
-  font-size: 3.9cqi;
-  font-weight: 600;
-}
-
-.info small {
-  display: block;
-  margin-top: 0.4cqi;
-  font-size: 3.2cqi;
-  color: var(--mm-muted);
-}
-
-.infoHost {
-  opacity: 0;
-}
-
-/* Starts on Host pickup, then switches to Doorstep and the route to your door draws in */
-.cardOn .segThumb {
-  animation: thumbToDoor 3s both;
-}
-
-.cardOn .segDoor {
-  animation: segOn 3s both;
-}
-
-.cardOn .segHost {
-  animation: segOff 3s both;
-}
-
-.cardOn .infoHost {
-  animation: infoOut 3s both;
-}
-
-.cardOn .infoDoor {
-  animation: infoIn 3s both;
-}
-
-.cardOn .route {
-  animation: draw 3s both;
-}
-
-.cardOn .pulseHost {
-  animation: pulse 1s 2 both;
-}
-
-.cardOn .pulseHome {
-  animation: pulse 1s 2.85s forwards;
-}
-
-.cardOn .pinHome {
-  animation: pinPop 3s both;
-}
-
-@keyframes thumbToDoor {
-  0%,
-  55% {
-    translate: 100% 0;
-  }
-  65%,
-  100% {
-    translate: 0 0;
-  }
-}
-
-@keyframes segOn {
-  0%,
-  57% {
-    color: var(--mm-muted);
-  }
-  62%,
-  100% {
-    color: var(--mm-ink);
-  }
-}
-
-@keyframes segOff {
-  0%,
-  57% {
-    color: var(--mm-ink);
-  }
-  62%,
-  100% {
-    color: var(--mm-muted);
-  }
-}
-
-@keyframes infoOut {
-  0%,
-  58% {
-    opacity: 1;
-    transform: none;
-  }
-  64%,
-  100% {
-    opacity: 0;
-    transform: translateY(-1.5cqi);
-  }
-}
-
-@keyframes infoIn {
-  0%,
-  60% {
-    opacity: 0;
-    transform: translateY(1.5cqi);
-  }
-  68%,
-  100% {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes draw {
-  0%,
-  62% {
-    stroke-dashoffset: 1;
-  }
-  95%,
-  100% {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes pulse {
-  0% {
-    opacity: 0.9;
-    transform: scale(0.6);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(1.8);
-  }
-}
-
-@keyframes pinPop {
-  0%,
-  93% {
-    transform: scale(1);
-  }
-  97% {
-    transform: scale(1.3);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-/* ── 5 · Ride safe ── */
-.sRide {
-  color: var(--mm-on-dark);
-}
-
-.sRide::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: url("/landing/topo-dark.svg") 30% 20% / 260% auto no-repeat;
-  opacity: 0.5;
-}
-
-.live {
-  position: absolute;
-  top: 7cqi;
-  left: 7cqi;
-  display: inline-flex;
-  align-items: center;
-  gap: 1.6cqi;
-  padding: 1.6cqi 3cqi;
-  border-radius: 99px;
-  background: rgba(255, 255, 255, 0.1);
-  font-size: 3.4cqi;
-  font-weight: 600;
-}
-
-.liveDot {
-  width: 2cqi;
-  height: 2cqi;
-  border-radius: 50%;
-  background: #4ade80;
-}
-
-.rideBadges {
-  position: absolute;
-  top: 18.5cqi;
-  right: 7cqi;
-  left: 7cqi;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.6cqi;
-}
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 1.2cqi;
-  padding: 1.6cqi 2.8cqi;
-  border-radius: 99px;
-  font-size: 3.4cqi;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.badge svg {
-  width: 3.8cqi;
-  height: 3.8cqi;
-}
-
-.badgeInsured {
-  background: var(--mm-lavender);
-  color: var(--mm-midnight);
-}
-
-.badgeSupport {
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.floor {
-  position: absolute;
-  top: 66cqi;
-  right: 6cqi;
-  left: 6cqi;
-  height: 16cqi;
-  border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(197, 181, 238, 0.5), transparent);
-}
-
-.ring {
-  position: absolute;
-  top: 62cqi;
-  right: 10cqi;
-  left: 10cqi;
-  height: 20cqi;
-  border: 0.6cqi solid rgba(197, 181, 238, 0.8);
-  border-radius: 50%;
-  opacity: 0;
-}
-
-.rideCar {
-  position: absolute;
-  top: 37cqi;
-  left: 12cqi;
-  width: 76cqi;
-}
-
-.rideCar img {
-  display: block;
-  width: 100%;
-  height: auto;
-  filter: drop-shadow(0 2.6cqi 2.4cqi rgba(0, 0, 0, 0.5));
-}
-
-/* Headlight glows, placed on the Venue photo's lamps */
-.light {
-  position: absolute;
-  width: 12cqi;
-  height: 12cqi;
-  margin: -6cqi 0 0 -6cqi;
-  border-radius: 50%;
-  background: radial-gradient(circle, #fffbe1 0%, rgba(255, 240, 190, 0.6) 30%, transparent 70%);
-  opacity: 0;
-  mix-blend-mode: screen;
-}
-
-.lightL {
-  top: 50%;
-  left: 10%;
-}
-
-.lightR {
-  top: 49%;
-  left: 43%;
-}
-
-/* He climbs in, the lights flash, the car comes alive and the cover badges pop in */
-.cardOn .live {
-  animation: popIn 0.4s 1.3s both;
-}
-
-.cardOn .liveDot {
-  animation: livePulse 1.4s 1.4s infinite;
-}
-
-.cardOn .badgeInsured {
-  animation: popIn 0.4s 1.5s both;
-}
-
-.cardOn .badgeSupport {
-  animation: popIn 0.4s 1.7s both;
-}
-
-.cardOn .light {
-  animation: flash 0.8s 1.1s forwards;
-}
-
-.cardOn .rideCar {
-  animation: rev 0.5s 1.2s both;
-}
-
-.cardOn .ring {
-  animation: ringOut 1.2s 1.7s 2 forwards;
-}
-
-@keyframes livePulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.6);
-  }
-  100% {
-    box-shadow: 0 0 0 2.4cqi rgba(74, 222, 128, 0);
-  }
-}
-
-@keyframes flash {
-  0% {
-    opacity: 0;
-  }
-  15% {
-    opacity: 1;
-  }
-  35% {
-    opacity: 0;
-  }
-  55% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes rev {
-  0%,
-  100% {
-    translate: 0 0;
-  }
-  30% {
-    translate: 0 -1.2cqi;
+    scale: 0.8;
   }
   60% {
-    translate: 0 0.3cqi;
+    scale: 1.12;
+  }
+  100% {
+    scale: 1;
   }
 }
 
-@keyframes ringOut {
+@keyframes ring {
   0% {
-    opacity: 0.9;
-    transform: scale(0.8);
+    opacity: 0.8;
+    scale: 0.92;
   }
   100% {
     opacity: 0;
-    transform: scale(1.25);
+    scale: 1.3;
   }
 }
 
-/* ── The traveller: stands on the active tile, hops to the next, climbs into the car at the end ── */
-.manPos {
-  --x: calc(var(--i) * (var(--card-w) + var(--gap)) + var(--card-w) - 30px - var(--man));
-  position: absolute;
-  z-index: 3;
-  top: calc(var(--room) - var(--lift) - var(--man) + 3px);
-  left: 0;
-  width: var(--man);
-  height: var(--man);
-  translate: var(--x) 0;
-  transition: translate 0.65s cubic-bezier(0.45, 0, 0.25, 1);
-  pointer-events: none;
-  animation: manEnter 0.45s both;
-}
-
-.manLast {
-  --x: calc(var(--i) * (var(--card-w) + var(--gap)) + (var(--card-w) - var(--man)) / 2);
-}
-
-.manHop {
-  position: absolute;
-  inset: 0;
-  display: block;
-  transform-origin: 50% 100%;
-}
-
-/* The 3D figures face left; he travels right */
-.manHop img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  scale: -1 1;
-}
-
-.manRun {
-  opacity: 0;
-}
-
-.hopping {
-  animation: hop 0.65s both;
-}
-
-.hopping .manRun {
-  animation: runOn 0.65s both;
-}
-
-.hopping .manIdle {
-  animation: runOff 0.65s both;
-}
-
-.boarding {
-  animation:
-    hop 0.65s both,
-    board 0.45s 0.75s forwards;
-}
-
-.manShadow {
-  position: absolute;
-  right: 20%;
-  bottom: -1px;
-  left: 20%;
-  height: 5px;
-  border-radius: 50%;
-  background: rgba(34, 34, 46, 0.25);
-  filter: blur(1.5px);
-}
-
-.shadowHop {
-  animation: shadowHop 0.65s both;
-}
-
-.shadowBoard {
-  animation:
-    shadowHop 0.65s both,
-    fadeOut 0.3s 0.75s forwards;
-}
-
-@keyframes manEnter {
-  from {
-    opacity: 0;
-    transform: translateY(-16px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes hop {
-  0% {
-    translate: 0 0;
-    scale: 1 1;
-    animation-timing-function: cubic-bezier(0.2, 0.6, 0.35, 1);
-  }
-  45% {
-    translate: 0 calc(-1 * var(--hop-h));
-    animation-timing-function: cubic-bezier(0.6, 0, 0.8, 0.4);
-  }
-  86% {
-    translate: 0 0;
-    scale: 1.08 0.9;
-  }
-  100% {
-    translate: 0 0;
-    scale: 1 1;
-  }
-}
-
-@keyframes runOn {
-  0%,
-  84% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes runOff {
-  0%,
-  84% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-@keyframes board {
-  to {
-    opacity: 0;
-    transform: translateY(calc(var(--card-w) * 0.45)) scale(0.4);
-  }
-}
-
-@keyframes shadowHop {
-  45% {
-    opacity: 0.4;
-    scale: 0.55;
-  }
-}
-
-@keyframes fadeOut {
-  to {
-    opacity: 0;
-  }
-}
-
-/* ── Wide screens: all five cards in one row ── */
-@media (min-width: 1180px) {
-  .journey {
-    --gap: 14px;
-    --room: 60px;
-    --man: 46px;
-    --hop-h: 26px;
-  }
-
-  .headRow.headRow {
-    margin-bottom: 16px;
-  }
-
-  .rail {
-    margin-inline: 0;
-    padding-inline: 0;
-    overflow: visible;
-  }
-
-  .track {
-    width: auto;
+/* ── Wide screens: the road snakes across the row ── */
+@media (min-width: 1000px) {
+  .roadBox {
+    --u: calc(100cqi / 1160); /* one SVG unit */
+    max-width: none;
+    aspect-ratio: 1160 / 260;
     container-type: inline-size;
   }
 
-  .cards {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    padding-bottom: 0;
+  .wideRoad {
+    display: block;
+    width: 100%;
+    height: 100%;
   }
 
-  .cards > li {
+  .appCard {
+    display: none;
+  }
+
+  .roadBase,
+  .roadTrail {
+    stroke-width: 22;
+  }
+
+  .roadLine {
+    stroke-width: 2;
+    stroke-dasharray: 10 12;
+  }
+
+  .steps {
+    position: absolute;
+    inset: 0;
     width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
   }
 
-  .manPos {
-    --card-w: calc((100cqi - 4 * var(--gap)) / 5);
-  }
-}
-
-/* ── Phones ── */
-@media (max-width: 760px) {
-  .actions {
+  .step {
     position: absolute;
     top: 0;
-    right: 0;
-  }
-
-  .actions a {
-    display: none;
-  }
-
-  .playPause {
-    justify-content: center;
-    width: 36px;
-    height: 36px;
+    bottom: 0;
+    left: calc(var(--x) * var(--u));
+    display: block;
+    width: calc(186 * var(--u));
+    height: auto;
     padding: 0;
+    translate: -50% 0;
   }
 
-  .playPause span {
-    display: none;
+  .circle {
+    top: calc((var(--lane) - 34) * var(--u));
+    left: 50%;
+    width: calc(68 * var(--u));
+    translate: -50% 0;
+  }
+
+  /* Every label starts on the same line, so the numbers line up across the road */
+  .text {
+    position: absolute;
+    top: calc(98 * var(--u));
+    right: 0;
+    left: 0;
+    align-items: center;
+    gap: 4px;
+    text-align: center;
+  }
+
+  .num {
+    font-size: 20px;
+    line-height: 1.2;
+    letter-spacing: 0;
+    color: var(--mm-ink);
+  }
+
+  .on .num {
+    color: var(--mm-lavender-deep);
   }
 
   .stepTitle {
@@ -1572,23 +472,18 @@
   }
 }
 
-/* Browsers without container units get plain colour tiles */
-@supports not (width: 1cqi) {
-  .scene,
-  .manPos {
-    display: none;
+/* Small laptops: slightly smaller step titles so two lines fit between the lanes */
+@media (min-width: 1000px) and (max-width: 1179px) {
+  .stepTitle {
+    font-size: 14px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .journey *,
-  .journey *::before,
-  .journey *::after {
+  .roadBox *,
+  .roadBox *::before,
+  .roadBox *::after {
     animation: none !important;
     transition: none !important;
-  }
-
-  .cardOn .bar i {
-    transform: scaleX(1);
   }
 }

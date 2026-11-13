@@ -1,58 +1,66 @@
-/* FAQ — intro on the left, accordion on the right */
+/* FAQ — the questions renters search most.
+   Laptops and up: two columns of clean question cards.
+   Phones: app-style — one grouped list with hairline dividers.
+   Answers slide open where the browser supports animating <details>; elsewhere they just open. */
 
-.layout {
+.section.section {
+  padding-block: clamp(36px, 4.5vw, 64px);
+  interpolate-size: allow-keywords; /* lets the answers animate to their natural height */
+}
+
+.head.head {
+  margin-bottom: clamp(20px, 3vw, 32px);
+}
+
+.grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-  gap: clamp(32px, 6vw, 88px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 16px;
   align-items: start;
 }
 
-.intro {
-  position: sticky;
-  top: calc(var(--mm-header-h) + 32px);
-}
-
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 28px;
-}
-
-.btnSoft {
-  background: var(--mm-mist);
-  color: var(--mm-ink);
-}
-
-.btnSoft:hover {
-  background: var(--mm-mist-strong);
-}
-
-.list {
+.column {
   display: grid;
   gap: 12px;
 }
 
+/* ── Question cards ── */
 .item {
-  border-radius: var(--mm-radius-md);
-  background: var(--mm-mist);
-  transition: background 0.2s;
+  border: 1px solid var(--mm-border);
+  border-radius: 18px;
+  background: var(--mm-bg);
+  transition:
+    background 0.25s,
+    border-color 0.25s;
 }
 
 .item[open] {
-  background: var(--mm-sky-soft);
+  border-color: transparent;
+  background: var(--mm-mist);
+}
+
+.item::details-content {
+  block-size: 0;
+  overflow: hidden;
+  transition:
+    block-size 0.3s ease,
+    content-visibility 0.3s allow-discrete;
+}
+
+.item[open]::details-content {
+  block-size: auto;
 }
 
 .question {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 20px 22px;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 1.4;
+  gap: 14px;
+  padding: 16px 18px;
   color: var(--mm-ink);
+  font-size: 15.5px;
+  font-weight: 600;
+  line-height: 1.35;
   list-style: none;
   cursor: pointer;
 }
@@ -62,21 +70,24 @@
 }
 
 .question:focus-visible {
+  border-radius: 18px;
   outline: 2px solid var(--mm-lavender-deep);
   outline-offset: 2px;
-  border-radius: var(--mm-radius-md);
 }
 
 .icon {
   display: grid;
   flex: none;
   place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 12px;
-  background: var(--mm-bg);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--mm-mist);
   color: var(--mm-ink);
-  transition: transform 0.25s, background 0.25s, color 0.25s;
+  transition:
+    transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+    background 0.25s,
+    color 0.25s;
 }
 
 .item[open] .icon {
@@ -85,38 +96,82 @@
   color: var(--mm-on-dark);
 }
 
+@media (hover: hover) {
+  .item:not([open]):hover {
+    border-color: var(--mm-lavender);
+  }
+
+  .item:not([open]):hover .icon {
+    background: var(--mm-lavender-soft);
+  }
+}
+
 .answer {
   margin: 0;
-  padding: 0 22px 22px;
-  font-size: 15px;
-  line-height: 1.7;
+  padding: 0 18px 18px;
   color: var(--mm-ink-2);
+  font-size: 14.5px;
+  line-height: 1.6;
 }
 
-@media (max-width: 900px) {
-  .layout {
+/* ── Phones: app structure ── */
+@media (max-width: 760px) {
+  /* One grouped list, like an app's settings screen */
+  .grid {
     grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--mm-border);
+    border-radius: 22px;
+    background: var(--mm-bg);
   }
 
-  .intro {
-    position: static;
+  .column {
+    display: contents;
   }
-}
 
-@media (max-width: 640px) {
+  .item {
+    border: 0;
+    border-radius: 0;
+  }
+
+  .item + .item,
+  .column + .column .item:first-child {
+    border-top: 1px solid var(--mm-border);
+  }
+
+  .item[open] {
+    background: var(--mm-mist);
+  }
+
   .question {
-    padding: 16px 16px 16px 18px;
+    padding: 15px 16px;
     font-size: 15px;
   }
 
+  .icon {
+    width: 28px;
+    height: 28px;
+  }
+
   .answer {
-    padding: 0 18px 18px;
+    padding: 0 16px 16px;
+    font-size: 14px;
+  }
+
+  .question {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .question:active {
+    background: var(--mm-mist);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .item,
-  .icon {
+  .icon,
+  .item::details-content {
     transition: none;
   }
 }

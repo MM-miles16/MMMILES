@@ -199,7 +199,7 @@ export default async function HomePage() {
           <LandingHero summary={summary} />
           <FleetSection />
         </CityProvider>
-        <HowItWorks rates={summary?.rates} />
+        <HowItWorks />
         <WhyMMMiles />
         <Offers />
         <RoadTrips />

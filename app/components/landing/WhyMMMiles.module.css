@@ -1,91 +1,164 @@
-/* Why MM Miles — bento grid in the reference's card colours */
+/* Why MM Miles — classic and compact.
+   Laptops/desktops: a Midnight ₹0 card beside four slim feature cards, short enough to fit one screen.
+   Tablets: the ₹0 card across the top, features 2 × 2 below.
+   Phones: app-style — a balance-card banner and a 2 × 2 grid of tinted app tiles with short text.
+   Light motion only: cards fade up as they scroll in, the wallet floats, cards lift on hover. */
+
+.section.section {
+  padding-block: clamp(32px, 4vw, 56px);
+}
+
+.head.head {
+  margin-bottom: clamp(22px, 3vw, 36px);
+}
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  grid-auto-rows: minmax(230px, auto);
-  gap: 20px;
+  grid-template-columns: minmax(0, 1.25fr) repeat(2, minmax(0, 1fr));
+  gap: 16px;
 }
 
 .card {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  padding: 28px;
+  border: 1px solid transparent;
   border-radius: var(--mm-radius-lg);
-}
-
-.sky {
-  background: var(--mm-sky);
-}
-
-.lavender {
-  background: var(--mm-lavender);
-}
-
-.mist {
-  background: var(--mm-mist);
-}
-
-.art {
-  width: 64px;
-  height: 64px;
-  margin-bottom: 22px;
+  transition:
+    transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.35s,
+    border-color 0.35s;
 }
 
 .cardTitle {
   margin: 0;
   font-family: var(--mm-font);
-  font-size: 19px;
+  font-size: 17px;
   font-weight: 600;
   line-height: 1.3;
   color: var(--mm-ink);
 }
 
 .cardText {
-  margin: 8px 0 0;
-  font-size: 15px;
-  line-height: 1.6;
+  margin: 4px 0 0;
+  font-size: 14.5px;
+  line-height: 1.55;
   color: var(--mm-ink-2);
 }
 
-/* ── Big Midnight card ── */
+.short {
+  display: none;
+}
+
+/* ── Feature cards: icon tile on the left, text on the right ── */
+.feature {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+  align-content: start;
+  column-gap: 16px;
+  padding: 22px 24px;
+  border-color: var(--mm-border);
+  background: var(--mm-bg);
+}
+
+.iconTile {
+  display: grid;
+  grid-row: 1 / span 2;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: var(--tint);
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.iconTile img {
+  width: 32px;
+  height: 32px;
+}
+
+.sky {
+  --tint: var(--mm-sky-soft);
+}
+
+.lavender {
+  --tint: var(--mm-lavender-soft);
+}
+
+.mint {
+  --tint: #e4f5ec;
+}
+
+.peach {
+  --tint: #fff0e2;
+}
+
+@media (hover: hover) {
+  .feature:hover {
+    transform: translateY(-4px);
+    border-color: transparent;
+    box-shadow: var(--mm-shadow-md);
+  }
+
+  .feature:hover .iconTile {
+    transform: rotate(-6deg) scale(1.06);
+  }
+}
+
+/* ── ₹0 card: plain Midnight with a soft glow behind the wallet ── */
 .big {
-  grid-column: span 2;
+  display: flex;
   grid-row: span 2;
+  flex-direction: column;
   justify-content: flex-end;
-  padding: clamp(28px, 3.5vw, 44px);
-  background: var(--mm-midnight) url("/landing/topo-dark.svg") left -120px top -80px / 720px auto no-repeat;
+  overflow: hidden;
+  padding: clamp(24px, 2.6vw, 36px);
+  background:
+    radial-gradient(circle at 82% 22%, rgba(197, 181, 238, 0.2), transparent 42%),
+    var(--mm-midnight);
 }
 
 .big .cardTitle {
-  font-size: clamp(22px, 2.2vw, 28px);
+  max-width: 12em; /* stays clear of the wallet */
+  font-size: clamp(20px, 1.8vw, 24px);
   color: var(--mm-on-dark);
 }
 
 .big .cardText {
-  max-width: 440px;
-  font-size: 16px;
+  max-width: 420px;
+  margin-top: 6px;
+  font-size: 15px;
   color: var(--mm-on-dark-muted);
 }
 
 .bigArt {
   position: absolute;
-  top: clamp(20px, 3vw, 40px);
-  right: clamp(20px, 3vw, 40px);
-  width: clamp(120px, 14vw, 190px);
+  top: clamp(18px, 2.4vw, 32px);
+  right: clamp(18px, 2.4vw, 32px);
+  width: clamp(90px, 8.5vw, 130px);
   height: auto;
-  transform: rotate(-8deg);
-  filter: drop-shadow(0 24px 30px rgba(0, 0, 0, 0.35));
+  rotate: -8deg;
+  filter: drop-shadow(0 20px 26px rgba(0, 0, 0, 0.35));
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    translate: 0 0;
+    rotate: -8deg;
+  }
+  50% {
+    translate: 0 -8px;
+    rotate: -5deg;
+  }
 }
 
 .stat {
   display: flex;
   align-items: baseline;
-  gap: 12px;
-  margin: 0 0 18px;
-  font-size: clamp(64px, 8vw, 104px);
+  gap: 10px;
+  margin: 0 0 12px;
+  font-size: clamp(52px, 5.6vw, 80px);
   font-weight: 600;
   line-height: 1;
   letter-spacing: -0.04em;
@@ -93,7 +166,7 @@
 }
 
 .stat span {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
   letter-spacing: 0;
   color: var(--mm-lavender);
@@ -103,52 +176,205 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin: 24px 0 0;
+  margin: 18px 0 0;
   padding: 0;
   list-style: none;
 }
 
 .chips li {
-  padding: 8px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: var(--mm-radius-pill);
-  background: rgba(255, 255, 255, 0.1);
   color: var(--mm-on-dark);
   font-size: 13px;
   font-weight: 500;
 }
 
-@media (max-width: 1080px) {
-  .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-auto-rows: auto;
-  }
+.chips svg {
+  width: 14px;
+  height: 14px;
+  color: var(--mm-lavender);
+}
 
-  .big {
-    grid-row: auto;
-    min-height: 420px;
+/* ── Cards fade up gently as they scroll in (browsers without scroll timelines just show them) ── */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* Each card finishes fading in by the time it's fully on screen */
+    .grid > * {
+      animation: rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 80%;
+    }
+
+    .grid > :nth-child(2),
+    .grid > :nth-child(4) {
+      animation-range: entry 10% entry 90%;
+    }
+
+    .grid > :nth-child(3),
+    .grid > :nth-child(5) {
+      animation-range: entry 20% entry 100%;
+    }
   }
 }
 
-@media (max-width: 560px) {
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 24px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+/* ── Tablets: ₹0 card across the top, features 2 × 2 ── */
+@media (max-width: 1080px) {
   .grid {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .big {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    padding-right: clamp(150px, 26vw, 240px);
+  }
+
+  .bigArt {
+    top: calc(50% - 64px);
+    width: 128px;
+  }
+}
+
+/* Landscape tablets and small laptops (901–1080px): the four features in one row with the short text */
+@media (min-width: 901px) and (max-width: 1080px) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .feature {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .iconTile {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 14px;
+  }
+
+  .feature .long {
+    display: none;
+  }
+
+  .feature .short {
+    display: block;
+  }
+}
+
+/* ── Phones: app structure ── */
+@media (max-width: 760px) {
+  .grid {
     gap: 12px;
   }
 
   .card {
-    padding: 22px;
+    border-radius: 22px;
+    transition: scale 0.15s;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  /* leave room for the wallet above the text (beats the .card padding above) */
-  .card.big {
-    grid-column: auto;
-    min-height: 0;
-    padding-top: 150px;
+  .card:active {
+    scale: 0.98;
   }
 
-  .art {
-    width: 52px;
-    height: 52px;
+  .long,
+  .chips {
+    display: none;
+  }
+
+  .short {
+    display: block;
+  }
+
+  /* Balance-card banner */
+  .big {
+    padding: 20px 112px 20px 20px;
+  }
+
+  .bigArt {
+    top: 22px;
+    right: 14px;
+    width: 92px;
+  }
+
+  .stat {
+    margin-bottom: 8px;
+    font-size: 48px;
+  }
+
+  .stat span {
+    font-size: 13px;
+  }
+
+  .big .cardTitle {
+    font-size: 17px;
+  }
+
+  .big .cardText {
+    font-size: 13px;
+  }
+
+  /* App tiles: tinted, icon chip on top, one short line */
+  .feature {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    border-color: transparent;
+    background: var(--tint);
+  }
+
+  .iconTile {
+    width: 44px;
+    height: 44px;
     margin-bottom: 14px;
+    border-radius: 14px;
+    background: var(--mm-bg);
+    box-shadow: 0 6px 14px -8px rgba(34, 34, 46, 0.3);
+  }
+
+  .iconTile img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .feature .cardTitle {
+    font-size: 15px;
+  }
+
+  .feature .cardText {
+    font-size: 13px;
+    line-height: 1.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .iconTile {
+    transition: none;
+  }
+
+  .feature:hover,
+  .feature:hover .iconTile {
+    transform: none;
+  }
+
+  .bigArt {
+    animation: none;
   }
 }

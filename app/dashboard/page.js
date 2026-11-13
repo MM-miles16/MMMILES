@@ -680,7 +680,7 @@ function DashboardContent() {
               className={styles.viewAllBtn}
               onClick={() => setActive("orders")}
             >
-              View All Bookings →
+              View All Bookings
             </button>
           </section>
         )}

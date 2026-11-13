@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { FiArrowUpRight, FiTruck } from "react-icons/fi";
+import { FiTruck } from "react-icons/fi";
 import { toast } from "react-hot-toast";
 import { useCity } from "../context/CityContext";
 import { formatDuration, formatINR, perPerson, tripHours, tripPrice, tripWeekendHours, WEEKEND_SURGE } from "@/lib/tripPrice";
@@ -100,7 +100,7 @@ export default function FleetSection() {
             Our Fleet
           </h2>
           <p className={ui.lead}>
-            Well-kept cars with zero deposit and doorstep delivery. Pick a car, choose your dates and drive.
+            Well-kept cars, zero deposit and doorstep delivery. Pick, book and drive.
           </p>
         </header>
 
@@ -194,9 +194,6 @@ export default function FleetSection() {
                           </>
                         )}
                       </div>
-                      <span className={styles.go} aria-hidden="true">
-                        <FiArrowUpRight />
-                      </span>
                     </div>
                   </Link>
                 </li>

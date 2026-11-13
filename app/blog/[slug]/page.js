@@ -130,7 +130,7 @@ function Block({ block, s }) {
               </Link>
               <p className={s.carCardReason}>{car.reason}</p>
               <Link href={`/rent/${car.slug}/${car.city}`} className={s.carCardButton}>
-                View {car.name} →
+                View {car.name}
               </Link>
             </div>
           ))}

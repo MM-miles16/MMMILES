@@ -1,289 +1,257 @@
 "use client";
-import { useEffect, useMemo, useRef, useState } from "react";
-import Image from "next/image";
-import {
-  ArrowRight,
-  Check,
-  CreditCard,
-  Headset,
-  House,
-  Landmark,
-  Lock,
-  MapPin,
-  Pause,
-  Play,
-  Search,
-  ShieldCheck,
-  Smartphone,
-  Store,
-  Users,
-} from "lucide-react";
-import { calculatePricing } from "@/lib/pricing";
-import { formatINR, perPerson } from "@/lib/tripPrice";
+import { useEffect, useRef, useState } from "react";
 import ui from "./ui.module.css";
 import styles from "./HowItWorks.module.css";
 
-// Five compact step cards. Each tile holds a small app screen that plays its moment while the
-// step is active; the other tiles show the finished state. The active card's progress bar drives
-// the timing (its animationend advances), so pausing the CSS pauses everything.
-const STEP_MS = 4600;
-
-const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const at = (d) => `${WEEKDAYS[d.getDay()]} ${d.getDate()}, ${d.getHours() % 12 || 12} ${d.getHours() < 12 ? "AM" : "PM"}`;
-
-// Upcoming weekend (Sat 9 AM → Sun 9 PM, same as the "This weekend" quick pick) and Thu–Mon around it
-function upcomingWeekend(now) {
-  const day = now.getDay();
-  const start = new Date(now);
-  start.setDate(now.getDate() + (day === 0 ? 6 : 6 - day));
-  start.setHours(9, 0, 0, 0);
-  const end = new Date(start);
-  end.setDate(start.getDate() + 1);
-  end.setHours(21, 0, 0, 0);
-  const days = [-2, -1, 0, 1, 2].map((offset) => {
-    const d = new Date(start);
-    d.setDate(start.getDate() + offset);
-    return { dow: WEEKDAYS[d.getDay()], date: d.getDate(), weekend: offset === 0 || offset === 1 };
-  });
-  return { start, end, days };
-}
-
-const PLACEHOLDER_DAYS = ["Thu", "Fri", "Sat", "Sun", "Mon"].map((dow, i) => ({ dow, date: "", weekend: i === 2 || i === 3 }));
-
-/* ── Step illustrations (decorative; built from spans because they sit inside buttons) ── */
-
-function SceneSearch({ ctx }) {
-  let n = 0;
-  return (
-    <span className={`${styles.scene} ${styles.sSearch}`}>
-      <span className={styles.ui}>
-        <span className={styles.loc}>
-          <MapPin /> Anna Nagar, Chennai
-        </span>
-        <span className={styles.days}>
-          {ctx.days.map((d, i) => (
-            <span
-              key={i}
-              className={`${styles.day} ${d.weekend ? styles.daySel : ""}`}
-              style={d.weekend ? { "--n": n++ } : undefined}
-            >
-              <small>{d.dow}</small>
-              <b>{d.date || " "}</b>
-            </span>
-          ))}
-        </span>
-        <span className={styles.chips}>
-          <span className={styles.chip}>Tomorrow</span>
-          <span className={`${styles.chip} ${styles.chipSel}`}>
-            This weekend
-            <i className={styles.tap} />
-          </span>
-        </span>
-        <span className={styles.searchBtn}>
-          <Search /> Search cars
-          <i className={styles.tap} />
-        </span>
-      </span>
-      <Image src="/landing/3d/spiral-calendar.webp" alt="" width={120} height={120} className={styles.sticker} />
-    </span>
-  );
-}
-
-function SceneCar({ ctx }) {
-  const c = ctx.car;
-  return (
-    <span className={`${styles.scene} ${styles.sCar}`}>
-      <span className={`${styles.ui} ${styles.carBack}`}>
-        <span className={styles.carPhoto}>
-          <Image src="/landing/cars/swift.webp" alt="" width={520} height={265} />
-        </span>
-        <b className={styles.carName}>Maruti Swift</b>
-        <small className={styles.carMeta}>Automatic · 5 seats</small>
-      </span>
-      <span className={`${styles.ui} ${styles.carFront}`}>
-        <span className={styles.carPhoto}>
-          <Image src="/landing/cars/venue.webp" alt="" width={520} height={248} />
-        </span>
-        <b className={styles.carName}>Hyundai Venue</b>
-        <small className={styles.carMeta}>Automatic · 5 seats</small>
-        {c ? (
-          <>
-            <span className={styles.carPrice}>
-              {formatINR(c.total)} <small>all-in</small>
-            </span>
-            <span className={styles.split}>
-              <Users /> {formatINR(c.each)} each for {c.people}
-            </span>
-          </>
-        ) : (
-          <span className={styles.carPrice}>
-            <small>All-in price, no surprises</small>
-          </span>
-        )}
-        <span className={styles.carCheck}>
-          <Check />
-        </span>
-        <i className={styles.tap} />
-      </span>
-    </span>
-  );
-}
-
-function ScenePay({ ctx }) {
-  const total = ctx.car?.total;
-  return (
-    <span className={`${styles.scene} ${styles.sPay}`}>
-      <span className={styles.ui}>
-        <small className={styles.payLabel}>Total · all-in</small>
-        <b className={styles.payTotal}>{total ? formatINR(total) : "Full price"}</b>
-        <span className={styles.methods}>
-          <span className={`${styles.method} ${styles.methodSel}`}>
-            <Smartphone /> UPI
-          </span>
-          <span className={styles.method}>
-            <CreditCard /> Card
-          </span>
-          <span className={styles.method}>
-            <Landmark /> Bank
-          </span>
-        </span>
-        <span className={styles.payBtn}>
-          <span className={styles.payIdle}>
-            <Lock /> {total ? `Pay ${formatINR(total)}` : "Pay securely"}
-          </span>
-          <i className={styles.spinner} />
-          <span className={styles.payDone}>
-            <Check /> Payment successful
-          </span>
-          <i className={styles.tap} />
-        </span>
-        <small className={styles.secure}>
-          <Lock /> Secured by Razorpay · ₹0 deposit
-        </small>
-      </span>
-      <Image src="/landing/3d/wallet.webp" alt="" width={120} height={120} className={styles.sticker} />
-    </span>
-  );
-}
-
-function SceneHandover({ ctx }) {
-  return (
-    <span className={`${styles.scene} ${styles.sHand}`}>
-      <span className={styles.ui}>
-        <span className={styles.seg}>
-          <span className={styles.segThumb} />
-          <span className={`${styles.segOpt} ${styles.segDoor}`}>
-            <House /> Doorstep
-            <i className={styles.tap} />
-          </span>
-          <span className={`${styles.segOpt} ${styles.segHost}`}>
-            <Store /> Host pickup
-          </span>
-        </span>
-        <span className={styles.map}>
-          <svg viewBox="0 0 212 80" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-            <rect width="212" height="80" fill="#e9f1fa" />
-            <path d="M146 80 C 158 62 184 56 212 54 V 80 Z" fill="#d3e6f8" />
-            <ellipse cx="46" cy="20" rx="28" ry="12" fill="#d6eedc" />
-            <ellipse cx="128" cy="68" rx="20" ry="9" fill="#d6eedc" />
-            <g stroke="#ffffff" strokeWidth="6" strokeLinecap="round" fill="none">
-              <path d="M-6 48 H 218" />
-              <path d="M100 -6 V 86" />
-              <path d="M-6 6 C 60 16 140 20 218 10" />
-              <path d="M168 -6 C 160 30 174 58 162 86" />
-            </g>
-            <path className={styles.route} d="M30 62 C 54 54 74 48 100 48 S 150 30 178 19" pathLength="1" />
-            <circle className={`${styles.pulse} ${styles.pulseHost}`} cx="30" cy="62" r="10" />
-            <circle cx="30" cy="62" r="5.5" fill="#ffffff" stroke="#6b57c4" strokeWidth="3" />
-            <circle className={`${styles.pulse} ${styles.pulseHome}`} cx="178" cy="19" r="11" />
-            <g className={styles.pinHome}>
-              <circle cx="178" cy="19" r="7" fill="#22222e" />
-              <circle cx="178" cy="19" r="2.6" fill="#ffffff" />
-            </g>
-          </svg>
-        </span>
-        <span className={styles.handInfo}>
-          <span className={`${styles.info} ${styles.infoHost}`}>
-            <span className={styles.infoIcon}>
-              <Store />
-            </span>
-            <span>
-              <b>Pick up from the host</b>
-              <small>Nolambur hub · 2.4 km away</small>
-            </span>
-          </span>
-          <span className={`${styles.info} ${styles.infoDoor}`}>
-            <span className={styles.infoIcon}>
-              <House />
-            </span>
-            <span>
-              <b>Delivered to your door</b>
-              <small>Anna Nagar · {ctx.pickup}</small>
-            </span>
-          </span>
-        </span>
-      </span>
-    </span>
-  );
-}
-
-function SceneRide() {
-  return (
-    <span className={`${styles.scene} ${styles.sRide}`}>
-      <span className={styles.live}>
-        <i className={styles.liveDot} /> Trip in progress
-      </span>
-      <span className={styles.rideBadges}>
-        <span className={`${styles.badge} ${styles.badgeInsured}`}>
-          <ShieldCheck /> Insured
-        </span>
-        <span className={`${styles.badge} ${styles.badgeSupport}`}>
-          <Headset /> 24×7 support
-        </span>
-      </span>
-      <i className={styles.floor} />
-      <i className={styles.ring} />
-      <span className={styles.rideCar}>
-        <Image src="/landing/cars/venue.webp" alt="" width={520} height={248} />
-        <i className={`${styles.light} ${styles.lightL}`} />
-        <i className={`${styles.light} ${styles.lightR}`} />
-      </span>
-    </span>
-  );
-}
-
+// A car drives along a winding road and stops at each step; when it arrives, the step's sketched
+// icon draws itself stroke by stroke. Wide screens: the road snakes across the row (steps alternate
+// top and bottom lanes). Narrow screens: the road wiggles down the left side of a list.
+// Icons are line drawings on a 48×48 grid, one stroke per path so each can draw in turn.
 const STEPS = [
-  { title: "Search & pick your dates", tone: styles.toneSky, Scene: SceneSearch },
-  { title: "Choose your car", tone: styles.toneLavender, Scene: SceneCar },
-  { title: "Pay securely", tone: styles.toneMist, Scene: ScenePay },
-  { title: "Doorstep delivery or host pickup", tone: styles.toneSkySoft, Scene: SceneHandover },
-  { title: "Ride safe", tone: styles.toneMidnight, Scene: SceneRide },
+  {
+    title: "Search & pick your dates",
+    desc: "Pick your city, pickup spot and dates. This weekend is one tap.",
+    tone: styles.toneSky,
+    sketch: [
+      "M26 38H12a4 4 0 0 1-4-4V15a4 4 0 0 1 4-4h20a4 4 0 0 1 4 4v9", // calendar
+      "M8 18h28",
+      "M15 7v6",
+      "M29 7v6",
+      "M13.5 27.5l3 3 5.5-5.5", // picked date
+      "M40 33a6 6 0 1 1-12 0a6 6 0 1 1 12 0", // search lens
+      "M38.4 37.4l4.1 4.1",
+    ],
+  },
+  {
+    title: "Choose your car",
+    desc: "See the all-in price, and what it costs each when friends split.",
+    tone: styles.toneLavender,
+    sketch: [
+      "M9 33H6.5A1.5 1.5 0 0 1 5 31.5V26a3 3 0 0 1 2.3-2.9L14 21.5l5-6.2a3 3 0 0 1 2.3-1.1h9.8a3 3 0 0 1 2.3 1.1l5 6.2 3.4 1A3 3 0 0 1 44 25.4v6.1a1.5 1.5 0 0 1-1.5 1.5H40", // body
+      "M17 33h15",
+      "M14 21.5h24",
+      "M25 14.2v7.3",
+      "M17 33a4 4 0 1 1-8 0a4 4 0 1 1 8 0", // wheels
+      "M40 33a4 4 0 1 1-8 0a4 4 0 1 1 8 0",
+      "M41 4v6", // sparkle
+      "M38 7h6",
+    ],
+  },
+  {
+    title: "Pay securely",
+    desc: "Pay by UPI or card. No deposit, nothing blocked.",
+    tone: styles.tonePeach,
+    sketch: [
+      "M16 5h12a4 4 0 0 1 4 4v30a4 4 0 0 1-4 4H16a4 4 0 0 1-4-4V9a4 4 0 0 1 4-4z", // phone
+      "M20 9.5h4",
+      "M28 23a6 6 0 1 1-12 0a6 6 0 1 1 12 0", // coin
+      "M19.5 23l2 2 3.5-3.5",
+      "M36 19a5 5 0 0 1 0 8", // tap to pay
+      "M39.5 16a9.5 9.5 0 0 1 0 14",
+      "M20 37.5h4",
+    ],
+  },
+  {
+    title: "Doorstep delivery or host pickup",
+    desc: "We bring the car to your door, or you pick it up nearby.",
+    tone: styles.toneMint,
+    sketch: [
+      "M6 23L22 10l16 13", // roof
+      "M10 20v18h24V20",
+      "M18.5 38v-8h7v8", // door
+      "M38 4a5 5 0 0 0-5 5c0 3.8 5 8 5 8s5-4.2 5-8a5 5 0 0 0-5-5z", // location pin
+      "M39.6 9a1.6 1.6 0 1 1-3.2 0a1.6 1.6 0 1 1 3.2 0",
+    ],
+  },
+  {
+    title: "Ride safe",
+    desc: "Every trip is insured, with 24×7 support a call away.",
+    tone: styles.toneMidnight,
+    sketch: [
+      "M24 5l14 5v11c0 9.2-6 16.6-14 19.5C16 37.6 10 30.2 10 21V10z", // shield
+      "M17.5 22.5l4.5 4.5 8.5-9",
+    ],
+  },
 ];
-const LAST = STEPS.length - 1;
 
-export default function HowItWorks({ rates }) {
-  const rootRef = useRef(null);
-  const railRef = useRef(null);
-  const cardRefs = useRef([]);
-  const autoScroll = useRef(false); // true while the rail scrolls itself to the active card
-  // cycle: bumps when the story restarts (the traveller re-enters); hop: bumps on every forward move
-  const [{ active, cycle, hop }, setStory] = useState({ active: 0, cycle: 0, hop: 0 });
+// A faint pencil outline until the step is reached, then the coloured strokes draw in
+function Sketch({ paths }) {
+  return (
+    <svg viewBox="0 0 48 48" className={styles.sketch} aria-hidden="true" focusable="false">
+      <g className={styles.ghost}>
+        {paths.map((d) => (
+          <path key={d} d={d} />
+        ))}
+      </g>
+      <g className={styles.ink}>
+        {paths.map((d, i) => (
+          <path key={d} d={d} pathLength="1" style={{ "--i": i }} />
+        ))}
+      </g>
+    </svg>
+  );
+}
+const DONE = STEPS.length + 1; // "reached" value once the car is parked at the finish
+
+// Road geometry in SVG units. reach: how close the car's centre gets to a step's circle before it
+// stops; endGap: where it parks before the finish dot.
+const WIDE = {
+  w: 1160,
+  h: 260,
+  road: "M40 130 V86 A44 44 0 0 1 84 42 H212 A44 44 0 0 1 256 86 V174 A44 44 0 0 0 300 218 H428 A44 44 0 0 0 472 174 V86 A44 44 0 0 1 516 42 H644 A44 44 0 0 1 688 86 V174 A44 44 0 0 0 732 218 H860 A44 44 0 0 0 904 174 V86 A44 44 0 0 1 948 42 H1076 A44 44 0 0 1 1120 86 V130",
+  centers: [
+    [148, 42],
+    [364, 218],
+    [580, 42],
+    [796, 218],
+    [1012, 42],
+  ],
+  end: [1120, 130],
+  reach: 61,
+  endGap: 33,
+  parked: "translate(1120 97) rotate(90)",
+};
+// Phones and tablets: a short wavy road across the top of an app-style card, with numbered stops
+const CARD = {
+  w: 340,
+  h: 64,
+  road: "M6 40 H56 C86 40 86 24 116 24 C146 24 146 40 176 40 C206 40 206 24 236 24 C266 24 266 40 296 40 H334",
+  centers: [
+    [56, 40],
+    [116, 24],
+    [176, 40],
+    [236, 24],
+    [296, 40],
+  ],
+  end: [334, 40],
+  reach: 27,
+  endGap: 21,
+  parked: "translate(313 40)",
+};
+
+const DRIVE_S = 7.2; // total driving time per loop; plus a pause at every step
+const DWELL_S = 1.1;
+const FINISH_S = 1.8;
+const FADE_S = 0.35;
+const ease = (p) => 0.5 - Math.cos(Math.PI * p) / 2;
+
+// Distances along the road where the car stops, and the loop's timeline
+function buildPlan(path, geo) {
+  const total = path.getTotalLength();
+  const stops = [];
+  let from = 0;
+  for (const [cx, cy] of geo.centers) {
+    let at = total;
+    for (let len = from; len <= total; len += 1) {
+      const p = path.getPointAtLength(len);
+      if (Math.hypot(p.x - cx, p.y - cy) <= geo.reach) {
+        at = len;
+        break;
+      }
+    }
+    stops.push(at);
+    from = at + 1;
+  }
+  const speed = total / DRIVE_S;
+  const segs = [];
+  let t = 0;
+  const push = (seg) => {
+    segs.push({ ...seg, t0: t });
+    t += seg.dur;
+  };
+  push({ at: 0, dur: 0.6 });
+  let pos = 0;
+  [...stops, total - geo.endGap].forEach((to, k) => {
+    push({ from: pos, to, dur: Math.max(0.5, (to - pos) / speed) });
+    push({ at: to, dur: k < stops.length ? DWELL_S : FINISH_S, reach: k + 1 });
+    pos = to;
+  });
+  return { total, segs, length: t, parkAt: total - geo.endGap };
+}
+
+// Top-down car, nose pointing along +x
+function Car({ carRef, scale = 1, parked }) {
+  return (
+    <g ref={carRef} transform={parked} className={styles.car}>
+      <g transform={`scale(${scale})`}>
+        <rect x="-22" y="-10" width="48" height="26" rx="9" fill="rgba(34,34,46,0.16)" />
+        <rect x="-17" y="-15" width="10" height="5" rx="2" fill="#15151c" />
+        <rect x="8" y="-15" width="10" height="5" rx="2" fill="#15151c" />
+        <rect x="-17" y="10" width="10" height="5" rx="2" fill="#15151c" />
+        <rect x="8" y="10" width="10" height="5" rx="2" fill="#15151c" />
+        <rect x="-24" y="-12" width="48" height="24" rx="9" fill="#22222e" />
+        <rect x="-12" y="-9.5" width="15" height="19" rx="4" fill="#34344a" />
+        <rect x="4" y="-9" width="9" height="18" rx="3" fill="#c5b5ee" />
+        <rect x="-18.5" y="-8" width="5" height="16" rx="2" fill="#c5b5ee" opacity="0.75" />
+        <rect x="20.5" y="-10" width="2.5" height="4" rx="1" fill="#fff3b0" />
+        <rect x="20.5" y="6" width="2.5" height="4" rx="1" fill="#fff3b0" />
+        <rect x="-24" y="-10" width="2" height="4" rx="1" fill="#ff6b6b" />
+        <rect x="-24" y="6" width="2" height="4" rx="1" fill="#ff6b6b" />
+      </g>
+    </g>
+  );
+}
+
+function Road({ trailRef, carRef, finished }) {
+  return (
+    <svg className={styles.wideRoad} viewBox={`0 0 ${WIDE.w} ${WIDE.h}`} aria-hidden="true" focusable="false">
+      <path d={WIDE.road} className={styles.roadBase} />
+      <path d={WIDE.road} className={styles.roadTrail} ref={trailRef} />
+      <path d={WIDE.road} className={styles.roadLine} />
+      <circle cx={WIDE.end[0]} cy={WIDE.end[1]} r="8" className={`${styles.finish} ${finished ? styles.finishOn : ""}`} />
+      <Car carRef={carRef} parked={WIDE.parked} />
+    </svg>
+  );
+}
+
+// The phone card's road: the car drives under numbered stops; tapping a stop jumps to that step
+function CardRoad({ trailRef, carRef, reached, started, onStop }) {
+  return (
+    <svg className={styles.cardRoad} viewBox={`0 0 ${CARD.w} ${CARD.h}`} focusable="false">
+      <path d={CARD.road} className={styles.roadBase} />
+      <path d={CARD.road} className={styles.roadTrail} ref={trailRef} />
+      <path d={CARD.road} className={styles.roadLine} />
+      <circle cx={CARD.end[0]} cy={CARD.end[1]} r="5" className={`${styles.finish} ${reached === DONE ? styles.finishOn : ""}`} />
+      <Car carRef={carRef} scale={0.55} parked={CARD.parked} />
+      {CARD.centers.map(([x, y], i) => (
+        <g
+          key={x}
+          className={`${styles.stop} ${i < reached ? styles.stopOn : ""} ${started && i === reached - 1 ? styles.stopNow : ""}`}
+          onClick={() => onStop(i)}
+        >
+          <circle cx={x} cy={y} r="11" />
+          <text x={x} y={y} dy="0.35em" textAnchor="middle">
+            {i + 1}
+          </text>
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+export default function HowItWorks() {
+  const boxRef = useRef(null);
+  const wideTrail = useRef(null);
+  const wideCar = useRef(null);
+  const cardTrail = useRef(null);
+  const cardCar = useRef(null);
+  const swipeX = useRef(null);
+  const plan = useRef(null);
+  const clock = useRef(0);
+  const reachedRef = useRef(DONE);
+  const [wide, setWide] = useState(null); // null until we know which road is on screen
+  const [reached, setReached] = useState(DONE); // everything shows until the drive starts
+  const [started, setStarted] = useState(false);
   const [inView, setInView] = useState(false);
-  const [userPaused, setUserPaused] = useState(false);
-  const [hold, setHold] = useState(false); // mouse over the cards: the timer waits
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [week, setWeek] = useState(null); // dates depend on "now", so they're set in the browser
-  const paused = userPaused || !inView || reducedMotion;
+  const playing = started && inView && !reducedMotion;
 
-  useEffect(() => setWeek(upcomingWeekend(new Date())), []);
-
-  // Play only while the section is on screen
   useEffect(() => {
-    const el = rootRef.current;
-    if (!el || !("IntersectionObserver" in window)) return setInView(true);
-    const io = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { threshold: 0.35 });
-    io.observe(el);
-    return () => io.disconnect();
+    const mq = window.matchMedia("(min-width: 1000px)");
+    const update = () => setWide(mq.matches);
+    update();
+    mq.addEventListener?.("change", update);
+    return () => mq.removeEventListener?.("change", update);
   }, []);
 
   useEffect(() => {
@@ -294,164 +262,167 @@ export default function HowItWorks({ rates }) {
     return () => mq.removeEventListener?.("change", update);
   }, []);
 
-  const goTo = (i) =>
-    setStory((s) =>
-      i === s.active
-        ? s
-        : i > s.active
-          ? { active: i, cycle: s.cycle, hop: s.hop + 1 }
-          : { active: i, cycle: s.cycle + 1, hop: 0 } // going back: re-enter instead of hopping backwards
-    );
-
-  const advance = (e) => {
-    if (!e.animationName.includes("fill")) return;
-    setStory((s) =>
-      s.active === LAST ? { active: 0, cycle: s.cycle + 1, hop: 0 } : { active: s.active + 1, cycle: s.cycle, hop: s.hop + 1 }
-    );
-  };
-
-  // Phones and tablets: bring the active card into view (scrolls the row only, never the page)
+  // Play only while the road is on screen; the first time it shows, the drive starts
   useEffect(() => {
-    const rail = railRef.current;
-    const card = cardRefs.current[active];
-    if (!rail || !card || rail.scrollWidth <= rail.clientWidth + 1) return;
-    const pad = parseFloat(getComputedStyle(rail).paddingLeft) || 0;
-    const delta = card.getBoundingClientRect().left - rail.getBoundingClientRect().left - pad;
-    if (Math.abs(delta) < 2) return;
-    autoScroll.current = true;
-    rail.scrollTo({ left: rail.scrollLeft + delta, behavior: reducedMotion ? "auto" : "smooth" });
-  }, [active, reducedMotion]);
-
-  // A swipe through the cards shows the card it lands on and stops the autoplay
-  useEffect(() => {
-    const rail = railRef.current;
-    if (!rail) return;
-    let settle;
-    const onScroll = () => {
-      clearTimeout(settle);
-      settle = setTimeout(() => {
-        if (autoScroll.current) {
-          autoScroll.current = false;
-          return;
-        }
-        const edge = rail.getBoundingClientRect().left + (parseFloat(getComputedStyle(rail).paddingLeft) || 0);
-        const gaps = cardRefs.current.map((el) => Math.abs(el.getBoundingClientRect().left - edge));
-        setUserPaused(true);
-        goTo(gaps.indexOf(Math.min(...gaps)));
-      }, 140);
-    };
-    const onTouch = () => (autoScroll.current = false);
-    const onWheel = (e) => Math.abs(e.deltaX) > Math.abs(e.deltaY) && onTouch();
-    rail.addEventListener("scroll", onScroll, { passive: true });
-    rail.addEventListener("pointerdown", onTouch, { passive: true });
-    rail.addEventListener("wheel", onWheel, { passive: true });
-    return () => {
-      clearTimeout(settle);
-      rail.removeEventListener("scroll", onScroll);
-      rail.removeEventListener("pointerdown", onTouch);
-      rail.removeEventListener("wheel", onWheel);
-    };
+    const el = boxRef.current;
+    if (!el || !("IntersectionObserver" in window)) return setInView(true);
+    const io = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { threshold: 0.4 });
+    io.observe(el);
+    return () => io.disconnect();
   }, []);
 
-  // Live prices for the illustration: same engine as checkout, Hyundai Venue for the upcoming weekend
-  const ctx = useMemo(() => {
-    if (!week) return { days: PLACEHOLDER_DAYS, pickup: "Sat, 9 AM", car: null };
-    const rate = rates?.["hyundai venue"];
-    let car = null;
-    if (rate) {
-      const pricing = calculatePricing({ baseDailyRate: rate, pickupTime: week.start, returnTime: week.end });
-      const split = perPerson(pricing.total, 5);
-      car = { total: pricing.total, each: split.each, people: split.people };
+  useEffect(() => {
+    if (inView && !reducedMotion) setStarted(true);
+  }, [inView, reducedMotion]);
+
+  const showReached = (n) => {
+    if (reachedRef.current === n) return;
+    reachedRef.current = n;
+    setReached(n);
+  };
+
+  const parts = () => (wide ? { trail: wideTrail.current, car: wideCar.current } : { trail: cardTrail.current, car: cardCar.current });
+
+  const place = (len, opacity) => {
+    const { trail, car } = parts();
+    const p = plan.current;
+    const pt = trail.getPointAtLength(len);
+    const a = trail.getPointAtLength(Math.max(0, len - 1));
+    const b = trail.getPointAtLength(Math.min(p.total, len + 1));
+    const angle = (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI;
+    car.setAttribute("transform", `translate(${pt.x.toFixed(2)} ${pt.y.toFixed(2)}) rotate(${angle.toFixed(1)})`);
+    car.style.opacity = opacity;
+    trail.style.strokeDasharray = `${len} ${p.total + 10}`;
+    trail.style.opacity = opacity;
+  };
+
+  const draw = (t) => {
+    const p = plan.current;
+    const tt = t % p.length;
+    let len = 0;
+    let reach = 0;
+    for (const s of p.segs) {
+      if (s.reach && s.t0 <= tt) reach = s.reach;
+      if (tt >= s.t0 && tt < s.t0 + s.dur) len = s.at ?? s.from + (s.to - s.from) * ease((tt - s.t0) / s.dur);
     }
-    return { days: week.days, pickup: at(week.start), car };
-  }, [week, rates]);
+    const opacity = Math.min(1, tt / FADE_S, (p.length - tt) / FADE_S);
+    place(len, Math.max(0, opacity));
+    showReached(reach);
+  };
+
+  const jumpTo = (k) => {
+    const p = plan.current;
+    if (!p || k < 0 || k >= STEPS.length) return;
+    clock.current = p.segs.find((seg) => seg.reach === k + 1).t0 + 0.001;
+    draw(clock.current);
+  };
+
+  // The finished picture: car parked at the end, the whole road driven, every step shown
+  const drawParked = () => {
+    const { trail, car } = parts();
+    car.setAttribute("transform", (wide ? WIDE : CARD).parked);
+    car.style.opacity = 1;
+    trail.style.strokeDasharray = "none";
+    trail.style.opacity = 1;
+    showReached(DONE);
+  };
+
+  // Measure the road that's on screen and lay out the loop
+  useEffect(() => {
+    if (wide === null) return;
+    const { trail } = parts();
+    plan.current = buildPlan(trail, wide ? WIDE : CARD);
+    clock.current = 0;
+    if (started && !reducedMotion) draw(0);
+    else drawParked();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wide, started, reducedMotion]);
+
+  useEffect(() => {
+    if (!playing || !plan.current) return;
+    let raf;
+    let last = performance.now();
+    const tick = (now) => {
+      clock.current += Math.min(0.1, (now - last) / 1000);
+      last = now;
+      draw(clock.current);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [playing, wide]);
+
+  // The step the phone card shows: the one the car is at (step 1 while it sets off)
+  const shown = Math.min(Math.max(reached, 1), STEPS.length) - 1;
 
   return (
     <section id="how-it-works" className={`${ui.section} ${styles.section}`} aria-labelledby="how-title">
       <div className={ui.container}>
-        <div className={`${ui.headRow} ${styles.headRow}`}>
-          <div className={ui.head}>
-            <p className={ui.eyebrow}>How it works</p>
-            <h2 id="how-title" className={`${ui.title} ${styles.title}`}>
-              Your car in 5 easy steps
-            </h2>
-            <p className={`${ui.lead} ${styles.lead}`}>From search to steering wheel, the whole booking happens on your phone.</p>
-          </div>
-          <div className={styles.actions}>
-            <button
-              type="button"
-              className={styles.playPause}
-              onClick={() => setUserPaused((p) => !p)}
-              aria-label={userPaused ? "Play the booking steps" : "Pause the booking steps"}
-              hidden={reducedMotion}
-            >
-              {userPaused ? <Play /> : <Pause />}
-              <span>{userPaused ? "Play" : "Pause"}</span>
-            </button>
-            <a href="#search" className={ui.textLink}>
-              Start booking <ArrowRight size={16} />
-            </a>
-          </div>
+        <div className={`${ui.head} ${styles.head}`}>
+          <p className={ui.eyebrow}>How it works</p>
+          <h2 id="how-title" className={ui.title}>
+            Your car in 5 easy steps
+          </h2>
+          <p className={ui.lead}>From search to steering wheel, the whole booking happens on your phone.</p>
         </div>
 
-        <div
-          ref={rootRef}
-          className={`${styles.journey} ${paused ? styles.paused : ""} ${hold ? styles.hold : ""}`}
-          data-step={active}
-          style={{ "--step-ms": `${STEP_MS}ms` }}
-        >
-          <div
-            className={styles.rail}
-            ref={railRef}
-            onPointerEnter={(e) => e.pointerType === "mouse" && setHold(true)}
-            onPointerLeave={(e) => e.pointerType === "mouse" && setHold(false)}
-          >
-            <div className={styles.track}>
-              <ol className={styles.cards}>
-                {STEPS.map(({ title, tone, Scene }, i) => (
-                  <li key={title} ref={(el) => (cardRefs.current[i] = el)}>
-                    <button
-                      type="button"
-                      className={`${styles.card} ${i === active ? styles.cardOn : ""} ${i < active ? styles.cardDone : ""}`}
-                      aria-current={i === active ? "step" : undefined}
-                      onClick={() => goTo(i)}
-                    >
-                      <span className={`${styles.tile} ${tone}`} aria-hidden="true">
-                        <Scene ctx={ctx} />
-                      </span>
-                      <span className={styles.meta}>
-                        <span className={styles.stepNo}>Step {i + 1}</span>
-                        <span className={styles.stepTitle}>{title}</span>
-                        <span className={styles.bar} aria-hidden="true">
-                          <i onAnimationEnd={i === active ? advance : undefined} />
-                        </span>
-                      </span>
-                    </button>
-                  </li>
-                ))}
-              </ol>
+        <div ref={boxRef} className={styles.roadBox} data-reached={reached}>
+          <Road trailRef={wideTrail} carRef={wideCar} finished={reached === DONE} />
 
-              {/* The traveller hops from card to card, then climbs into the car on the last one */}
-              <div
-                key={cycle}
-                className={`${styles.manPos} ${active === LAST ? styles.manLast : ""}`}
-                style={{ "--i": active }}
-                aria-hidden="true"
-              >
-                <span
-                  key={`h${hop}`}
-                  className={`${styles.manHop} ${hop ? styles.hopping : ""} ${hop && active === LAST ? styles.boarding : ""}`}
-                >
-                  <Image src="/landing/3d/man-walking.webp" alt="" width={120} height={120} className={styles.manIdle} />
-                  <Image src="/landing/3d/man-running.webp" alt="" width={120} height={120} className={styles.manRun} />
-                </span>
-                <span
-                  key={`s${hop}`}
-                  className={`${styles.manShadow} ${hop ? styles.shadowHop : ""} ${hop && active === LAST ? styles.shadowBoard : ""}`}
-                />
-              </div>
+          {/* Phones and tablets: an app-style card that shows the step the car has reached */}
+          <div
+            className={styles.appCard}
+            onPointerDown={(e) => (swipeX.current = e.clientX)}
+            onPointerUp={(e) => {
+              if (swipeX.current === null) return;
+              const dx = e.clientX - swipeX.current;
+              swipeX.current = null;
+              if (Math.abs(dx) > 40) jumpTo(shown + (dx < 0 ? 1 : -1));
+            }}
+            onPointerCancel={() => (swipeX.current = null)}
+            aria-hidden="true"
+          >
+            <CardRoad trailRef={cardTrail} carRef={cardCar} reached={reached} started={started} onStop={jumpTo} />
+            <div key={shown} className={styles.slide}>
+              <span className={`${styles.bigIcon} ${STEPS[shown].tone} ${reached > shown ? styles.on : ""}`}>
+                <Sketch paths={STEPS[shown].sketch} />
+              </span>
+              <span className={styles.stepOf}>
+                Step {shown + 1} of {STEPS.length}
+              </span>
+              <span className={styles.slideTitle}>{STEPS[shown].title}</span>
+              <span className={styles.slideDesc}>{STEPS[shown].desc}</span>
             </div>
           </div>
+
+          <ol className={styles.steps}>
+            {STEPS.map((s, i) => {
+              const on = i < reached;
+              const now = started && i === reached - 1;
+              return (
+                <li
+                  key={s.title}
+                  className={`${styles.step} ${on ? styles.on : ""} ${now ? styles.now : ""}`}
+                  style={{ "--x": WIDE.centers[i][0], "--lane": WIDE.centers[i][1] }}
+                >
+                  <span className={`${styles.circle} ${s.tone}`} aria-hidden="true">
+                    <Sketch paths={s.sketch} />
+                  </span>
+                  <span className={styles.text}>
+                    <span className={styles.num}>{String(i + 1).padStart(2, "0")}</span>
+                    <span className={styles.stepTitle}>{s.title}</span>
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+
+        <div className={styles.cta}>
+          <a href="#search" className={`${ui.btn} ${ui.btnDark}`}>
+            Start booking
+          </a>
         </div>
       </div>
     </section>

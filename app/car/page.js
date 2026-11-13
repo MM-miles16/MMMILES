@@ -215,7 +215,7 @@ export default function CarsPage() {
         </p>
         <p style={{ fontSize: 14, color: "#777", marginBottom: 28 }}>
           10,000+ happy customers · 4.5★ rated · Fully insured · 24/7 support ·
-          <Link href="/car/chennai"> Browse Chennai-specific rentals →</Link>
+          <Link href="/car/chennai"> Browse Chennai-specific rentals</Link>
         </p>
 
         {/* ── Car Type Quick Links ── */}

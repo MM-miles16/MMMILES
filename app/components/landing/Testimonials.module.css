@@ -62,7 +62,7 @@
 }
 
 .featured {
-  background: var(--mm-midnight) url("/landing/topo-dark.svg") right -160px bottom -120px / 560px auto no-repeat;
+  background: var(--mm-midnight);
   box-shadow: var(--mm-shadow-md);
 }
 
