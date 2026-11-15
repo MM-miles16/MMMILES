@@ -1,7 +1,8 @@
 /* Site footer — redesign: a Midnight rounded card, like the reference's dark cards */
 
+/* The card's edges line up with the page's side padding, like every other section */
 .footer {
-  padding: 0 12px 12px;
+  padding: 0 var(--mm-gutter) 12px;
   background: var(--mm-bg);
   font-family: var(--mm-font);
 }
@@ -9,7 +10,7 @@
 .card {
   position: relative;
   overflow: hidden;
-  max-width: 1440px;
+  max-width: calc(var(--mm-container) - 2 * var(--mm-gutter));
   margin: 0 auto;
   padding: clamp(40px, 6vw, 72px) clamp(20px, 5vw, 64px) 28px;
   border-radius: var(--mm-radius-xl);

@@ -17,6 +17,14 @@
   border-radius: 12px;
 }
 
+/* Tablets and up: the card spans the page, its edges on the shared 50px side padding */
+@media (min-width: 761px) {
+  .contentWrapper {
+    width: calc(100% - 2 * var(--mm-gutter));
+    max-width: calc(var(--mm-container) - 2 * var(--mm-gutter));
+  }
+}
+
 .leftColumn {
   flex: 1;
   display: flex;

@@ -5,49 +5,48 @@ import { getRoadTrips } from "@/lib/landing";
 import ui from "./ui.module.css";
 import styles from "./RoadTrips.module.css";
 
+// "Roads worth taking" — six portrait photos in a staggered row (laptops and up); a swipeable
+// app-style row on phones and tablets. Distance and drive time slide up on hover (always shown
+// on phones). Cards with a travel guide link to it.
 export default function RoadTrips() {
   const trips = getRoadTrips("chennai");
   if (trips.length === 0) return null;
 
   return (
-    <section className={ui.section} aria-labelledby="trips-title">
+    <section className={`${ui.section} ${styles.section}`} aria-labelledby="trips-title">
       <div className={ui.container}>
-        <div className={ui.headRow}>
-          <div className={ui.head}>
-            <p className={ui.eyebrow}>Road trips from Chennai</p>
-            <h2 id="trips-title" className={ui.title}>
-              Where will you drive this weekend?
-            </h2>
-          </div>
-          <Link href="/blog" className={ui.textLink}>
-            Travel guides
-          </Link>
+        <div className={`${ui.head} ${styles.head}`}>
+          <p className={ui.eyebrow}>Where our renters go</p>
+          <h2 id="trips-title" className={ui.title}>
+            Roads worth taking
+          </h2>
+          <p className={ui.lead}>From the coast road to the hill stations, a self-drive car turns a free weekend into a trip to remember.</p>
         </div>
       </div>
 
       <ul className={styles.track}>
         {trips.map((t) => {
+          const name = t.label ?? t.name;
           const card = (
             <>
-              <Image src={t.image} alt={`${t.name}, a road trip from Chennai`} fill sizes="(max-width: 760px) 70vw, 300px" className={styles.photo} />
-              <div className={styles.overlay}>
-                <h3 className={styles.name}>{t.name}</h3>
-                <div className={styles.meta}>
+              <Image src={t.image} alt={`${t.name}, a road trip from Chennai`} fill sizes="(max-width: 899px) 44vw, 220px" className={styles.photo} />
+              <span className={styles.overlay}>
+                <span className={styles.name}>{name}</span>
+                <span className={styles.meta}>
                   <span>
-                    <MapPin size={14} aria-hidden="true" /> {t.distance}
+                    <MapPin size={13} aria-hidden="true" /> {t.distance}
                   </span>
                   <span>
-                    <Clock size={14} aria-hidden="true" /> {t.time}
+                    <Clock size={13} aria-hidden="true" /> {t.time}
                   </span>
-                </div>
-                {t.href && <span className={styles.guide}>Read the guide</span>}
-              </div>
+                </span>
+              </span>
             </>
           );
           return (
             <li key={t.name} className={styles.item}>
               {t.href ? (
-                <Link href={t.href} className={styles.card}>
+                <Link href={t.href} className={styles.card} aria-label={`${name}: read the road trip guide`}>
                   {card}
                 </Link>
               ) : (

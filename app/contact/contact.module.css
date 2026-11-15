@@ -2,7 +2,7 @@
 @media (min-width: 1440px){
   .ccontainer {
   display: flex;
-  padding: 20px 130px 0px;
+  padding: 20px var(--mm-gutter) 0px;
   min-height: 60vh !important; /* Ensure it takes full viewport height */
   background-color: #FEF9F5; /* A light background color */
   font-family: Arial, sans-serif; /* Or your preferred font */
@@ -10,7 +10,7 @@
 }
 .ccontainer {
   display: flex;
-  padding: 20px 130px 0px;
+  padding: 20px var(--mm-gutter) 0px;
   min-height: 100vh; /* Ensure it takes full viewport height */
   background-color: #FEF9F5; /* A light background color */
   font-family: Arial, sans-serif; /* Or your preferred font */

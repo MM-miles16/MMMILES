@@ -6,12 +6,12 @@
 }
 
 .advantage-container {
-  max-width: 1200px;
+  max-width: none; /* full-width pages: content fills the card */
   margin: 0 auto;
 }
 
 .advantage-body{
-  padding: 60px 100px;
+  padding: 60px var(--mm-gutter);
   background-color: #FEF9F5;
 }
 .advantage-container h2 {

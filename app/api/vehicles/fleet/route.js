@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { canonicalCity } from "@/lib/cities";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -15,7 +16,7 @@ const IMAGE_BASE = `${SUPABASE_URL}/storage/v1/object/public/car-images/`;
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const city = searchParams.get("city");
+    const city = canonicalCity(searchParams.get("city")); // Bangalore → Bengaluru
 
     if (!city || city.length > 40) {
       return NextResponse.json({ error: "City parameter is required" }, { status: 400 });

@@ -59,7 +59,7 @@
   margin: 0;
   color: var(--mm-ink);
   font-family: var(--mm-font);
-  font-size: clamp(1.7rem, 3vw, 2.4rem);
+  font-size: calc(clamp(1.7rem, 3vw, 2.4rem) - var(--mm-text-trim));
   font-weight: 600;
   line-height: 1.12;
   letter-spacing: -0.025em;
@@ -70,7 +70,7 @@
   max-width: 560px;
   margin-top: 8px;
   color: var(--mm-ink-2);
-  font-size: clamp(0.95rem, 1.2vw, 1.0625rem);
+  font-size: calc(clamp(0.95rem, 1.2vw, 1.0625rem) - var(--mm-text-trim));
   line-height: 1.5;
 }
 
@@ -89,7 +89,7 @@
   border-radius: var(--mm-radius-pill);
   background: rgba(255, 255, 255, 0.75);
   color: var(--mm-ink);
-  font-size: 13.5px;
+  font-size: max(11px, calc(13.5px - var(--mm-text-trim)));
   font-weight: 600;
 }
 
@@ -117,13 +117,13 @@
 
 .keep small {
   color: var(--mm-muted);
-  font-size: 13px;
+  font-size: max(11px, calc(13px - var(--mm-text-trim)));
   font-weight: 500;
 }
 
 .keep b {
   color: var(--mm-ink);
-  font-size: 40px;
+  font-size: calc(40px - var(--mm-text-trim));
   font-weight: 700;
   line-height: 1.1;
   letter-spacing: -0.03em;
@@ -149,7 +149,7 @@
   place-items: center;
   background: var(--mm-lavender-soft);
   color: var(--mm-lavender-deep);
-  font-size: 11.5px;
+  font-size: max(11px, calc(11.5px - var(--mm-text-trim)));
   font-weight: 700;
 }
 

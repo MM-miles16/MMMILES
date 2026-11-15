@@ -1,4 +1,5 @@
 "use client";
+import { isBookableCity } from "@/lib/cities";
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -18,14 +19,14 @@ import { parseDate, formatDateTimeForDB, parseBookingRawDateTime } from "../../l
 import { WEEKEND_SURGE } from "../../lib/pricing";
 import styles from "./EnhancedCheckout.module.css";
 
-// Enforce Chennai/Coimbatore-only logic
+// Only bookable cities (Chennai, Coimbatore, Bengaluru — see lib/cities) continue; others go to /comingsoon
 function useCityEnforcement() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
     const city = searchParams.get("city");
-    if (city && city !== "Chennai" && city !== "Coimbatore") {
+    if (city && !isBookableCity(city)) {
       router.push(`/comingsoon?city=${encodeURIComponent(city)}`);
     }
   }, [searchParams, router]);

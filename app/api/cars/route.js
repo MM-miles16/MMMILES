@@ -1,9 +1,11 @@
 import { supabase } from "../../../lib/supabaseClient.js";
+import { canonicalCity } from "../../../lib/cities.js";
 
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
-    const city = searchParams.get("city");
+    // "Bangalore" in a link → "Bengaluru", the spelling in the vehicles table
+    const city = canonicalCity(searchParams.get("city"));
     if (!city)
       return Response.json({ error: "City missing" }, { status: 400 });
 

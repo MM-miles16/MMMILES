@@ -194,7 +194,7 @@ export default function CarsPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
-      <main style={{ padding: "40px 20px", maxWidth: "1200px", margin: "0 auto" }}>
+      <main style={{ padding: "40px var(--mm-gutter)", maxWidth: "var(--mm-container)", margin: "0 auto" }}>
 
         {/* ── Breadcrumb ── */}
         <nav aria-label="breadcrumb" style={{ fontSize: 13, color: "#888", marginBottom: 16 }}>

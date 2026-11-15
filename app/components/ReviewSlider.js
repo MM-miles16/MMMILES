@@ -40,22 +40,10 @@ const reviews = [
     img: "/dinesh.jpeg",
   },
   {
-    text: "Needed a car to pick up family from the airport. Booking took just 2 minutes, and the car was ready right on time. Excellent coordination!",
-    name: "Bhavya P",
-    title: "Local Resident",
-    img: "/bhavya.jpg",
-  },
-  {
     text: "I had drove from Chennai to Bangalore using MM Miles. The car was handled in a good manner, and there were no hidden charges.",
     name: "Raksha",
     title: "Road Trip Traveler",
     img: "/tutu.jpg",
-  },
-  {
-    text: "Our company car went for servicing, and MM Miles provided an immediate replacement with flexible plans and professional support.",
-    name: "Darshan",
-    title: "Fleet Manager",
-    img: "/sai.jpg",
   },
   {
     text: "I Booked just an day before my trip and I still got a reliable vehicle. I'm super impressed with MM miles a quick turn around and its response.",

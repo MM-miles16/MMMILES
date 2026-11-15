@@ -1,5 +1,5 @@
 .reviewslide {
-  padding: 80px 100px 130px;
+  padding: 80px var(--mm-gutter) 130px;
   background: #fef9f5;
 }
 

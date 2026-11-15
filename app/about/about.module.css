@@ -132,7 +132,7 @@
   position: absolute;
   z-index: 3;
   top: 14px;
-  right: -1%;
+  right: 10px; /* stays inside the page's side padding even when tilted */
   display: flex;
   align-items: center;
   gap: 12px;

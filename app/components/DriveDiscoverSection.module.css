@@ -7,7 +7,7 @@
 .placebody {
   font-size: 22px !important;
   font-weight: 700;
-  padding: 60px 100px;
+  padding: 60px var(--mm-gutter);
   background-color: #FEF9F5;
   font-family: Frank Ruhl Libre;
 }

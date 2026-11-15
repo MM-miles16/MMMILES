@@ -7,7 +7,7 @@ import SiteHeader from "./sitewide/SiteHeader";
 import SiteFooter from "./sitewide/SiteFooter";
 import MobileTabBar from "./sitewide/MobileTabBar";
 
-export default function LayoutWrapper({ children }) {
+export default function LayoutWrapper({ children, directory }) {
 
   const pathname = usePathname();
 
@@ -25,7 +25,7 @@ export default function LayoutWrapper({ children }) {
 
       {children}
 
-      {!hideFooter && <SiteFooter />}
+      {!hideFooter && <SiteFooter directory={directory} />}
 
       <MobileTabBar />
     </>

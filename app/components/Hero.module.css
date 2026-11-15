@@ -30,6 +30,16 @@
 
 
 
+/* Tablets and up: a rounded banner inside the shared 50px side padding, like the homepage hero */
+@media (min-width: 769px) {
+  .slider {
+    width: calc(100% - 2 * var(--mm-gutter));
+    max-width: calc(var(--mm-container) - 2 * var(--mm-gutter));
+    margin: 16px auto 0;
+    border-radius: var(--mm-radius-lg);
+  }
+}
+
 /* Mobile height tweak */
 @media (max-width: 768px) {
   .slider {

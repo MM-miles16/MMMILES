@@ -6,7 +6,7 @@ import styles from "./WhyMMMiles.module.css";
 // text: laptops and up; short: the phone's app-style tiles
 const FEATURES = [
   {
-    icon: "delivery-truck",
+    icon: "house",
     tone: styles.sky,
     title: "Doorstep delivery",
     text: "We bring the car to your home or office across Chennai, and collect it when you're done.",
@@ -23,14 +23,14 @@ const FEATURES = [
     icon: "infinity",
     tone: styles.mint,
     title: "Unlimited km",
-    text: "On most cars. Head to Pondicherry or Ooty without watching the meter; any limit is shown before you book.",
+    text: "On most cars, so you can head to Pondicherry or Ooty without watching the meter.",
     short: "On most cars, no meter to watch",
   },
   {
     icon: "headphone",
     tone: styles.peach,
     title: "24×7 support",
-    text: "Call or WhatsApp us any time during your trip, day or night.",
+    text: "Stuck or have a question? Call or WhatsApp us any time during your trip, day or night.",
     short: "Call or WhatsApp, day or night",
   },
 ];
@@ -49,10 +49,14 @@ export default function WhyMMMiles() {
 
         <div className={styles.grid}>
           <article className={`${styles.card} ${styles.big}`}>
-            <Image src="/landing/3d/wallet.webp" alt="" width={240} height={240} className={styles.bigArt} />
-            <p className={styles.stat}>
-              ₹0 <span>security deposit</span>
-            </p>
+            {/* Top row: the ₹0 figure and its label on the left, the wallet on the right */}
+            <div className={styles.bigTop}>
+              <p className={styles.stat}>
+                <b>₹0</b>
+                <span>security deposit</span>
+              </p>
+              <Image src="/landing/3d/wallet.webp" alt="" width={240} height={240} className={styles.bigArt} />
+            </div>
             <h3 className={styles.cardTitle}>Keep your money where it belongs</h3>
             <p className={`${styles.cardText} ${styles.long}`}>
               We never hold a deposit, not at booking and not during the trip. You pay for the rental, and that&apos;s it.
@@ -60,10 +64,10 @@ export default function WhyMMMiles() {
             <p className={`${styles.cardText} ${styles.short}`}>Nothing blocked on your card, no cash at handover.</p>
             <ul className={styles.chips}>
               <li>
-                <Check aria-hidden="true" /> Nothing blocked on your card
+                <Check aria-hidden="true" /> No amount blocked
               </li>
               <li>
-                <Check aria-hidden="true" /> No cash deposit at handover
+                <Check aria-hidden="true" /> No cash deposit
               </li>
             </ul>
           </article>

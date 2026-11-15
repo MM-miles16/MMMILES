@@ -16,7 +16,7 @@ export default function LandingHero({ summary }) {
         <div className={styles.panel}>
           <div className={styles.copy}>
             <p className={styles.kicker}>
-              <span className={styles.dot} aria-hidden="true" /> Doorstep delivery across Chennai
+              Doorstep delivery across Chennai
             </p>
             <h1 id="hero-title" className={styles.title}>
               Self-drive car rental in Chennai, <span>delivered to your door.</span>

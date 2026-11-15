@@ -8,7 +8,7 @@ import RoadTrips from "./components/landing/RoadTrips";
 import Testimonials from "./components/landing/Testimonials";
 import Faq from "./components/landing/Faq";
 import ClosingCta from "./components/landing/ClosingCta";
-import ExploreLinks from "./components/landing/ExploreLinks";
+import ui from "./components/landing/ui.module.css";
 import { getFleetSummary, getHomeFaqs } from "@/lib/landing";
 
 // Live "from" prices and fleet links are refreshed hourly
@@ -193,7 +193,7 @@ export default async function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
-      <main>
+      <main className={ui.homeType}>
         {/* Hero search and fleet share the selected city and dates */}
         <CityProvider>
           <LandingHero summary={summary} />
@@ -206,7 +206,6 @@ export default async function HomePage() {
         <Testimonials />
         <Faq faqs={faqs} />
         <ClosingCta />
-        <ExploreLinks summary={summary} />
       </main>
     </>
   );

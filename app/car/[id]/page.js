@@ -1,4 +1,5 @@
 "use client";
+import { isBookableCity } from "@/lib/cities";
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
@@ -27,10 +28,10 @@ export default function CarPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Enforce Chennai/Coimbatore-only logic
+  // Only bookable cities (Chennai, Coimbatore, Bengaluru — see lib/cities) continue; others go to /comingsoon
   useEffect(() => {
     const city = searchParams.get("city");
-    if (city && city !== "Chennai" && city !== "Coimbatore") {
+    if (city && !isBookableCity(city)) {
       router.push(`/comingsoon?city=${encodeURIComponent(city)}`);
     }
   }, [searchParams, router]);

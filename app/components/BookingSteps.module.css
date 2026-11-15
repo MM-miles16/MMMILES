@@ -1,13 +1,13 @@
 .stepsSection {
   width: 100%;
-  padding: 40px 100px; /* some breathing room */
+  padding: 40px var(--mm-gutter);
   background: #FEF9F5; /* optional background like your screenshot */
   display: flex;
   justify-content: center;
 }
 
 .contentWrapper {
-  max-width: 1400px;
+  max-width: none;
   width: 100%;
   text-align: center;
 }

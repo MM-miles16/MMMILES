@@ -1,4 +1,5 @@
 "use client";
+import { canonicalCity, isBookableCity } from "@/lib/cities";
 
 import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -288,7 +289,7 @@ export default function SearchBar() {
   }, []);
 
   const handleCitySelect = (city) => {
-    if (city !== "Chennai" && city !== "Coimbatore") {
+    if (!isBookableCity(city)) {
       router.push(`/comingsoon?city=${encodeURIComponent(city)}`);
       return;
     }
@@ -393,7 +394,9 @@ export default function SearchBar() {
 
     // Check if detected city matches any city in our CITIES array
     if (detectedCity) {
-      if (detectedCity !== "Chennai" && detectedCity !== "Coimbatore") {
+      // "Bangalore" from Google → "Bengaluru", the spelling our city list and fleet use
+      detectedCity = canonicalCity(detectedCity);
+      if (!isBookableCity(detectedCity)) {
           // If detected city is not Chennai, we don't auto-set it in location state to avoid confusion,
           // OR we could redirect immediately. The request implies "auto city selector... wen selected... direct to coming soon".
           // If we auto-select here, it might be better to just let the user see "Chennai" or "Select" 

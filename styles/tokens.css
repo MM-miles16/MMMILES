@@ -47,11 +47,16 @@
   --mm-shadow-lg: 0 30px 70px -30px rgba(34, 34, 46, 0.35);
   --mm-shadow-pill: 0 8px 18px -8px rgba(34, 34, 46, 0.55);
 
-  /* Layout */
-  --mm-container: 1240px;
-  --mm-gutter: clamp(16px, 4vw, 40px);
+  /* Layout: full-width pages with a 50px side padding (phones: see below). The container only
+     stops growing on screens wider than 1920px, so ultra-wide monitors don't stretch forever. */
+  --mm-container: 1920px;
+  --mm-gutter: 50px;
   --mm-header-h: 68px;
   --mm-section-y: clamp(44px, 5.5vw, 80px);
+
+  /* Type trim: landing-page font sizes subtract this (never below 11px). 0 here; the homepage
+     sets it on its <main> via ui.homeType, so shared pieces stay unchanged on other pages. */
+  --mm-text-trim: 0px;
 }
 
 /* Font variables from next/font are set on <body>, so the font token lives here */
@@ -61,6 +66,7 @@ body {
 
 @media (max-width: 760px) {
   :root {
+    --mm-gutter: clamp(16px, 4vw, 24px); /* app-style phones keep a slim edge */
     --mm-header-h: 60px;
     --mm-radius-lg: 22px;
     --mm-radius-xl: 28px;

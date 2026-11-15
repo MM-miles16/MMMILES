@@ -1,13 +1,13 @@
 .offersSection {
   width: 100%;
-  padding: 40px 100px;
+  padding: 40px var(--mm-gutter);
   background: #fef9f5;
   display: flex;
   justify-content: center;
 }
 
 .container {
-  max-width: 1400px;
+  max-width: none;
   width: 100%;
 }
 

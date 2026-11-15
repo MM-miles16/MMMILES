@@ -1,17 +1,28 @@
-/* Road trips — horizontal scroll that starts aligned with the page container */
+/* Roads worth taking — portrait photos with the place name.
+   Laptops and up (900px+): all six in one row, every other card set lower (staggered).
+   Phones and portrait tablets: a swipeable app-style row with the distance under each name.
+   Light motion: cards fade up as they scroll in; on hover a card lifts and its distance slides up. */
 
+.section.section {
+  padding-block: clamp(36px, 4.5vw, 64px);
+}
+
+.head.head {
+  margin-bottom: clamp(22px, 3vw, 36px);
+}
+
+/* ── Phones and portrait tablets: swipeable row ── */
 .track {
-  /* % padding resolves against the section width (unlike 100vw, it excludes the scrollbar) */
-  --edge: max(var(--mm-gutter), calc((100% - var(--mm-container)) / 2 + var(--mm-gutter)));
   display: flex;
-  gap: 18px;
+  gap: 12px;
   margin: 0;
-  padding: 4px var(--edge) 12px;
+  padding: 0 var(--mm-gutter) 4px;
   overflow-x: auto;
-  list-style: none;
+  overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory;
-  scroll-padding-inline: var(--edge);
+  scroll-padding-inline: var(--mm-gutter);
   scrollbar-width: none;
+  list-style: none;
 }
 
 .track::-webkit-scrollbar {
@@ -19,19 +30,24 @@
 }
 
 .item {
-  flex: 0 0 clamp(240px, 24vw, 300px);
+  flex: none;
+  width: min(44vw, 200px);
   scroll-snap-align: start;
 }
 
 .card {
   position: relative;
   display: block;
-  aspect-ratio: 4 / 5;
   overflow: hidden;
-  border-radius: var(--mm-radius-lg);
+  aspect-ratio: 3 / 4;
+  border-radius: 20px;
   background: var(--mm-mist);
   color: var(--mm-on-dark);
   text-decoration: none;
+  transition:
+    transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.35s;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .photo {
@@ -39,60 +55,132 @@
   transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-a.card:hover .photo {
-  transform: scale(1.05);
-}
-
-a.card:focus-visible {
-  outline: 3px solid var(--mm-lavender-deep);
-  outline-offset: 3px;
-}
-
 .overlay {
   position: absolute;
-  inset: auto 0 0 0;
-  padding: 60px 20px 20px;
-  background: linear-gradient(180deg, rgba(22, 22, 29, 0) 0%, rgba(22, 22, 29, 0.78) 100%);
+  inset: auto 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 40px 14px 14px;
+  background: linear-gradient(to top, rgba(17, 17, 24, 0.72), rgba(17, 17, 24, 0));
 }
 
 .name {
-  margin: 0 0 10px;
   font-family: var(--mm-font);
-  font-size: 22px;
+  font-size: calc(16px - var(--mm-text-trim));
   font-weight: 600;
-  letter-spacing: -0.01em;
-  color: var(--mm-on-dark);
+  line-height: 1.2;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
 }
 
 .meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 4px 10px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: max(11px, calc(12px - var(--mm-text-trim)));
+  font-weight: 500;
 }
 
 .meta span {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 5px 10px;
-  border-radius: var(--mm-radius-pill);
-  background: rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  font-size: 12.5px;
-  font-weight: 500;
+  gap: 4px;
 }
 
-.guide {
-  display: inline-block;
-  margin-top: 12px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--mm-lavender);
+.card:active {
+  scale: 0.98;
+}
+
+/* ── Laptops and up: one staggered row of six ── */
+@media (min-width: 900px) {
+  .track {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: clamp(12px, 1.4vw, 18px);
+    max-width: var(--mm-container);
+    margin: 0 auto;
+    padding: 0 var(--mm-gutter) 34px;
+    overflow: visible;
+  }
+
+  .item {
+    width: auto;
+  }
+
+  /* every other card sits lower */
+  .item:nth-child(even) {
+    translate: 0 34px;
+  }
+
+  .name {
+    font-size: calc(clamp(14px, 1.2vw, 16px) - var(--mm-text-trim));
+  }
+
+  /* Distance and time stay hidden until hover */
+  .meta {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition:
+      max-height 0.35s ease,
+      opacity 0.3s ease;
+  }
+
+  @media (hover: hover) {
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 26px 44px -26px rgba(34, 34, 46, 0.6);
+    }
+
+    .card:hover .photo {
+      transform: scale(1.05);
+    }
+
+    .card:hover .meta {
+      max-height: 40px;
+      opacity: 1;
+    }
+  }
+
+  .card:focus-visible .meta {
+    max-height: 40px;
+    opacity: 1;
+  }
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--mm-lavender-deep);
+  outline-offset: 3px;
+}
+
+/* Cards fade up as they scroll in (browsers without scroll timelines just show them) */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .card {
+      animation: rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 24px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .photo {
+  .card,
+  .photo,
+  .meta {
     transition: none;
+  }
+
+  .card:hover,
+  .card:hover .photo {
+    transform: none;
   }
 }

@@ -10,6 +10,7 @@ const COLUMNS = [
     links: [
       { href: "/car", label: "All self-drive cars" },
       { href: "/cities/chennai", label: "Car rental in Chennai" },
+      { href: "/cities/bangalore", label: "Car rental in Bangalore" },
       { href: "/#offers", label: "Offers" },
       { href: "/host-registration", label: "Become a host" },
     ],
@@ -35,7 +36,8 @@ const COLUMNS = [
   },
 ];
 
-export default function SiteFooter() {
+// directory: the area / car link directory (server-rendered, passed in through LayoutWrapper)
+export default function SiteFooter({ directory }) {
   return (
     <footer id="global-footer" className={styles.footer}>
       <div className={styles.card}>
@@ -91,6 +93,9 @@ export default function SiteFooter() {
             ))}
           </nav>
         </div>
+
+        {/* Area and car link directory, below the brand and the main columns */}
+        {directory}
 
         <div className={styles.bottom}>
           <p>© {new Date().getFullYear()} MM Miles. All rights reserved.</p>

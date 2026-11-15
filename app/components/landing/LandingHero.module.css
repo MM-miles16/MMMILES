@@ -32,28 +32,19 @@
 .kicker {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
   margin: 0 0 22px;
-  padding: 8px 16px 8px 12px;
+  padding: 8px 16px;
   border-radius: var(--mm-radius-pill);
   background: rgba(255, 255, 255, 0.75);
   color: var(--mm-ink);
-  font-size: 14px;
+  font-size: calc(14px - var(--mm-text-trim));
   font-weight: 500;
-}
-
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #22a06b;
-  box-shadow: 0 0 0 4px rgba(34, 160, 107, 0.18);
 }
 
 .title {
   margin: 0;
   font-family: var(--mm-font);
-  font-size: clamp(2.15rem, 4.2vw, 3.35rem);
+  font-size: calc(clamp(2.15rem, 4.2vw, 3.35rem) - var(--mm-text-trim));
   font-weight: 600;
   line-height: 1.08;
   letter-spacing: -0.03em;
@@ -68,7 +59,7 @@
 .lead {
   max-width: 500px;
   margin: 20px 0 0;
-  font-size: clamp(1rem, 1.35vw, 1.15rem);
+  font-size: calc(clamp(1rem, 1.35vw, 1.15rem) - var(--mm-text-trim));
   line-height: 1.65;
   color: var(--mm-ink-2);
 }
@@ -122,19 +113,19 @@
   padding: 14px 18px;
   background: var(--mm-midnight);
   color: var(--mm-on-dark-muted);
-  font-size: 13px;
+  font-size: max(11px, calc(13px - var(--mm-text-trim)));
 }
 
 .floatPrice strong {
   color: var(--mm-on-dark);
-  font-size: 24px;
+  font-size: calc(24px - var(--mm-text-trim));
   font-weight: 600;
   letter-spacing: -0.02em;
 }
 
 .floatPrice small {
   margin-left: 3px;
-  font-size: 13px;
+  font-size: max(11px, calc(13px - var(--mm-text-trim)));
   font-weight: 500;
   color: var(--mm-on-dark-muted);
 }
@@ -170,13 +161,13 @@
 }
 
 .floatText strong {
-  font-size: 14px;
+  font-size: calc(14px - var(--mm-text-trim));
   font-weight: 600;
   color: var(--mm-ink);
 }
 
 .floatText span {
-  font-size: 12px;
+  font-size: max(11px, calc(12px - var(--mm-text-trim)));
   color: var(--mm-muted);
 }
 
@@ -222,7 +213,7 @@
   align-items: center;
   gap: 10px;
   color: var(--mm-ink-2);
-  font-size: 15px;
+  font-size: calc(15px - var(--mm-text-trim));
   font-weight: 500;
 }
 
@@ -264,7 +255,7 @@
 
   .kicker {
     margin-bottom: 16px;
-    font-size: 13px;
+    font-size: max(11px, calc(13px - var(--mm-text-trim)));
   }
 
   .lead {
@@ -288,7 +279,7 @@
   }
 
   .floatPrice strong {
-    font-size: 19px;
+    font-size: calc(19px - var(--mm-text-trim));
   }
 
   .search {
@@ -314,7 +305,7 @@
     padding: 8px 14px 8px 8px;
     border-radius: var(--mm-radius-pill);
     background: var(--mm-mist);
-    font-size: 14px;
+    font-size: calc(14px - var(--mm-text-trim));
   }
 }
 

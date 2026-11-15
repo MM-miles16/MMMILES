@@ -18,9 +18,9 @@
 }
 
 .blogListInner {
-  max-width: 960px;
+  max-width: var(--mm-container);
   margin: 0 auto;
-  padding: 40px 40px;
+  padding: 40px var(--mm-gutter);
 }
 
 .blogListBreadcrumb {
@@ -54,6 +54,7 @@
 
 .blogGrid {
   display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
   gap: 24px;
 }
 
@@ -153,9 +154,9 @@
 }
 
 .postInner {
-  max-width: 1640px;
+  max-width: var(--mm-container);
   width: 100%;
-  padding: 40px 80px;
+  padding: 40px var(--mm-gutter);
 }
 
 /* Breadcrumb */

@@ -1,7 +1,7 @@
 .faqSection {
   font-size: 40px;
   background: #FEF9F5;
-  padding: 50px 130px;
+  padding: 50px var(--mm-gutter);
   text-align: center;
 }
 
@@ -27,8 +27,8 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  width: 86%;
-  max-width: 1285px;
+  width: 100%;
+  max-width: none;
   margin: 0 auto;
 }
 
@@ -144,7 +144,7 @@
   }
   .faqSection {
   background: #FEF9F5;
-  padding: 30px 20px;
+  padding: 30px var(--mm-gutter);
   text-align: center;
 }
 }

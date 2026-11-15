@@ -2,6 +2,7 @@ import "./../styles/reset.css";
 import "./../styles/tokens.css";
 import "./globals.css";
 import LayoutWrapper from "./components/LayoutWrapper";
+import FooterDirectory from "./components/sitewide/FooterDirectory";
 import ChatSupport from "./components/ChatSupport";
 
 import Navbar from "./components/Navbar";
@@ -146,7 +147,8 @@ export default function RootLayout({ children }) {
       <body
         className={`${frankRuhl.variable} ${darkerGrotesque.variable} ${ibmPlexSans.variable} ${sanchez.variable} ${poppins.variable}`}
       >
-        <LayoutWrapper>
+        {/* The footer link directory loads the live fleet on the server, so it is passed in from here */}
+        <LayoutWrapper directory={<FooterDirectory />}>
 
         {children}
         <ChatSupport />

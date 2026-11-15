@@ -31,7 +31,7 @@
 .cardTitle {
   margin: 0;
   font-family: var(--mm-font);
-  font-size: 17px;
+  font-size: calc(17px - var(--mm-text-trim));
   font-weight: 600;
   line-height: 1.3;
   color: var(--mm-ink);
@@ -39,7 +39,7 @@
 
 .cardText {
   margin: 4px 0 0;
-  font-size: 14.5px;
+  font-size: calc(14.5px - var(--mm-text-trim));
   line-height: 1.55;
   color: var(--mm-ink-2);
 }
@@ -52,8 +52,8 @@
 .feature {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  grid-template-rows: auto 1fr;
-  align-content: start;
+  grid-template-rows: auto auto;
+  align-content: center; /* centred, so a taller row never leaves a gap under the text */
   column-gap: 16px;
   padding: 22px 24px;
   border-color: var(--mm-border);
@@ -109,33 +109,41 @@
   display: flex;
   grid-row: span 2;
   flex-direction: column;
-  justify-content: flex-end;
   overflow: hidden;
-  padding: clamp(24px, 2.6vw, 36px);
+  padding: clamp(22px, 2.4vw, 30px);
   background:
     radial-gradient(circle at 82% 22%, rgba(197, 181, 238, 0.2), transparent 42%),
     var(--mm-midnight);
 }
 
+.bigTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: auto; /* the text sits on the bottom edge, so top and bottom line up with the cards beside it */
+  padding-bottom: 18px;
+}
+
 .big .cardTitle {
-  max-width: 12em; /* stays clear of the wallet */
-  font-size: clamp(20px, 1.8vw, 24px);
+  font-size: calc(clamp(20px, 1.7vw, 23px) - var(--mm-text-trim));
   color: var(--mm-on-dark);
+  text-wrap: balance;
 }
 
 .big .cardText {
   max-width: 420px;
   margin-top: 6px;
-  font-size: 15px;
+  text-wrap: pretty; /* no lone word on the last line */
+  font-size: calc(15px - var(--mm-text-trim));
   color: var(--mm-on-dark-muted);
 }
 
 .bigArt {
-  position: absolute;
-  top: clamp(18px, 2.4vw, 32px);
-  right: clamp(18px, 2.4vw, 32px);
-  width: clamp(90px, 8.5vw, 130px);
+  flex: none;
+  width: clamp(84px, 7.5vw, 112px);
   height: auto;
+  margin: -4px -4px 0 0;
   rotate: -8deg;
   filter: drop-shadow(0 20px 26px rgba(0, 0, 0, 0.35));
   animation: float 6s ease-in-out infinite;
@@ -153,30 +161,33 @@
   }
 }
 
+/* ₹0 with its label underneath, both on the left edge */
 .stat {
   display: flex;
-  align-items: baseline;
-  gap: 10px;
-  margin: 0 0 12px;
-  font-size: clamp(52px, 5.6vw, 80px);
-  font-weight: 600;
-  line-height: 1;
-  letter-spacing: -0.04em;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+}
+
+.stat b {
   color: var(--mm-on-dark);
+  font-size: calc(clamp(52px, 5vw, 72px) - var(--mm-text-trim));
+  font-weight: 600;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
 }
 
 .stat span {
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: 0;
   color: var(--mm-lavender);
+  font-size: calc(14px - var(--mm-text-trim));
+  font-weight: 500;
 }
 
 .chips {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin: 18px 0 0;
+  margin: 16px 0 0;
   padding: 0;
   list-style: none;
 }
@@ -189,7 +200,7 @@
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: var(--mm-radius-pill);
   color: var(--mm-on-dark);
-  font-size: 13px;
+  font-size: max(11px, calc(13px - var(--mm-text-trim)));
   font-weight: 500;
 }
 
@@ -241,12 +252,10 @@
   .big {
     grid-column: 1 / -1;
     grid-row: auto;
-    padding-right: clamp(150px, 26vw, 240px);
   }
 
-  .bigArt {
-    top: calc(50% - 64px);
-    width: 128px;
+  .big .cardText {
+    max-width: 560px;
   }
 }
 
@@ -304,30 +313,31 @@
 
   /* Balance-card banner */
   .big {
-    padding: 20px 112px 20px 20px;
+    padding: 20px;
+  }
+
+  .bigTop {
+    padding-bottom: 14px;
   }
 
   .bigArt {
-    top: 22px;
-    right: 14px;
-    width: 92px;
+    width: 84px;
   }
 
-  .stat {
-    margin-bottom: 8px;
-    font-size: 48px;
+  .stat b {
+    font-size: calc(48px - var(--mm-text-trim));
   }
 
   .stat span {
-    font-size: 13px;
+    font-size: max(11px, calc(13px - var(--mm-text-trim)));
   }
 
   .big .cardTitle {
-    font-size: 17px;
+    font-size: calc(17px - var(--mm-text-trim));
   }
 
   .big .cardText {
-    font-size: 13px;
+    font-size: max(11px, calc(13px - var(--mm-text-trim)));
   }
 
   /* App tiles: tinted, icon chip on top, one short line */
@@ -354,11 +364,11 @@
   }
 
   .feature .cardTitle {
-    font-size: 15px;
+    font-size: calc(15px - var(--mm-text-trim));
   }
 
   .feature .cardText {
-    font-size: 13px;
+    font-size: max(11px, calc(13px - var(--mm-text-trim)));
     line-height: 1.45;
   }
 }

@@ -13,12 +13,12 @@
   justify-content: center;
   gap: 2rem;
   transform: translateY(-40%);
-  max-width: 1400px;
+  max-width: none;
   margin: 0 auto;
 }
 
 .userrating-review-body {
-  padding: 0 100px;
+  padding: 0 var(--mm-gutter);
   background-color: #FEF9F5;
 }
 
@@ -80,6 +80,30 @@
 .userrating-reviewBtn:hover {
   background: linear-gradient(to right, #BF9860 0%, #D8B480 100%);
   color: #000000;
+}
+
+/* Tablets: the two cards share the width instead of pushing past the screen edge
+   (the fixed 280px heading made each card ~470px wide) */
+@media (min-width: 769px) and (max-width: 1100px) {
+  .userrating-reviewCard {
+    min-width: 0;
+    padding: 1.2rem;
+  }
+
+  .userrating-reviewContent {
+    gap: 1rem;
+  }
+
+  .userrating-reviewImg,
+  .userrating-reviewImg1 {
+    width: 56px;
+    height: 56px;
+  }
+
+  .userrating-reviewText h3 {
+    width: auto;
+    font-size: 14px;
+  }
 }
 
 /* ✅ Responsive */

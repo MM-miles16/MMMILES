@@ -40,7 +40,7 @@
   align-items:center;
   justify-content:space-between;
 
-  padding:8px 34px 4px;
+  padding:8px var(--mm-gutter) 4px;
 }
 
 .hpanelNavbarActions{
@@ -169,7 +169,7 @@
 
 .hpanelHeroSection{
   width:100%;
-  padding:24px;
+  padding:24px var(--mm-gutter);
   background:#FFFAF3;
 }
 
@@ -230,7 +230,7 @@
   z-index:2;
 
   width:100%;
-  max-width:1450px;
+  max-width:none;
 
   margin:0 auto;
 
@@ -585,7 +585,7 @@
 
 .hpanelBenefitsSection{
   width:100%;
-  padding:50px 24px 50px;
+  padding:50px var(--mm-gutter) 50px;
 
   background:#FFFAF3;
 }
@@ -716,7 +716,7 @@
 .hpanelStepsSection{
   width:100%;
 
-  padding:30px 24px 100px;
+  padding:30px var(--mm-gutter) 100px;
 
   background:#FFFAF3;
 }
@@ -979,7 +979,7 @@
 
   width:100%;
 
-  padding:0 24px 100px;
+  padding:0 var(--mm-gutter) 100px;
 
   background:#FFFAF3;
 }
