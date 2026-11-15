@@ -9,7 +9,8 @@ const GOOGLE_REVIEW_URL = "https://g.page/r/Cf04Wx5P5v3vEAE/review";
 const AUTO_MS = 4500;
 
 // Customer quotes from the site's existing testimonials, with face-cropped photos in /landing/people.
-// A swipeable slider: three cards at a time on laptops, two on tablets, one-and-a-bit on phones.
+// A swipeable slider: four cards at a time on wide screens, three on smaller laptops, two on tablets,
+// one-and-a-bit on phones.
 // It moves on by itself while on screen, and pauses on hover, touch or keyboard focus.
 const REVIEWS = [
   {
