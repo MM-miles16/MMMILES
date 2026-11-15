@@ -1,0 +1,211 @@
+/* Solid South India map (HostMap.js). The box keeps the map's 580:520 shape; its parent sets the
+   width. Top and bottom fade out so the crop edges (central India, Sri Lanka) never look cut.
+   Light motion: routes draw in as the map comes into view, the Chennai pin pulses. */
+
+.map {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 580 / 520;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 86%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 86%, transparent 100%);
+  view-timeline: --host-map block;
+}
+
+.svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.land {
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.route {
+  fill: none;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+}
+
+.pulse {
+  fill: none;
+  stroke-width: 2;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.dot {
+  stroke-width: 3;
+}
+
+.label {
+  position: absolute;
+  z-index: 1;
+  padding: 6px 10px;
+  border-radius: 9px;
+  font-family: var(--mm-font);
+  font-size: max(11px, calc(13px - var(--mm-text-trim)));
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.right {
+  translate: 20px -50%;
+}
+
+.left {
+  translate: calc(-100% - 16px) -50%;
+}
+
+/* ── Light: lavender land on light panels ── */
+.light .stopA {
+  stop-color: #e6defc;
+}
+
+.light .stopB {
+  stop-color: #b7a3ec;
+}
+
+.light .texture {
+  fill: rgba(255, 255, 255, 0.55);
+}
+
+.light .land {
+  stroke: rgba(255, 255, 255, 0.95);
+}
+
+.light .shadow {
+  flood-color: #6b57c4;
+  flood-opacity: 0.25;
+}
+
+.light .neighbour {
+  fill: rgba(197, 181, 238, 0.35);
+}
+
+.light .route {
+  stroke: #fff;
+}
+
+.light .dot {
+  fill: var(--mm-midnight);
+  stroke: #fff;
+}
+
+.light .hubHalo {
+  fill: rgba(255, 255, 255, 0.85);
+}
+
+.light .pulse {
+  stroke: #fff;
+}
+
+.light .label {
+  background: #fff;
+  color: var(--mm-ink);
+  box-shadow: 0 8px 18px -10px rgba(34, 34, 46, 0.45);
+}
+
+.light .hubLabel {
+  background: var(--mm-midnight);
+  color: var(--mm-on-dark);
+}
+
+/* ── Dark: glowing land for midnight panels ── */
+.dark .stopA {
+  stop-color: #8f7fd8;
+}
+
+.dark .stopB {
+  stop-color: #4a3f8f;
+}
+
+.dark .texture {
+  fill: rgba(255, 255, 255, 0.18);
+}
+
+.dark .land {
+  stroke: rgba(197, 181, 238, 0.7);
+}
+
+.dark .shadow {
+  flood-color: #c5b5ee;
+  flood-opacity: 0.35;
+}
+
+.dark .neighbour {
+  fill: rgba(197, 181, 238, 0.14);
+}
+
+.dark .route {
+  stroke: rgba(255, 255, 255, 0.85);
+}
+
+.dark .dot {
+  fill: #fff;
+  stroke: var(--mm-lavender);
+}
+
+.dark .hubHalo {
+  fill: rgba(197, 181, 238, 0.35);
+}
+
+.dark .pulse {
+  stroke: var(--mm-lavender);
+}
+
+.dark .label {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(34, 34, 46, 0.55);
+  color: var(--mm-on-dark);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.dark .hubLabel {
+  border-color: transparent;
+  background: var(--mm-lavender);
+  color: var(--mm-midnight);
+}
+
+/* ── Motion ── */
+@media (prefers-reduced-motion: no-preference) {
+  .pulse {
+    animation: pulse 2.4s ease-out infinite;
+  }
+}
+
+@keyframes pulse {
+  from {
+    opacity: 0.9;
+    scale: 0.7;
+  }
+
+  to {
+    opacity: 0;
+    scale: 2.3;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .route {
+      animation: draw linear both;
+      animation-timeline: --host-map;
+      animation-range: entry 10% entry 100%;
+    }
+  }
+}
+
+@keyframes draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}

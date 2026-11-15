@@ -1,0 +1,351 @@
+/* Option 2 — Host spotlight. Laptops and up: portrait card with floating badges on the left,
+   pitch + map card + button on the right. Tablets: the same, tighter. Phones: portrait first
+   (badges tucked inside it), then the pitch, the map card and a full-width button.
+   Light motion: the badges bob gently; the map draws its own routes. */
+
+.section.section {
+  padding-block: clamp(32px, 4vw, 56px);
+}
+
+.panel {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  align-items: center;
+  gap: clamp(28px, 5vw, 72px);
+  padding: clamp(28px, 3.4vw, 44px) clamp(28px, 4vw, 56px);
+  border-radius: var(--mm-radius-xl);
+  background:
+    radial-gradient(55% 70% at 15% 30%, rgba(255, 255, 255, 0.75), transparent 70%),
+    linear-gradient(160deg, #f4f1fd 0%, #e6e0f8 100%);
+  color: inherit;
+  font-family: var(--mm-font);
+  text-decoration: none;
+}
+
+.panel:focus-visible {
+  outline: 3px solid var(--mm-lavender-deep);
+  outline-offset: 4px;
+}
+
+/* ── Portrait + floating badges ── */
+.visual {
+  position: relative;
+  justify-self: center;
+  width: min(100%, 360px);
+  padding-inline: 44px;
+  box-sizing: content-box;
+}
+
+.photoCard {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border: 6px solid #fff;
+  border-radius: 30px;
+  aspect-ratio: 4 / 5;
+  box-shadow: 0 30px 60px -30px rgba(34, 34, 46, 0.55);
+}
+
+.photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.nameTag {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  left: 14px;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.82);
+  color: var(--mm-ink);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.nameTag b {
+  font-size: max(11px, calc(15px - var(--mm-text-trim)));
+  font-weight: 600;
+}
+
+.nameTag small {
+  color: var(--mm-muted);
+  font-size: max(11px, calc(12.5px - var(--mm-text-trim)));
+}
+
+.float {
+  position: absolute;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px 10px 10px;
+  border-radius: 16px;
+  background: #fff;
+  color: var(--mm-ink);
+  white-space: nowrap;
+  box-shadow: 0 18px 36px -18px rgba(34, 34, 46, 0.5);
+}
+
+.fIcon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+}
+
+.mint {
+  background: #dcf3e7;
+  color: #1d8a5c;
+}
+
+.sky {
+  background: var(--mm-sky-soft);
+  color: #1f6fb2;
+}
+
+.fText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.fText b {
+  font-size: max(11px, calc(14px - var(--mm-text-trim)));
+  font-weight: 600;
+}
+
+.fText small {
+  color: var(--mm-muted);
+  font-size: 11px;
+}
+
+.fPayout {
+  top: 10%;
+  right: 0;
+}
+
+.fOtp {
+  top: 46%;
+  left: 0;
+}
+
+.fSupport {
+  right: 8px;
+  bottom: 24%;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--mm-midnight);
+  color: var(--mm-on-dark);
+  font-size: max(11px, calc(13.5px - var(--mm-text-trim)));
+  font-weight: 600;
+}
+
+/* ── Pitch ── */
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  color: var(--mm-ink);
+  font-family: var(--mm-font);
+  font-size: calc(clamp(1.7rem, 3vw, 2.4rem) - var(--mm-text-trim));
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.title span {
+  color: var(--mm-lavender-deep);
+}
+
+.lead {
+  max-width: 520px;
+  margin-top: 12px;
+  color: var(--mm-ink-2);
+  font-size: calc(clamp(0.95rem, 1.2vw, 1.0625rem) - var(--mm-text-trim));
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* Map card */
+.mapCard {
+  display: grid;
+  grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+  align-items: center;
+  align-self: stretch;
+  gap: 20px;
+  max-width: 560px;
+  margin-top: 22px;
+  padding: 8px 20px 8px 8px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 18px 40px -28px rgba(34, 34, 46, 0.45);
+}
+
+/* The map card is small, so its city names live in the list beside it */
+.map span {
+  display: none;
+}
+
+.mapText {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mapText > b {
+  color: var(--mm-ink);
+  font-size: max(11px, calc(16px - var(--mm-text-trim)));
+  font-weight: 600;
+}
+
+.cityRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--mm-ink);
+  font-size: max(11px, calc(14px - var(--mm-text-trim)));
+  font-weight: 600;
+}
+
+.cityRow svg {
+  flex: none;
+  color: var(--mm-lavender-deep);
+}
+
+.cityRow small {
+  margin-left: 6px;
+  color: var(--mm-muted);
+  font-size: max(11px, calc(12.5px - var(--mm-text-trim)));
+  font-weight: 500;
+}
+
+.cta.cta {
+  margin-top: 22px;
+}
+
+@media (hover: hover) {
+  .panel:hover .cta {
+    background: var(--mm-midnight-hover);
+  }
+}
+
+/* ── Motion: badges bob gently ── */
+@media (prefers-reduced-motion: no-preference) {
+  .float {
+    animation: bob 5s ease-in-out infinite;
+  }
+
+  .fOtp {
+    animation-delay: -1.6s;
+  }
+
+  .fSupport {
+    animation-delay: -3.2s;
+  }
+}
+
+@keyframes bob {
+  50% {
+    translate: 0 -6px;
+  }
+}
+
+/* ── Tablets ── */
+@media (max-width: 999px) {
+  .panel {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  }
+
+  .visual {
+    padding-inline: 24px;
+  }
+
+  .mapCard {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 8px 16px 16px;
+  }
+
+  .map {
+    max-width: 240px;
+    justify-self: center;
+  }
+}
+
+/* ── Phones: portrait first, badges tucked inside it ── */
+@media (max-width: 760px) {
+  .panel {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 22px;
+    padding: 18px 18px 20px;
+    border-radius: 26px;
+  }
+
+  .visual {
+    width: min(100%, 320px);
+    padding-inline: 0;
+  }
+
+  /* Compact badges below the face, so it stays clear */
+  .fText small {
+    display: none;
+  }
+
+  .fIcon {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+  }
+
+  .fPayout {
+    top: 54%;
+    right: auto;
+    left: 12px;
+  }
+
+  .fOtp {
+    top: 66%;
+    right: 12px;
+    left: auto;
+  }
+
+  .fSupport {
+    right: auto;
+    bottom: 92px;
+    left: 12px;
+  }
+
+  .mapCard {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: 10px;
+    padding: 6px 14px 6px 4px;
+  }
+
+  .cityRow small {
+    display: block;
+    margin-left: 0;
+  }
+
+  .cta.cta {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .float {
+    animation: none;
+  }
+}

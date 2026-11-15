@@ -1,0 +1,220 @@
+/* Option 4 — Midnight. Laptops and up: pitch, a 2×2 grid of glass tiles and the button with a
+   host's words on the left; a glowing map on the right. Phones: pitch, map, tiles, button
+   (DOM order). Light motion: tiles brighten on hover; the map draws its own routes. */
+
+.section.section {
+  padding-block: clamp(32px, 4vw, 56px);
+}
+
+.panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  grid-template-rows: 1fr auto auto auto 1fr;
+  grid-template-areas:
+    ". map"
+    "intro map"
+    "tiles map"
+    "foot map"
+    ". map";
+  column-gap: clamp(28px, 5vw, 72px);
+  padding: clamp(28px, 3.4vw, 48px) clamp(28px, 4vw, 56px);
+  border-radius: var(--mm-radius-xl);
+  background:
+    radial-gradient(50% 70% at 80% 45%, rgba(143, 127, 216, 0.35), transparent 70%),
+    radial-gradient(40% 50% at 0% 0%, rgba(197, 181, 238, 0.14), transparent 70%),
+    var(--mm-midnight);
+  color: var(--mm-on-dark);
+  font-family: var(--mm-font);
+  text-decoration: none;
+}
+
+.panel:focus-visible {
+  outline: 3px solid var(--mm-lavender);
+  outline-offset: 4px;
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  grid-area: intro;
+}
+
+.eyebrow.eyebrow {
+  background: rgba(197, 181, 238, 0.16);
+  color: var(--mm-lavender);
+}
+
+.title {
+  margin: 0;
+  color: var(--mm-on-dark);
+  font-family: var(--mm-font);
+  font-size: calc(clamp(1.7rem, 3vw, 2.4rem) - var(--mm-text-trim));
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.title span {
+  color: var(--mm-lavender);
+}
+
+.lead {
+  margin-top: 12px;
+  color: var(--mm-on-dark-muted);
+  font-size: calc(clamp(0.95rem, 1.2vw, 1.0625rem) - var(--mm-text-trim));
+  line-height: 1.55;
+}
+
+/* ── Glass tiles ── */
+.tiles {
+  display: grid;
+  grid-area: tiles;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.05);
+  transition:
+    background 0.25s,
+    border-color 0.25s;
+}
+
+@media (hover: hover) {
+  .tile:hover {
+    border-color: rgba(197, 181, 238, 0.35);
+    background: rgba(255, 255, 255, 0.09);
+  }
+}
+
+.tile svg {
+  margin-bottom: 8px;
+  color: var(--mm-lavender);
+}
+
+.tile b {
+  font-size: max(11px, calc(15.5px - var(--mm-text-trim)));
+  font-weight: 600;
+}
+
+.tile small {
+  color: var(--mm-on-dark-muted);
+  font-size: max(11px, calc(13px - var(--mm-text-trim)));
+  line-height: 1.4;
+}
+
+/* ── Button + host ── */
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  grid-area: foot;
+  gap: 16px 24px;
+  margin-top: 24px;
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  padding: 0 26px;
+  border-radius: var(--mm-radius-sm);
+  background: var(--mm-lavender);
+  color: var(--mm-midnight);
+  font-size: max(11px, calc(16px - var(--mm-text-trim)));
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+@media (hover: hover) {
+  .panel:hover .cta {
+    background: #d4c8f3;
+  }
+}
+
+.host {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--mm-on-dark-muted);
+  font-size: max(11px, calc(13px - var(--mm-text-trim)));
+  line-height: 1.4;
+}
+
+.host b {
+  display: block;
+  color: var(--mm-on-dark);
+  font-weight: 600;
+}
+
+.avatar {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 2px solid rgba(197, 181, 238, 0.6);
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* ── Map ── */
+.mapSide {
+  grid-area: map;
+  align-self: center;
+  justify-self: center;
+  width: min(100%, 520px);
+}
+
+/* ── Tablets ── */
+@media (max-width: 999px) {
+  .panel {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  }
+}
+
+/* ── Phones ── */
+@media (max-width: 760px) {
+  .panel {
+    grid-template-areas: none;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    padding: 22px 18px 20px;
+    border-radius: 26px;
+  }
+
+  .intro,
+  .mapSide,
+  .tiles,
+  .foot {
+    grid-area: auto;
+  }
+
+  .mapSide {
+    width: min(100%, 420px);
+    margin-top: 8px;
+  }
+
+  .tiles {
+    margin-top: 6px;
+  }
+
+  .cta {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tile {
+    transition: none;
+  }
+}
