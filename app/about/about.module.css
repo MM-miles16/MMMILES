@@ -670,9 +670,100 @@
 }
 
 /* big outlined chapter number */
+/* number + chapter progress on one row */
+.chapterTop {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  padding-bottom: 6px;
+}
+
+.progressLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mm-ink-2);
+}
+
+.progressBar {
+  display: flex;
+  gap: 5px;
+}
+
+.progressBar i {
+  width: 26px;
+  height: 5px;
+  border-radius: var(--mm-radius-pill);
+  background: rgba(34, 34, 46, 0.12);
+}
+
+.progressBar i.progressOn {
+  background: var(--mm-lavender-deep);
+}
+
+.chapterCard.midnight .progressLabel {
+  color: var(--mm-on-dark-muted);
+}
+
+.chapterCard.midnight .progressBar i {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.chapterCard.midnight .progressBar i.progressOn {
+  background: var(--mm-lavender);
+}
+
+/* fact chips */
+.chapterFacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chapterFacts li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: var(--mm-radius-pill);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.8), var(--mm-shadow-sm);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mm-ink);
+}
+
+.chapterFacts svg {
+  color: var(--mm-lavender-deep);
+}
+
+.chapterCard.mist .chapterFacts li {
+  background: var(--mm-bg);
+}
+
+.chapterCard.midnight .chapterFacts li {
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  color: var(--mm-on-dark);
+}
+
+.chapterCard.midnight .chapterFacts svg {
+  color: var(--mm-lavender);
+}
+
 .chapterNum {
   display: block;
-  margin-bottom: 14px;
   font-size: clamp(56px, 7vw, 92px);
   font-weight: 700;
   line-height: 0.9;
@@ -719,13 +810,240 @@
 }
 
 .chapterArt {
+  position: relative;
   display: grid;
   place-items: center;
   height: 100%;
-  min-height: 220px;
+  min-height: 280px;
+  overflow: hidden;
   border-radius: var(--mm-radius-lg);
-  background: rgba(255, 255, 255, 0.55);
+  /* faint blueprint grid */
+  background:
+    linear-gradient(rgba(34, 34, 46, 0.045) 1px, transparent 1px) 0 0 / 22px 22px,
+    linear-gradient(90deg, rgba(34, 34, 46, 0.045) 1px, transparent 1px) 0 0 / 22px 22px,
+    rgba(255, 255, 255, 0.55);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+}
+
+.chapterCard.midnight .chapterArt {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px) 0 0 / 22px 22px,
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px) 0 0 / 22px 22px,
+    rgba(255, 255, 255, 0.04);
+}
+
+/* soft colour glow behind the illustration */
+.artGlow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 70%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(197, 181, 238, 0.55) 0%, transparent 65%);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.chapterArt > svg {
+  position: relative;
+}
+
+/* floating glass cards over the illustration */
+.float {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 62%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.86);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--mm-shadow-md), inset 0 0 0 1px rgba(255, 255, 255, 0.9);
+  color: var(--mm-ink);
+  font-size: 13px;
+  line-height: 1.35;
+  animation: floatY 6s ease-in-out infinite;
+}
+
+.floatA {
+  top: 9%;
+  left: 5%;
+}
+
+.floatB {
+  right: 5%;
+  bottom: 9%;
+  animation-delay: -3s;
+}
+
+@keyframes floatY {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.floatIcon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--mm-lavender-soft);
+  color: var(--mm-lavender-deep);
+}
+
+.floatIconGreen {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.floatText {
+  display: flex;
+  flex-direction: column;
+}
+
+.floatText strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.floatText span {
+  font-size: 11.5px;
+  color: var(--mm-muted);
+}
+
+/* chat bubbles appear one after the other */
+.bubbleIn,
+.bubbleOut {
+  max-width: 54%;
+  font-weight: 500;
+  animation: bubbleIn 6s ease-out infinite both;
+}
+
+.bubbleIn {
+  border-bottom-left-radius: 4px;
+}
+
+.bubbleOut {
+  border-bottom-right-radius: 4px;
+  background: var(--mm-lavender-deep);
+  color: #fff;
+  animation-delay: 1.2s;
+}
+
+@keyframes bubbleIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.92);
+  }
+  8%,
+  82% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  92%,
+  100% {
+    opacity: 0;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* earnings mini chart */
+.floatChart {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  height: 34px;
+}
+
+.bars i {
+  width: 10px;
+  height: calc(30% + var(--b) * 17%);
+  border-radius: 3px 3px 1px 1px;
+  background: linear-gradient(180deg, var(--mm-lavender-deep), var(--mm-lavender));
+  transform-origin: bottom;
+  animation: barGrow 4.5s ease-out infinite both;
+  animation-delay: calc(var(--b) * 0.12s);
+}
+
+@keyframes barGrow {
+  0% {
+    transform: scaleY(0.15);
+  }
+  18%,
+  86% {
+    transform: scaleY(1);
+  }
+  100% {
+    transform: scaleY(0.15);
+  }
+}
+
+/* price breakdown card */
+.floatBill {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  width: 190px;
+  max-width: 48%;
+  padding: 14px 16px;
+}
+
+.billTitle {
+  margin-bottom: 2px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.billRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 11.5px;
+  color: var(--mm-ink-2);
+  transform-origin: left center;
+  animation: rowIn 5s ease-out infinite both;
+  animation-delay: calc(var(--r) * 0.22s);
+}
+
+.billRow i {
+  width: 30px;
+  height: 6px;
+  border-radius: 3px;
+  background: #d9d9e3;
+}
+
+.billTotal {
+  display: flex;
+  flex-direction: column;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px dashed #d9d9e3;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.billTotal em {
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 500;
+  color: #15803d;
 }
 
 .chapterCard.mist .chapterArt {
@@ -737,7 +1055,7 @@
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
-.chapterArt svg {
+.chapterArt > svg {
   width: min(100%, 300px);
   height: auto;
   overflow: visible;
@@ -2173,10 +2491,38 @@ a.bizValue:hover {
   .chapterArt {
     order: -1;
     min-height: 0;
-    height: 170px;
+    height: 240px;
   }
 
-  .chapterArt svg {
+  .float {
+    padding: 8px 10px;
+    font-size: 11.5px;
+    gap: 8px;
+  }
+
+  .floatIcon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .floatText strong {
+    font-size: 12px;
+  }
+
+  .floatText span {
+    font-size: 10.5px;
+  }
+
+  .floatBill {
+    width: 150px;
+    padding: 10px 12px;
+  }
+
+  .billRow {
+    font-size: 10.5px;
+  }
+
+  .chapterArt > svg {
     width: auto;
     height: 150px;
   }
@@ -2185,12 +2531,12 @@ a.bizValue:hover {
     padding: 0 6px;
   }
 
+  .chapterTop {
+    margin-bottom: 12px;
+  }
+
   .chapterNum {
-    position: absolute;
-    top: -4px;
-    right: 6px;
-    margin: 0;
-    font-size: 48px;
+    font-size: 44px;
   }
 
   .chapterText {
@@ -2425,10 +2771,15 @@ a.bizValue:hover {
 
   .saWave,
   .saCoin,
-  .saBooked {
+  .saBooked,
+  .bubbleIn,
+  .bubbleOut {
     opacity: 1;
   }
 
+  .float,
+  .bars i,
+  .billRow,
   .saRing,
   .saWave,
   .saDrive,

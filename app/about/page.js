@@ -1,6 +1,24 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Building2, CarFront, Check, Clock, Compass, Mail, Phone, Search, Telescope } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Building2,
+  CalendarDays,
+  CarFront,
+  Check,
+  CircleCheck,
+  Clock,
+  Compass,
+  House,
+  IndianRupee,
+  Mail,
+  Phone,
+  Receipt,
+  Search,
+  Telescope,
+  Truck,
+} from "lucide-react";
 import { FaInstagram, FaLinkedinIn, FaWhatsapp } from "react-icons/fa";
 import { Oswald } from "next/font/google";
 import { getActiveCities } from "@/lib/cities";
@@ -89,6 +107,10 @@ const CHAPTERS = [
     text: "A handful of cars, one phone number and a simple promise: clean cars, honest prices and help whenever you need it.",
     tone: "sky",
     art: "phone",
+    facts: [
+      { icon: Building2, label: "Born in Chennai" },
+      { icon: Phone, label: "One number, 24×7" },
+    ],
   },
   {
     kicker: "Doorstep delivery",
@@ -96,6 +118,10 @@ const CHAPTERS = [
     text: "No counters and no queues. We started delivering cars to homes and offices, and collecting them when the trip was done.",
     tone: "lavender",
     art: "delivery",
+    facts: [
+      { icon: House, label: "Homes and offices" },
+      { icon: Truck, label: "Delivery and pickup" },
+    ],
   },
   {
     kicker: "Car hosting",
@@ -103,6 +129,10 @@ const CHAPTERS = [
     text: "Car owners can list their cars with us and earn when they are not driving, with no registration or platform fees.",
     tone: "mist",
     art: "garage",
+    facts: [
+      { icon: IndianRupee, label: "No listing fees" },
+      { icon: CalendarDays, label: "Your calendar" },
+    ],
   },
   {
     kicker: "Now",
@@ -110,6 +140,10 @@ const CHAPTERS = [
     text: "Book online, see the full price before you pay, and rent for anything from 6 hours to 29 days.",
     tone: "midnight",
     art: "booking",
+    facts: [
+      { icon: Clock, label: "6 hours to 29 days" },
+      { icon: Receipt, label: "Full price upfront" },
+    ],
   },
 ];
 
@@ -129,6 +163,88 @@ function MiniCar({ fill = "#6b57c4" }) {
     </g>
   );
 }
+
+// Floating glass cards layered over each illustration (HTML, so the text stays crisp)
+const STORY_FLOATS = {
+  phone: (
+    <>
+      <div className={`${styles.float} ${styles.floatA} ${styles.bubbleIn}`}>Hi, I need a car for Saturday</div>
+      <div className={`${styles.float} ${styles.floatB} ${styles.bubbleOut}`}>
+        Sure! We&apos;ll bring it to your door.
+      </div>
+    </>
+  ),
+  delivery: (
+    <>
+      <div className={`${styles.float} ${styles.floatA}`}>
+        <span className={styles.floatIcon}>
+          <Truck size={16} />
+        </span>
+        <span className={styles.floatText}>
+          <strong>On its way</strong>
+          <span>To your doorstep</span>
+        </span>
+      </div>
+      <div className={`${styles.float} ${styles.floatB}`}>
+        <span className={`${styles.floatIcon} ${styles.floatIconGreen}`}>
+          <CircleCheck size={16} />
+        </span>
+        <span className={styles.floatText}>
+          <strong>Picked up</strong>
+          <span>After your trip</span>
+        </span>
+      </div>
+    </>
+  ),
+  garage: (
+    <>
+      <div className={`${styles.float} ${styles.floatA} ${styles.floatChart}`}>
+        <span className={styles.floatText}>
+          <strong>Earning while idle</strong>
+        </span>
+        <span className={styles.bars}>
+          {[0, 1, 2, 3, 4].map((b) => (
+            <i key={b} style={{ "--b": b }} />
+          ))}
+        </span>
+      </div>
+      <div className={`${styles.float} ${styles.floatB}`}>
+        <span className={styles.floatIcon}>
+          <IndianRupee size={16} />
+        </span>
+        <span className={styles.floatText}>
+          <strong>₹0 listing fee</strong>
+          <span>No registration</span>
+        </span>
+      </div>
+    </>
+  ),
+  booking: (
+    <>
+      <div className={`${styles.float} ${styles.floatA} ${styles.floatBill}`}>
+        <strong className={styles.billTitle}>Price breakdown</strong>
+        {["Rental", "Trip protection", "Convenience fee", "GST"].map((row, r) => (
+          <span key={row} className={styles.billRow} style={{ "--r": r }}>
+            {row}
+            <i />
+          </span>
+        ))}
+        <span className={styles.billTotal}>
+          Total <em>shown before you pay</em>
+        </span>
+      </div>
+      <div className={`${styles.float} ${styles.floatB}`}>
+        <span className={styles.floatIcon}>
+          <Clock size={16} />
+        </span>
+        <span className={styles.floatText}>
+          <strong>6 hrs to 29 days</strong>
+          <span>You pick the times</span>
+        </span>
+      </div>
+    </>
+  ),
+};
 
 const STORY_ART = {
   // one phone number: a phone that rings
@@ -928,15 +1044,36 @@ export default function AboutPage() {
             {CHAPTERS.map((c, i) => (
               <li key={c.title} className={`${styles.chapterCard} ${styles[c.tone]}`} style={{ "--i": i }}>
                 <div className={styles.chapterCopy}>
-                  <span className={styles.chapterNum} aria-hidden="true">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
+                  <div className={styles.chapterTop}>
+                    <span className={styles.chapterNum} aria-hidden="true">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <div className={styles.progress}>
+                      <span className={styles.progressLabel}>
+                        Chapter {i + 1} of {CHAPTERS.length}
+                      </span>
+                      <span className={styles.progressBar} aria-hidden="true">
+                        {CHAPTERS.map((_, k) => (
+                          <i key={k} className={k <= i ? styles.progressOn : undefined} />
+                        ))}
+                      </span>
+                    </div>
+                  </div>
                   <p className={styles.chapterKicker}>{c.kicker}</p>
                   <h3 className={styles.chapterTitle}>{c.title}</h3>
                   <p className={styles.chapterText}>{c.text}</p>
+                  <ul className={styles.chapterFacts}>
+                    {c.facts.map(({ icon: Icon, label }) => (
+                      <li key={label}>
+                        <Icon size={15} aria-hidden="true" /> {label}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
                 <div className={styles.chapterArt} aria-hidden="true">
+                  <span className={styles.artGlow} />
                   <svg viewBox="0 0 200 150">{STORY_ART[c.art]}</svg>
+                  {STORY_FLOATS[c.art]}
                 </div>
               </li>
             ))}
