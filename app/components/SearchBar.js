@@ -808,6 +808,7 @@ export default function SearchBar() {
               onClose={() => setIsCitySelectorOpen(false)}
               onSelect={handleCitySelect}
               selectedCity={location}
+              onDetect={handleUseMyLocation}
             />
           )}
 
