@@ -134,7 +134,6 @@ export default function Testimonials() {
     <section className={`${ui.section} ${styles.section}`} aria-labelledby="reviews-title">
       <div className={ui.container}>
         <div className={`${ui.head} ${styles.head}`}>
-          <p className={ui.eyebrow}>Reviews</p>
           <h2 id="reviews-title" className={ui.title}>
             Loved by people who drive with us
           </h2>

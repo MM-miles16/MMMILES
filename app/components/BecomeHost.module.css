@@ -80,7 +80,7 @@
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
-  font-family: poppins;
+  font-family: var(--mm-font);
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
   transition: 0.3s ease;
@@ -96,7 +96,7 @@
     font-weight: 700;
     bottom: 17px;
     right: 50px;
-    font-family: poppins;
+    font-family: var(--mm-font);
   }
 }
 @media (min-width: 1430px) {

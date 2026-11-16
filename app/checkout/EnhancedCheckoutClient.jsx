@@ -17,6 +17,7 @@ import EmptyState from "../components/EmptyState";
 import { makeAuthenticatedRequest } from "../../lib/customSupabaseClient";
 import { parseDate, formatDateTimeForDB, parseBookingRawDateTime } from "../../lib/dateUtils";
 import { WEEKEND_SURGE } from "../../lib/pricing";
+import { deliveryText } from "../../lib/addressText";
 import styles from "./EnhancedCheckout.module.css";
 
 // Only bookable cities (Chennai, Coimbatore, Bengaluru — see lib/cities) continue; others go to /comingsoon
@@ -105,6 +106,10 @@ export default function EnhancedCheckoutPage() {
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [couponInfo, setCouponInfo] = useState(null);
+  const [offer, setOffer] = useState(null); // automatic offer from the server: first trip ₹350 off, or 1 free hour
+  const [customerLoaded, setCustomerLoaded] = useState(false);
+  const [savedAddresses, setSavedAddresses] = useState(null); // from the dashboard; null = none to offer
+  const [addressChoice, setAddressChoice] = useState(null); // saved address id, or "other" (typed)
   const [applyingCoupon, setApplyingCoupon] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [completedSteps, setCompletedSteps] = useState(new Set());
@@ -322,7 +327,24 @@ export default function EnhancedCheckoutPage() {
         );
 
         if (response.ok) {
-          const allCoupons = await response.json() || [];
+          // Personal coupons (referral bonuses) belong to one account: hide other people's,
+          // and add this customer's own (that query fails harmlessly before the column exists)
+          let allCoupons = ((await response.json()) || []).filter(
+            (c) => !c.assigned_user_id || c.assigned_user_id === loggedInUser.sub
+          );
+          try {
+            const own = await fetch(
+              `/api/sb/rest/v1/coupons?is_active=eq.true&assigned_user_id=eq.${loggedInUser.sub}&select=*`,
+              { headers: { apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, "Content-Type": "application/json" } }
+            );
+            if (own.ok) {
+              const mine = ((await own.json()) || []).filter((c) => c.assigned_user_id === loggedInUser.sub);
+              const seen = new Set(allCoupons.map((c) => c.code));
+              allCoupons = allCoupons.concat(mine.filter((c) => !seen.has(c.code)));
+            }
+          } catch {
+            // no personal coupons
+          }
 
           // 1. Fetch user's past bookings to determine coupon eligibility
           const { data: pastBookings, error } = await makeAuthenticatedRequest(
@@ -424,10 +446,54 @@ export default function EnhancedCheckoutPage() {
           phone: loggedInUser.phone_number || "",
         }));
       }
+      setCustomerLoaded(true);
     }
 
     go();
   }, [loggedInUser]);
+
+  /* -------------------------------------------------------------------------- */
+  /*            SAVED ADDRESSES (dashboard) → choose one for delivery             */
+  /* -------------------------------------------------------------------------- */
+  useEffect(() => {
+    if (!loggedInUser?.sub) return;
+    let active = true;
+    (async () => {
+      try {
+        const token = localStorage.getItem("auth_token");
+        const res = await fetch("/api/dashboard/addresses", {
+          credentials: "include",
+          cache: "no-store",
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        const data = res.ok ? await res.json() : null;
+        if (active && Array.isArray(data?.addresses) && data.addresses.length) setSavedAddresses(data.addresses);
+      } catch {
+        // no saved addresses: the address is typed as before
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [loggedInUser]);
+
+  function chooseAddress(a) {
+    const text = deliveryText(a.address, a.landmark);
+    setAddressChoice(a.id);
+    if (customer.address !== text) setEditing(true); // saved to the profile on "Review Journey"
+    setCustomer((c) => ({ ...c, address: text }));
+  }
+
+  // Start on the saved address that matches the profile, else the default (when none is set yet)
+  useEffect(() => {
+    if (!savedAddresses || !customerLoaded || addressChoice !== null) return;
+    const current = (customer.address || "").trim();
+    const match = savedAddresses.find((a) => deliveryText(a.address, a.landmark) === current || a.address.trim() === current);
+    if (match) setAddressChoice(match.id);
+    else if (!current) chooseAddress(savedAddresses.find((a) => a.isDefault) || savedAddresses[0]);
+    else setAddressChoice("other");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [savedAddresses, customerLoaded, addressChoice, customer.address]);
 
   /* -------------------------------------------------------------------------- */
   /*                    SERVER-SIDE PRICE CALCULATION                            */
@@ -553,9 +619,14 @@ export default function EnhancedCheckoutPage() {
             serverCalculated: true,
           });
 
-          // Update local discount state to match server for display consistency
-          if (data.pricing.discount !== undefined) {
-            setDiscount(data.pricing.discount);
+          // Match the server: the automatic offer and the coupon are shown as separate lines
+          setOffer(data.pricing.offer || null);
+          setDiscount(data.pricing.couponDiscount ?? data.pricing.discount ?? 0);
+          if (couponInfo && data.pricing.couponApplied === false) {
+            // e.g. the first-trip ₹350 saves more, or the code no longer applies
+            setCouponInfo(null);
+            setCouponCode("");
+            if (data.pricing.couponNote) toast(data.pricing.couponNote, { duration: 6000 });
           }
 
           setOrderDetails({
@@ -651,6 +722,18 @@ export default function EnhancedCheckoutPage() {
       });
 
       const data = await response.json();
+
+      // First trip: the ₹350 offer doesn't combine with a code, so only take a code that saves more
+      if (data.valid && offer?.kind === "welcome" && data.discount <= offer.amount) {
+        setCouponFeedback({
+          show: true,
+          type: 'error',
+          message: `Your ₹${offer.amount} first-trip offer is already applied and saves at least as much as '${data.coupon.code}'.`,
+          discount: 0
+        });
+        setShowCouponDropdown(false);
+        return;
+      }
 
       if (data.valid) {
         setDiscount(data.discount);
@@ -1439,19 +1522,60 @@ export default function EnhancedCheckoutPage() {
             ))}
 
             <div className={styles.formGroup}>
-              <label>Home Address *</label>
-              <textarea
-                rows="3"
-                value={customer.address}
-                onChange={(e) => {
-                  setCustomer({ ...customer, address: e.target.value });
-                  setEditing(true);
-                }}
-                placeholder="Enter your complete address including city and state"
-                style={{
-                  borderColor: !customer.address?.trim() && !isCustomerDataComplete() ? '#dc3545' : '#ddd'
-                }}
-              />
+              <label id="delivery-label">Delivery address *</label>
+              {savedAddresses?.length > 0 && (
+                <div className={styles.addrPick} role="radiogroup" aria-labelledby="delivery-label">
+                  {savedAddresses.map((a) => {
+                    const on = addressChoice === a.id;
+                    return (
+                      <label key={a.id} className={`${styles.addrOption} ${on ? styles.addrOptionOn : ""}`}>
+                        <input type="radio" name="delivery-address" checked={on} onChange={() => chooseAddress(a)} />
+                        <span className={styles.addrOptionText}>
+                          <span className={styles.addrOptionName}>
+                            {a.label}
+                            {a.isDefault && <span className={styles.addrOptionTag}>Default</span>}
+                          </span>
+                          <span className={styles.addrOptionLine}>{deliveryText(a.address, a.landmark)}</span>
+                        </span>
+                      </label>
+                    );
+                  })}
+                  <label className={`${styles.addrOption} ${addressChoice === "other" ? styles.addrOptionOn : ""}`}>
+                    <input
+                      type="radio"
+                      name="delivery-address"
+                      checked={addressChoice === "other"}
+                      onChange={() => {
+                        setAddressChoice("other");
+                        setCustomer((c) => ({ ...c, address: "" }));
+                        setEditing(true);
+                      }}
+                    />
+                    <span className={styles.addrOptionText}>
+                      <span className={styles.addrOptionName}>Use another address</span>
+                      <span className={styles.addrOptionLine}>Type it below</span>
+                    </span>
+                  </label>
+                </div>
+              )}
+              {(!savedAddresses?.length || addressChoice === "other") && (
+                <textarea
+                  rows="3"
+                  value={customer.address}
+                  onChange={(e) => {
+                    setCustomer({ ...customer, address: e.target.value });
+                    setEditing(true);
+                  }}
+                  placeholder="House or flat, street, area, city"
+                  aria-labelledby="delivery-label"
+                  style={{
+                    borderColor: !customer.address?.trim() && !isCustomerDataComplete() ? '#dc3545' : '#ddd'
+                  }}
+                />
+              )}
+              <a href="/dashboard?tab=addresses" target="_blank" rel="noopener noreferrer" className={styles.addrManage}>
+                {savedAddresses?.length ? "Add or edit saved addresses" : "Save your addresses in your account to pick them here next time"}
+              </a>
             </div>
 
             <button
@@ -1639,9 +1763,19 @@ export default function EnhancedCheckoutPage() {
                   <div className={styles.rowValue}>₹{priceSummary.gst.toLocaleString('en-IN')}</div>
                 </div>
 
+                {offer?.amount > 0 && (
+                  <div className={`${styles.summaryRow} ${styles.rowLight}`}>
+                    <div className={styles.rowLabel}>
+                      {offer.label}
+                      <span className={styles.rowNote}>{offer.note}</span>
+                    </div>
+                    <div className={styles.rowValue} style={{ color: '#16a34a' }}>-₹{offer.amount.toLocaleString('en-IN')}</div>
+                  </div>
+                )}
+
                 {discount > 0 && (
                   <div className={`${styles.summaryRow} ${styles.rowLight}`}>
-                    <div className={styles.rowLabel}>Discount</div>
+                    <div className={styles.rowLabel}>{couponInfo?.code ? `Coupon ${couponInfo.code}` : "Discount"}</div>
                     <div className={styles.rowValue} style={{ color: '#16a34a' }}>-₹{discount.toLocaleString('en-IN')}</div>
                   </div>
                 )}

@@ -12,7 +12,7 @@
   font-weight: 500;
   font-weight: 700;
   margin-bottom: 4px;
-  font-family: Frank Ruhl Libre;
+  font-family: var(--mm-font);
 }
 
 .gsubtitle {
@@ -21,7 +21,7 @@
   font-weight: 500;
   text-align: center;
   margin-bottom: 28px;
-  font-family: poppins;
+  font-family: var(--mm-font);
 }
 
 /* Grid layout */
@@ -41,7 +41,7 @@
   font-size: 16px;
   font-weight: 500;
   margin: 14px 0 8px;
-  font-family: poppins;
+  font-family: var(--mm-font);
 }
 
 .gcard p {
@@ -50,7 +50,7 @@
   margin-bottom: 1px;
   line-height: 1.5;
   color: #555;
-  font-family: poppins;
+  font-family: var(--mm-font);
 }
 
 /* Icon box */

@@ -153,7 +153,7 @@ export default async function CarCityPage({ params }) {
       {/* ── YOUR HOMEPAGE COMPONENTS — exactly what users see ───────────────── */}
       <main>
         <Hero />
-        <HomeContent />
+        <HomeContent city={city.name} />
         <AdvantageSection />
         <OffersSection />
         <DriveDiscoverSection />

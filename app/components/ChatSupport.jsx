@@ -17,6 +17,13 @@ export default function ChatSupport() {
 
   const chatBodyRef = useRef(null);
 
+  // "Chat with us" in the header menu opens this window
+  useEffect(() => {
+    const open = () => setIsOpen(true);
+    window.addEventListener("open-chat", open);
+    return () => window.removeEventListener("open-chat", open);
+  }, []);
+
   // Auto-scroll to bottom of chat when messages or loading state changes
   useEffect(() => {
     if (chatBodyRef.current) {

@@ -1,4 +1,4 @@
-import CopyCode from "./CopyCode";
+import { Check } from "lucide-react";
 import ui from "./ui.module.css";
 import styles from "./Offers.module.css";
 
@@ -73,18 +73,17 @@ function Dial() {
   );
 }
 
-// Three road-trip objects people remember: the welcome code on a number plate, long-trip
+// Three road-trip objects people remember: the automatic first-trip ₹350 off, long-trip
 // discounts as highway milestones, and the 6-hour minimum on a clock dial.
 export default function Offers() {
   return (
     <section id="offers" className={`${ui.section} ${styles.section}`} aria-labelledby="offers-title">
       <div className={ui.container}>
         <div className={`${ui.head} ${styles.head}`}>
-          <p className={ui.eyebrow}>Offers</p>
           <h2 id="offers-title" className={ui.title}>
             Save more on every trip
           </h2>
-          <p className={ui.lead}>A welcome code for your first trip, and lower daily rates the longer you drive.</p>
+          <p className={ui.lead}>₹350 off your first trip, a free hour on every trip after, and lower daily rates the longer you drive.</p>
         </div>
 
         <div className={styles.grid}>
@@ -97,8 +96,11 @@ export default function Offers() {
               <span>off</span>
             </p>
             <h3 className={styles.heroTitle}>on your first booking</h3>
-            <CopyCode code="FIRSTMILES" />
-            <p className={styles.fine}>Apply the code at checkout on your first trip with MM Miles.</p>
+            <p className={styles.auto}>
+              <Check size={16} strokeWidth={2.4} aria-hidden="true" />
+              No code needed
+            </p>
+            <p className={styles.fine}>Taken off automatically at checkout. After that, every trip comes with a free hour.</p>
           </article>
 
           {/* Long trips */}

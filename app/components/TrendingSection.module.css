@@ -3,7 +3,7 @@
   background: #fef9f5;
   text-align: center;
   padding: 60px 100px 20px;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--mm-font);
   overflow: hidden;
 }
 
@@ -11,7 +11,7 @@
   background: #fef9f5;
   text-align: center;
   padding: 20px 100px 0px;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--mm-font);
   overflow: hidden;
 }
 
@@ -20,7 +20,7 @@
     margin-bottom: -4px;
     font-size: 30px;
     font-weight: bold;
-    font-family: Frank Ruhl Libre;
+    font-family: var(--mm-font);
 }
 
 .trendy-subheading {
@@ -28,7 +28,7 @@
   font-size: 1.1rem;
   color: #555;
   margin-bottom: 0px;
-  font-family: poppins;
+  font-family: var(--mm-font);
   font-weight: 500;
 }
 
@@ -198,7 +198,7 @@
   background: #fef9f5;
   text-align: center;
   padding: 20px 10px 20px;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--mm-font);
   overflow: hidden;
 }
 .trendy-heading {

@@ -69,13 +69,13 @@
 }
 
 .nameTag b {
-  font-size: max(11px, calc(15px - var(--mm-text-trim)));
+  font-size: max(calc(11px + var(--mm-text-plus)), calc(15px - var(--mm-text-trim)));
   font-weight: 600;
 }
 
 .nameTag small {
   color: var(--mm-muted);
-  font-size: max(11px, calc(12.5px - var(--mm-text-trim)));
+  font-size: max(calc(11px + var(--mm-text-plus)), calc(12.5px - var(--mm-text-trim)));
 }
 
 .float {
@@ -118,13 +118,13 @@
 }
 
 .fText b {
-  font-size: max(11px, calc(14px - var(--mm-text-trim)));
+  font-size: max(calc(11px + var(--mm-text-plus)), calc(14px - var(--mm-text-trim)));
   font-weight: 600;
 }
 
 .fText small {
   color: var(--mm-muted);
-  font-size: 11px;
+  font-size: calc(11px + var(--mm-text-plus));
 }
 
 .fPayout {
@@ -144,7 +144,7 @@
   padding: 10px 14px;
   background: var(--mm-midnight);
   color: var(--mm-on-dark);
-  font-size: max(11px, calc(13.5px - var(--mm-text-trim)));
+  font-size: max(calc(11px + var(--mm-text-plus)), calc(13.5px - var(--mm-text-trim)));
   font-weight: 600;
 }
 
@@ -208,7 +208,7 @@
 
 .mapText > b {
   color: var(--mm-ink);
-  font-size: max(11px, calc(16px - var(--mm-text-trim)));
+  font-size: max(calc(11px + var(--mm-text-plus)), calc(16px - var(--mm-text-trim)));
   font-weight: 600;
 }
 
@@ -217,7 +217,7 @@
   align-items: center;
   gap: 10px;
   color: var(--mm-ink);
-  font-size: max(11px, calc(14px - var(--mm-text-trim)));
+  font-size: max(calc(11px + var(--mm-text-plus)), calc(14px - var(--mm-text-trim)));
   font-weight: 600;
 }
 
@@ -229,7 +229,7 @@
 .cityRow small {
   margin-left: 6px;
   color: var(--mm-muted);
-  font-size: max(11px, calc(12.5px - var(--mm-text-trim)));
+  font-size: max(calc(11px + var(--mm-text-plus)), calc(12.5px - var(--mm-text-trim)));
   font-weight: 500;
 }
 

@@ -2,7 +2,7 @@
   padding: 40px;
   background-color: #FEF9F5;
   min-height: 100vh;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--mm-font);
 }
 
 .results-title {
@@ -61,7 +61,7 @@
   border-radius: 8px;
   border: 1px solid #ddd;
   background: #FEF9F5;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--mm-font);
   font-size: 13px;
   outline: none;
 }

@@ -1,7 +1,7 @@
 .advantage-section {
   background: #f9f4ec;
   padding: 40px 40px 50px;
-  font-family: Arial, sans-serif;
+  font-family: var(--mm-font);
   text-align: center;
 }
 
@@ -19,7 +19,7 @@
   font-weight: 700;
   color: #000;
   margin-bottom: 8px;
-  font-family: Frank Ruhl Libre;
+  font-family: var(--mm-font);
 }
 
 .subtitle {
@@ -27,7 +27,7 @@
   font-size: 16px !important;
   font-weight: 500;
   margin-bottom: 27px;
-  font-family: poppins !important;
+  font-family: var(--mm-font) !important;
 }
 
 .advantage-grid {
@@ -77,14 +77,14 @@
   line-height: 1.4;
   margin-left: 10px;
   width: 160px;
-  font-family: poppins;
+  font-family: var(--mm-font);
 }
 
 @media (max-width: 768px) {
   .advantage-section {
   background: #f9f4ec;
   padding: 30px 20px 35px !important;
-  font-family: Arial, sans-serif;
+  font-family: var(--mm-font);
   text-align: center;
 }
   .advantage-body {
@@ -100,7 +100,7 @@
   font-weight: 700;
   color: #000;
   margin-bottom: 8px;
-  font-family: Frank Ruhl Libre;
+  font-family: var(--mm-font);
 }
 
 .subtitle {
@@ -108,7 +108,7 @@
   font-size: 12px !important;
   font-weight: 500;
   margin-bottom: 27px;
-  font-family: poppins !important;
+  font-family: var(--mm-font) !important;
 }
   .advantage-card img {
   width: 30px;

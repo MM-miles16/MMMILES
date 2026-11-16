@@ -115,7 +115,7 @@
 .context {
   margin: 1px 0 0;
   color: var(--mm-muted);
-  font-size: max(11px, calc(13px - var(--mm-text-trim)));
+  font-size: max(calc(11px + var(--mm-text-plus)), calc(13px - var(--mm-text-trim)));
 }
 
 .midnight .name {

@@ -89,7 +89,7 @@
 
 .hregHeader h2{
   font-size:28px;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
   line-height:1;
   letter-spacing: 1%;
 
@@ -102,7 +102,7 @@
 
 .hregHeader p{
   font-size:16px;
-  font-family: poppins;
+  font-family: var(--mm-font);
   color:#8c8c8c;
   padding-left: 2px;
   margin:0;
@@ -116,7 +116,7 @@
   display:block;
 
   font-size:15px;
-  font-family: poppins;
+  font-family: var(--mm-font);
   font-weight:600;
 
   color:#707070;
@@ -133,7 +133,7 @@
 
   border-radius:12px;
   font-weight: 600;
-  font-family: poppins;
+  font-family: var(--mm-font);
   background:#fff;
   color: #707070;
   padding:0 16px;
@@ -163,7 +163,7 @@
   background:#f2f2f2;
 
   color:#000000;
-  font-family: poppins;
+  font-family: var(--mm-font);
   font-size:15px;
 
   font-weight:600;
@@ -303,7 +303,7 @@
 
   font-size:14px;
 
-  font-family:poppins;
+  font-family: var(--mm-font);
 
   color:#555;
 
@@ -345,7 +345,7 @@
 
   color:#06c100;
 
-  font-family:poppins;
+  font-family: var(--mm-font);
 }
 
 
@@ -369,7 +369,7 @@
 
   color:#7d7d7d;
 
-  font-family:poppins;
+  font-family: var(--mm-font);
 }
 
 .hregFailedButtons{
@@ -399,7 +399,7 @@
 
   font-weight:600;
 
-  font-family:poppins;
+  font-family: var(--mm-font);
 
   cursor:pointer;
 
@@ -450,7 +450,7 @@
 
   color:#555;
 
-  font-family:poppins;
+  font-family: var(--mm-font);
 }
 
 
@@ -512,7 +512,7 @@
 
   margin-bottom:12px;
 
-  font-family:var(--font-ibm-plex);
+  font-family: var(--mm-font);
 }
 
 .hregSuccessCard h3{
@@ -524,7 +524,7 @@
 
   margin-bottom:30px;
 
-  font-family:poppins;
+  font-family: var(--mm-font);
 }
 
 .hregSuccessButtons{
@@ -587,7 +587,7 @@
 
   color:#555;
 
-  font-family:poppins;
+  font-family: var(--mm-font);
 }
 
 /* MOBILE */
@@ -639,7 +639,7 @@
     line-height:1.6;
     font-weight: 500;
     color:#858585;
-    font-family:poppins;
+    font-family: var(--mm-font);
   }
 }
 

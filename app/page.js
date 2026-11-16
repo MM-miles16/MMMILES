@@ -193,7 +193,7 @@ export default async function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
 
-      <main className={ui.homeType}>
+      <main className={ui.homeType} data-mm>
         {/* Hero search and fleet share the selected city and dates */}
         <CityProvider>
           <LandingHero summary={summary} />

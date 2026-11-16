@@ -39,7 +39,7 @@ const COLUMNS = [
 // directory: the area / car link directory (server-rendered, passed in through LayoutWrapper)
 export default function SiteFooter({ directory }) {
   return (
-    <footer id="global-footer" className={styles.footer}>
+    <footer id="global-footer" data-mm className={styles.footer}>
       <div className={styles.card}>
         <div className={styles.top}>
           <div className={styles.brand}>

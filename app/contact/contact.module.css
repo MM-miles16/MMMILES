@@ -5,7 +5,7 @@
   padding: 20px var(--mm-gutter) 0px;
   min-height: 60vh !important; /* Ensure it takes full viewport height */
   background-color: #FEF9F5; /* A light background color */
-  font-family: Arial, sans-serif; /* Or your preferred font */
+  font-family: var(--mm-font); /* Or your preferred font */
 }
 }
 .ccontainer {
@@ -13,7 +13,7 @@
   padding: 20px var(--mm-gutter) 0px;
   min-height: 100vh; /* Ensure it takes full viewport height */
   background-color: #FEF9F5; /* A light background color */
-  font-family: Arial, sans-serif; /* Or your preferred font */
+  font-family: var(--mm-font); /* Or your preferred font */
 }
 
 /* --- Left Section Styles --- */
@@ -36,26 +36,26 @@
   font-weight: 700;
   color: #333;
   margin-bottom: 6px;
-  font-family: Frank Ruhl Libre;
+  font-family: var(--mm-font);
 }
 
 .cemail {
   font-size: 16px;
   font-weight: 400;
   color: #666;
-  font-family: poppins;
+  font-family: var(--mm-font);
 }
 .cphone {
   font-size: 16px;
   font-weight: 400;
   color: #666;
   margin-bottom: 5px;
-  font-family: poppins;
+  font-family: var(--mm-font);
 }
 .csectionTitle {
   font-size: 32px;
   font-weight: 700;
-  font-family: Frank Ruhl Libre;
+  font-family: var(--mm-font);
   color: #333;
   margin-top: 20px;
   margin-bottom: 6px;
@@ -83,7 +83,7 @@
 .caddress {
   font-size: 16px;
   font-weight: 400;
-  font-family: poppins;
+  font-family: var(--mm-font);
   color: #666;
   line-height: 1.6;
   margin-bottom: 20px;
@@ -180,7 +180,7 @@
     padding: 20px 20px 0px;
     min-height: 50vh; /* Ensure it takes full viewport height */
     background-color: #FEF9F5; /* A light background color */
-    font-family: Arial, sans-serif; /* Or your preferred font */
+    font-family: var(--mm-font); /* Or your preferred font */
   }
   .cemail {
   font-size: 14px;

@@ -9,7 +9,7 @@
   font-weight: 700;
   padding: 60px var(--mm-gutter);
   background-color: #FEF9F5;
-  font-family: Frank Ruhl Libre;
+  font-family: var(--mm-font);
 }
 
 .subtitle {
@@ -17,7 +17,7 @@
   font-size: 16px;
   font-weight: 500;
   margin-bottom: 25px;
-  font-family: poppins;
+  font-family: var(--mm-font);
 }
 
 .slider {
@@ -105,7 +105,7 @@
   font-weight: 700;
   padding: 20px 20px !important;
   background-color: #FEF9F5;
-  font-family: Frank Ruhl Libre;
+  font-family: var(--mm-font);
 }
 
 .subtitle {
@@ -113,7 +113,7 @@
   font-size: 12px;
   font-weight: 500;
   margin-bottom: 25px;
-  font-family: poppins;
+  font-family: var(--mm-font);
 }
 
   .slideTrack {
@@ -132,5 +132,12 @@
     padding: 4px 10px;
     border-radius: 10px;
     font-size: 10px;
+  }
+}
+
+/* Phones: the shared type scale (styles/tokens.css) */
+@media (max-width: 760px) {
+  .label {
+    font-size: var(--mm-fs-label);
   }
 }

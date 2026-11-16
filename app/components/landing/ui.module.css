@@ -1,9 +1,10 @@
 /* Shared building blocks for the redesigned landing page (tokens in styles/tokens.css) */
 
-/* Homepage <main>: every landing font size is 3px smaller (see --mm-text-trim in tokens.css);
-   text that only inherits the page size drops from 16px to 13px too */
+/* Homepage <main>: landing font sizes are 3px smaller than their base values on phones and tablets,
+   and 1px smaller on desktops and laptops, which get --mm-text-plus (see tokens.css); text that only
+   inherits the page size is 13px / 15px */
 .homeType {
-  --mm-text-trim: 3px;
+  --mm-text-trim: calc(3px - var(--mm-text-plus));
   font-size: calc(16px - var(--mm-text-trim));
 }
 
@@ -39,7 +40,7 @@
   padding: 0 var(--mm-gutter);
 }
 
-/* ── Section heading: eyebrow pill + title + lead ── */
+/* ── Section heading: title + lead ── */
 /* Wide enough that the one-line descriptions stay on one line from tablets up */
 .head {
   max-width: 880px;
@@ -59,20 +60,6 @@
 .headRow .head {
   margin: 0;
   text-align: left;
-}
-
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0 0 10px;
-  padding: 6px 14px;
-  border-radius: var(--mm-radius-pill);
-  background: var(--mm-lavender-soft);
-  color: var(--mm-lavender-deep);
-  font-size: max(11px, calc(13px - var(--mm-text-trim)));
-  font-weight: 600;
-  letter-spacing: 0.01em;
 }
 
 .title {

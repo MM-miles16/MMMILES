@@ -27,13 +27,13 @@
   margin: 0;
   color: var(--mm-on-dark);
   font-family: var(--mm-font);
-  font-size: 16px;
+  font-size: calc(16px + var(--mm-text-plus));
   font-weight: 600;
 }
 
 .count {
   color: var(--mm-on-dark-muted);
-  font-size: 12.5px;
+  font-size: calc(12.5px + var(--mm-text-plus));
 }
 
 .chevron {
@@ -54,7 +54,7 @@
   overflow: hidden;
   padding: 5px 0;
   color: var(--mm-on-dark-muted);
-  font-size: 13.5px;
+  font-size: calc(13.5px + var(--mm-text-plus));
   line-height: 1.4;
   text-decoration: none;
   text-overflow: ellipsis;
@@ -118,7 +118,7 @@
 
   .title {
     flex: 1;
-    font-size: 15px;
+    font-size: calc(15px + var(--mm-text-plus));
   }
 
   .chevron {
@@ -140,7 +140,7 @@
 
   .links a {
     padding: 7px 0;
-    font-size: 13px;
+    font-size: calc(13px + var(--mm-text-plus));
   }
 
   /* "Car rental in" / "in Chennai" are already in the group title: hide them visually only */
@@ -158,5 +158,20 @@
 @media (prefers-reduced-motion: reduce) {
   .chevron {
     transition: none;
+  }
+}
+
+/* Phones: the shared type scale (styles/tokens.css) */
+@media (max-width: 760px) {
+  .title {
+    font-size: var(--mm-fs-title);
+  }
+
+  .links a {
+    font-size: var(--mm-fs-body);
+  }
+
+  .count {
+    font-size: var(--mm-fs-label);
   }
 }

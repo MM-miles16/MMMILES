@@ -49,7 +49,7 @@
   padding: 6px 10px;
   border-radius: 9px;
   font-family: var(--mm-font);
-  font-size: max(11px, calc(13px - var(--mm-text-trim)));
+  font-size: max(calc(11px + var(--mm-text-plus)), calc(13px - var(--mm-text-trim)));
   font-weight: 600;
   line-height: 1.2;
   white-space: nowrap;

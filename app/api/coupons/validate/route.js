@@ -48,6 +48,14 @@ export async function POST(request) {
       }, { status: 400 });
     }
 
+    // Personal coupons (referral rewards) work only for the account they belong to
+    if (coupon.assigned_user_id) {
+      const owner = getUserFromRequest(request);
+      if (!owner?.sub || owner.sub !== coupon.assigned_user_id) {
+        return NextResponse.json({ valid: false, message: 'Invalid coupon code' }, { status: 400 });
+      }
+    }
+
     // 1. Check if coupon is active
     if (!coupon.is_active) {
       return NextResponse.json({ 

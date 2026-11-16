@@ -34,7 +34,7 @@
   color: #ceccba !important;
   font-size: 15px;
   
-  font-family: poppins;
+  font-family: var(--mm-font);
   text-decoration: none !important;
   transition: color 0.3s ease, transform 0.3s ease;
 }

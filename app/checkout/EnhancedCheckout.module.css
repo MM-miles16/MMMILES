@@ -144,7 +144,7 @@
 
 .summaryTitle {
   margin: 0 0 16px 0;
-  font-family: "Playfair Display", serif;
+  font-family: var(--mm-font);
   font-size: 18px;
   color: #111827;
   font-weight: 700;
@@ -305,7 +305,7 @@
 
 .title {
   margin: 0;
-  font-family: poppins;
+  font-family: var(--mm-font);
   font-size: 22px;
   /* Slightly larger */
   color: #0b1722;
@@ -356,7 +356,7 @@
 .price {
   font-weight: 800;
   font-size: 26px;
-  font-family: poppins;
+  font-family: var(--mm-font);
   color: #081026;
   display: flex;
   align-items: baseline;
@@ -511,7 +511,7 @@
 
 .summaryTitle {
   margin: 0 0 12px 0;
-  font-family: "Playfair Display", serif;
+  font-family: var(--mm-font);
   font-size: 20px;
   color: #0b1722;
   font-weight: 700;
@@ -776,6 +776,98 @@
   outline: none;
   border-color: #d5ae7e;
   box-shadow: 0 0 0 2px rgba(213, 174, 126, 0.1);
+}
+
+/* Delivery address: pick a saved address (dashboard) or type another */
+.addrPick {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.formGroup .addrOption {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--mm-border, #ebebf0);
+  border-radius: 16px;
+  background: #fff;
+  font-weight: 400;
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+
+.formGroup .addrOption:hover {
+  border-color: #cfcfd8;
+}
+
+.formGroup .addrOptionOn,
+.formGroup .addrOptionOn:hover {
+  border-color: var(--mm-midnight, #22222e);
+  background: var(--mm-lavender-soft, #eee8fc);
+}
+
+.formGroup .addrOption input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  padding: 0;
+  accent-color: var(--mm-midnight, #22222e);
+  cursor: pointer;
+}
+
+.formGroup .addrOption input:focus-visible {
+  outline: 2px solid var(--mm-lavender-deep, #6b57c4);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+.addrOptionText {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.addrOptionName {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: var(--mm-ink, #16161d);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.addrOptionTag {
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--mm-lavender-deep, #6b57c4);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.addrOptionLine {
+  color: var(--mm-ink-2, #4f4f5a);
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.addrManage {
+  display: inline-block;
+  margin-top: 10px;
+  color: var(--mm-lavender-deep, #6b57c4);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 .saveBtn {
@@ -1323,7 +1415,7 @@
   font-weight: 700;
   color: #111827;
   margin: 0;
-  font-family: 'Poppins', sans-serif;
+  font-family: var(--mm-font);
 }
 
 .bookingResultMessage {
@@ -1686,7 +1778,7 @@
 }
 
 .feedbackTitle {
-  font-family: 'Poppins', sans-serif;
+  font-family: var(--mm-font);
   font-size: 22px;
   font-weight: 700;
   color: #111827;

@@ -40,7 +40,6 @@ export default function WhyMMMiles() {
     <section className={`${ui.section} ${styles.section}`} aria-labelledby="why-title">
       <div className={ui.container}>
         <div className={`${ui.head} ${styles.head}`}>
-          <p className={ui.eyebrow}>Why MM Miles</p>
           <h2 id="why-title" className={ui.title}>
             Self-drive, without the usual hassle
           </h2>

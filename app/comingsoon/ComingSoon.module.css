@@ -9,7 +9,7 @@
   padding: 50px 120px;
   background: #000;
   color: rgb(195, 199, 202);
-  font-family: "Poppins", sans-serif;
+  font-family: var(--mm-font);
   overflow: hidden;
 }
 
@@ -23,7 +23,7 @@
 
 .ComingSooncity {
   text-align: center;
-  font-family: "Playfair Display", serif;
+  font-family: var(--mm-font);
   font-size: 46px;
   margin-bottom: -20px;
   font-weight: 600;
@@ -60,7 +60,7 @@
 }
 
 .ComingSoonright h2 {
-  font-family: poppins;
+  font-family: var(--mm-font);
   font-size: 28px;
   font-weight: 600;
   line-height: 144.8%;

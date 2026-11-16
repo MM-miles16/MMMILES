@@ -246,3 +246,10 @@
     color: #6b7280;
     font-weight: 500;
 }
+
+/* Phones: the shared type scale (styles/tokens.css) */
+@media (max-width: 760px) {
+  .ratingText {
+    font-size: var(--mm-fs-label);
+  }
+}

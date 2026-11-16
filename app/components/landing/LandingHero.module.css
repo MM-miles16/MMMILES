@@ -113,7 +113,7 @@
   padding: 14px 18px;
   background: var(--mm-midnight);
   color: var(--mm-on-dark-muted);
-  font-size: max(11px, calc(13px - var(--mm-text-trim)));
+  font-size: max(calc(11px + var(--mm-text-plus)), calc(13px - var(--mm-text-trim)));
 }
 
 .floatPrice strong {
@@ -125,14 +125,14 @@
 
 .floatPrice small {
   margin-left: 3px;
-  font-size: max(11px, calc(13px - var(--mm-text-trim)));
+  font-size: max(calc(11px + var(--mm-text-plus)), calc(13px - var(--mm-text-trim)));
   font-weight: 500;
   color: var(--mm-on-dark-muted);
 }
 
 .allIn {
   margin-top: 2px;
-  font-size: 11px;
+  font-size: calc(11px + var(--mm-text-plus));
   color: var(--mm-lavender);
 }
 
@@ -167,7 +167,7 @@
 }
 
 .floatText span {
-  font-size: max(11px, calc(12px - var(--mm-text-trim)));
+  font-size: max(calc(11px + var(--mm-text-plus)), calc(12px - var(--mm-text-trim)));
   color: var(--mm-muted);
 }
 
@@ -255,7 +255,7 @@
 
   .kicker {
     margin-bottom: 16px;
-    font-size: max(11px, calc(13px - var(--mm-text-trim)));
+    font-size: max(calc(11px + var(--mm-text-plus)), calc(13px - var(--mm-text-trim)));
   }
 
   .lead {
@@ -312,5 +312,12 @@
 @media (prefers-reduced-motion: reduce) {
   .float {
     animation: none;
+  }
+}
+
+/* Phones: the shared type scale (styles/tokens.css) */
+@media (max-width: 760px) {
+  .lead {
+    font-size: var(--mm-fs-body);
   }
 }

@@ -69,7 +69,7 @@ export default function Counter({ value, label, styles }) {
     return (
         <div ref={counterRef} className={styles.statItem}>
             <div className={styles.statIconBackground}></div> 
-            <p className={styles.statNumber}>{count}</p>
+            <p className={styles.statNumber} data-mm-keep>{count}</p>
             <p className={styles.statLabel}>{label}</p>
         </div>
     );

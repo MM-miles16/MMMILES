@@ -5,9 +5,19 @@
   box-sizing: border-box;
 }
 
+/* Every page starts from the landing page's base: its font (Poppins via --mm-font, styles/tokens.css),
+   ink colour and white background (was cream #FEF9F5, ink #111) */
 body {
- 
-  background: #FEF9F5;
-  color: #111;
+  background: var(--mm-bg, #fff);
+  color: var(--mm-ink, #16161d);
+  font-family: var(--mm-font);
   line-height: 1.6;
+}
+
+/* Form controls don't inherit the page font by default (they fell back to Arial) */
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
 }

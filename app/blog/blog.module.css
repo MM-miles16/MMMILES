@@ -14,7 +14,7 @@
   background: #FEF9F5;
   min-height: 100vh;
   padding-bottom: 80px;
-  font-family: "Inter", sans-serif;
+  font-family: var(--mm-font);
 }
 
 .blogListInner {
@@ -86,7 +86,7 @@
   border-radius: 99px;
   color: #7a5c2e;
   font-weight: 600;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--mm-font);
 }
 
 .blogCardTitle {
@@ -122,13 +122,13 @@
 .blogCardDate {
   font-size: 12px;
   color: #999;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--mm-font);
 }
 
 .blogCardReadTime {
   font-size: 12px;
   color: #999;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--mm-font);
 }
 
 .blogCardReadMore {
@@ -150,7 +150,7 @@
   background: #FEF9F5;
   min-height: 100vh;
   padding-bottom: 80px;
-  font-family: "Inter", sans-serif;
+  font-family: var(--mm-font);
 }
 
 .postInner {
@@ -189,7 +189,7 @@
   border-radius: 99px;
   color: #7a5c2e;
   font-weight: 600;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--mm-font);
 }
 
 /* Title */
@@ -199,7 +199,7 @@
   color: #1f1f1f;
   line-height: 1.3;
   margin-bottom: 14px;
-  font-family: Frank Ruhl Libre;
+  font-family: var(--mm-font);
 }
 
 
@@ -211,7 +211,7 @@
   color: #999;
   margin-bottom: 28px;
   flex-wrap: wrap;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--mm-font);
 }
 
 /* Cover image */
@@ -264,7 +264,7 @@
   line-height: 1.85;
   color: #555;
   margin-bottom: 18px;
-  font-family:poppins;
+  font-family: var(--mm-font);
 }
 
 /* List */
@@ -291,7 +291,7 @@
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--mm-font);
 }
 
 .blockTable thead tr th {
@@ -341,7 +341,7 @@
   color: #5b4d39;
   line-height: 1.7;
   margin: 0;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--mm-font);
   font-weight: 500;
 }
 
@@ -363,7 +363,7 @@
   color: #9a3412;
   line-height: 1.7;
   margin: 0;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--mm-font);
 }
 
 /* Car cards */
@@ -444,7 +444,7 @@
   color: #999;
   text-align: center;
   margin-top: 8px;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--mm-font);
 }
 
 /* CTA block */
@@ -463,7 +463,7 @@
   color: #333;
   margin-bottom: 18px;
   line-height: 1.6;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--mm-font);
   font-weight: 500;
 }
 
@@ -552,7 +552,7 @@
   line-height: 1.75;
   padding: 0 20px 16px;
   margin: 0;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--mm-font);
 }
 
 /* ─── BOOK YOUR CAR SECTION ─────────────────────────────────── */
@@ -589,7 +589,7 @@
   font-weight: 600;
   background: #fff;
   transition: all 0.3s ease;
-  font-family: "Poppins", sans-serif;
+  font-family: var(--mm-font);
 }
 
 .bookLink:hover {
@@ -704,7 +704,7 @@
     color: #000;
     margin-bottom: 2px;
     text-align: center;
-    font-family: Frank Ruhl Libre;
+    font-family: var(--mm-font);
   }
 
   .blogListSubtitle {
@@ -723,7 +723,7 @@
     border-radius: 99px;
     color: #7a5c2e;
     font-weight: 600;
-    font-family: "Poppins", sans-serif;
+    font-family: var(--mm-font);
 }
 
     .blogCardTitle {
@@ -746,14 +746,14 @@
         font-size: 12px;
         color: #999;
         font-weight: 500;
-        font-family: "Poppins", sans-serif;
+        font-family: var(--mm-font);
     }
 
     .blogCardReadTime {
         font-size: 12px;
         color: #999;
         font-weight: 500;
-        font-family: "Poppins", sans-serif;
+        font-family: var(--mm-font);
     }
 
     .postTags {
@@ -766,14 +766,14 @@
       color: #1f1f1f;
       line-height: 1.3;
       margin-bottom: 14px;
-      font-family: Frank Ruhl Libre;
+      font-family: var(--mm-font);
     }
     .blockParagraph {
       font-size: 12px !important;
       line-height: 1.75;
       color: #555;
       margin-bottom: 18px;
-      font-family:poppins;
+      font-family: var(--mm-font);
     }
     .quickStatValue {
         font-size: 14px !important;
@@ -787,7 +787,7 @@
         color: #5b4d39;
         line-height: 1.7;
         margin: 0;
-        font-family: "Poppins", sans-serif;
+        font-family: var(--mm-font);
         font-weight: 500;
     }
 
@@ -802,7 +802,7 @@
         color: #333;
         margin-bottom: 18px;
         line-height: 1.6;
-        font-family: "Poppins", sans-serif;
+        font-family: var(--mm-font);
         font-weight: 500;
     }
 
@@ -876,7 +876,7 @@
     padding: 0 15px 16px;
     margin: 0;
     font-weight: 500;
-    font-family: "Poppins", sans-serif;
+    font-family: var(--mm-font);
 }
 
   .bookLink {
@@ -991,4 +991,22 @@
   font-size: 13px;
   color: #666;
   line-height: 1.6;
+}
+
+/* Phones: the shared type scale (styles/tokens.css) */
+@media (max-width: 760px) {
+  .blogCardTag,
+  .bookLink {
+    font-size: var(--mm-fs-label);
+  }
+
+  .blogCardTitle,
+  .carCardName {
+    font-size: var(--mm-fs-title);
+  }
+
+  .blogCardReadMore,
+  .authorBioText {
+    font-size: var(--mm-fs-body);
+  }
 }

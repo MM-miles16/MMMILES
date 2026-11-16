@@ -8,6 +8,9 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { estimatePrice } from "../../../lib/pricing";
 import { formatDuration, formatINR, tripPrice, WEEKEND_SURGE } from "../../../lib/tripPrice";
+import { formatTripTime, parseTripTime, startingSearch } from "../../../lib/searchDefaults";
+import { asShowcase, isShowcaseView } from "../../../lib/showcase";
+import UnavailableDialog from "../../components/UnavailableDialog";
 import { supabase } from "../../../lib/supabaseClient";
 import Loading from "../../components/Loading";
 import EmptyState from "../../components/EmptyState";
@@ -40,8 +43,21 @@ export default function CarPage() {
   const pickup = searchParams.get("pickup") || searchParams.get("pickupTime");
   const returnTime = searchParams.get("return") || searchParams.get("returnTime");
 
+  // No dates in the link (shared link, Google, typed URL) or a pickup that has already passed:
+  // use the visitor's saved dates, else tomorrow 9 AM → day after 9 AM, so prices and Book work
+  const needsDates = !pickup || !returnTime || !(parseTripTime(pickup) > new Date());
   useEffect(() => {
-    if (pickup && returnTime) {
+    if (!needsDates) return;
+    const { start, end } = startingSearch();
+    const params = new URLSearchParams(searchParams.toString());
+    ["pickupTime", "returnTime"].forEach((k) => params.delete(k));
+    params.set("pickup", formatTripTime(start));
+    params.set("return", formatTripTime(end));
+    router.replace(`/car/${id}?${params}`, { scroll: false });
+  }, [needsDates, id, searchParams, router]);
+
+  useEffect(() => {
+    if (pickup && returnTime && !needsDates) {
         // Helper to parse "DD/MM/YYYY HH:MM"
         const parseDateTime = (str) => {
             if (!str) return null;
@@ -77,9 +93,10 @@ export default function CarPage() {
             }
         }
     }
-  }, [pickup, returnTime, router]);
+  }, [pickup, returnTime, needsDates, router]);
 
-  const [car, setCar] = useState(null);
+  const [rawCar, setCar] = useState(null);
+  const [showUnavailable, setShowUnavailable] = useState(false); // Bengaluru preview car: Book was tapped
   const [host, setHost] = useState(null);
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -143,6 +160,12 @@ export default function CarPage() {
   }
 
   if (loading) return <Loading fullScreen={true} />;
+
+  // Bengaluru preview car (lib/showcase): a Chennai car opened from Bengaluru's fleet or search.
+  // Shown as a Bengaluru car; Chennai-only details are hidden and it can't be booked yet.
+  const showcase = isShowcaseView(rawCar, searchParams.get("city"));
+  const car = showcase ? asShowcase(rawCar) : rawCar;
+
   if (!car) return (
     <EmptyState 
       icon="🚗"
@@ -373,8 +396,25 @@ export default function CarPage() {
               carId={id}
               pickup={pickup}
               returnTime={returnTime}
+              showcase={showcase}
+              onShowcaseBook={() => setShowUnavailable(true)}
             />
           </div>
+          {showcase && (
+            <UnavailableDialog
+              open={showUnavailable}
+              onClose={() => setShowUnavailable(false)}
+              carName={`${car.make} ${car.model}`}
+              city={car.city}
+              image={(() => {
+                const all = car.vehicle_images || [];
+                const cover = all.find((i) => i.is_primary) || all[0];
+                return cover ? getFullImageUrl(cover.image_url) : null;
+              })()}
+              pickup={pickup}
+              returnTime={returnTime}
+            />
+          )}
         </div>
       </div>
 
@@ -396,7 +436,8 @@ export default function CarPage() {
 
 
 
-      {/* --- Car Location --- */}
+      {/* --- Car Location (Chennai map and host; not for Bengaluru preview cars) --- */}
+{!showcase && (
 <div className={styles.locationSection}>
   <div className={styles.worldMapContainer}>
 
@@ -428,6 +469,7 @@ export default function CarPage() {
 
   </div>
 </div>
+)}
 
 
 
@@ -466,7 +508,8 @@ export default function CarPage() {
         </div>
       </div>
 
-      {/* --- Explore More Cars Section --- */}
+      {/* --- Explore More Cars Section (not for Bengaluru preview cars: it lists the real city's cars) --- */}
+      {!showcase && (
       <div className={styles.exploreSection}>
         <h2 className={styles.exploreTitle}>Explore more Cars in {car.city}</h2>
         <ExploreMoreCars 
@@ -476,6 +519,7 @@ export default function CarPage() {
           returnTime={returnTime}
         />
       </div>
+      )}
     </div>
   );
 }
@@ -531,7 +575,7 @@ function ExploreMoreCars({ currentCarId, city, pickup, returnTime }) {
   );
 }
 
-function BookNowButton({ carId, pickup, returnTime }) {
+function BookNowButton({ carId, pickup, returnTime, showcase = false, onShowcaseBook }) {
   const router = useRouter();
   const [loggedIn, setLoggedIn] = useState(null);
 
@@ -555,6 +599,11 @@ function BookNowButton({ carId, pickup, returnTime }) {
   }, []);
 
   const handleClick = () => {
+    // Bengaluru preview car: no login or checkout, just the "not available right now" popup
+    if (showcase) {
+      onShowcaseBook?.();
+      return;
+    }
     if (loggedIn === null) return;
 
     if (!loggedIn) {
@@ -567,8 +616,8 @@ function BookNowButton({ carId, pickup, returnTime }) {
   };
 
   return (
-    <button className={styles.bookBtn} onClick={handleClick} disabled={loggedIn === null}>
-      {loggedIn === null ? "Checking Session..." : loggedIn ? "Book Now" : "Login to Continue"}
+    <button className={styles.bookBtn} onClick={handleClick} disabled={!showcase && loggedIn === null}>
+      {showcase ? "Book Now" : loggedIn === null ? "Checking Session..." : loggedIn ? "Book Now" : "Login to Continue"}
     </button>
   );
 }

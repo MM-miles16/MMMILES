@@ -100,6 +100,7 @@ export async function GET(request) {
 
       return {
         id: booking.id,
+        vehicleId: booking.vehicles?.id || null, // dashboard "Book again" opens this car
         title: `${booking.vehicles?.make} ${booking.vehicles?.model}`,
         img: imageUrl,
         rating: 4.5, // Default rating
@@ -127,6 +128,10 @@ export async function GET(request) {
           minute: '2-digit'
         }),
         price: `₹${booking.total_amount || 0}`,
+        amount: Number(booking.total_amount) || 0,
+        paymentId: booking.payment_id || null,
+        appliedCoupon: booking.applied_coupon || null,
+        createdAt: booking.created_at,
         // Additional details for the card
         hostName: booking.hosts?.full_name || 'MM Miles Host',
         hostAddress: booking.vehicles?.location_name || 'Contact host for pickup location',

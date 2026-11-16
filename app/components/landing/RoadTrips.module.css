@@ -78,7 +78,7 @@
   flex-wrap: wrap;
   gap: 4px 10px;
   color: rgba(255, 255, 255, 0.85);
-  font-size: max(11px, calc(12px - var(--mm-text-trim)));
+  font-size: max(calc(11px + var(--mm-text-plus)), calc(12px - var(--mm-text-trim)));
   font-weight: 500;
 }
 
@@ -182,5 +182,12 @@
   .card:hover,
   .card:hover .photo {
     transform: none;
+  }
+}
+
+/* Phones: the shared type scale (styles/tokens.css) */
+@media (max-width: 760px) {
+  .name {
+    font-size: var(--mm-fs-title);
   }
 }

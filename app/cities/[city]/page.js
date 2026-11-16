@@ -162,7 +162,7 @@ export default async function CityPage({ params }) {
       ──────────────────────────────────────────────────────────────────────── */}
       <main>
         <Hero />
-        <HomeContent />
+        <HomeContent city={city.name} />
         <AdvantageSection />
         <OffersSection />
         <DriveDiscoverSection />

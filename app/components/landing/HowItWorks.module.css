@@ -197,7 +197,7 @@
 .stepOf {
   margin-top: 16px;
   color: var(--mm-lavender-deep);
-  font-size: max(11px, calc(12px - var(--mm-text-trim)));
+  font-size: max(calc(11px + var(--mm-text-plus)), calc(12px - var(--mm-text-trim)));
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -287,7 +287,7 @@
 }
 
 .num {
-  font-size: max(11px, calc(13px - var(--mm-text-trim)));
+  font-size: max(calc(11px + var(--mm-text-plus)), calc(13px - var(--mm-text-trim)));
   font-weight: 700;
   letter-spacing: 0.04em;
   color: var(--mm-lavender-deep);

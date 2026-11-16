@@ -16,6 +16,12 @@ function refreshSession() {
   return current;
 }
 
+// Resolves to the current login state, waiting for the first check if it's still running.
+// Use it before sending someone to an account page, so a slow check can't give the wrong answer.
+export function getSession() {
+  return current || refreshSession();
+}
+
 export function useSession() {
   const [loggedIn, setLoggedIn] = useState(false);
 

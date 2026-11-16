@@ -91,7 +91,7 @@ function Gauge({ value, unit, label, p, accent }) {
         </g>
         <circle cx="100" cy="100" r="8" className={styles.hub} />
       </svg>
-      <p className={styles.gaugeValue}>
+      <p className={styles.gaugeValue} data-mm-keep>
         {value}
         {unit && <span>{unit}</span>}
       </p>
@@ -872,7 +872,6 @@ export default function AboutPage() {
       <section className={styles.hero} aria-labelledby="about-title">
         <div className={`${ui.container} ${styles.heroGrid}`}>
           <div className={styles.heroCopy}>
-            <p className={ui.eyebrow}>About MM Miles</p>
             <h1 id="about-title" className={styles.heroTitle}>
               Self-drive, the way it <span>always should have been.</span>
             </h1>
@@ -917,7 +916,7 @@ export default function AboutPage() {
               className={styles.heroSpark}
             />
 
-            <div className={styles.pass}>
+            <div className={styles.pass} data-mm>
               <div className={styles.passHead}>
                 <span className={styles.passBrand}>MM Miles · Self-drive pass</span>
                 <span className={styles.passStatus}>
@@ -1031,7 +1030,6 @@ export default function AboutPage() {
       <section className={ui.section} aria-labelledby="story-title">
         <div className={ui.container}>
           <div className={ui.head}>
-            <p className={ui.eyebrow}>Our story</p>
             <h2 id="story-title" className={ui.title}>
               The road so far
             </h2>
@@ -1085,7 +1083,6 @@ export default function AboutPage() {
       <section className={`${ui.section} ${styles.valuesSection}`} aria-labelledby="values-title">
         <div className={ui.container}>
           <div className={ui.head}>
-            <p className={ui.eyebrow}>What we believe</p>
             <h2 id="values-title" className={ui.title}>
               Five promises behind every booking
             </h2>
@@ -1129,7 +1126,6 @@ export default function AboutPage() {
       <section className={ui.section} aria-labelledby="trips-title">
         <div className={ui.container}>
           <div className={ui.head}>
-            <p className={ui.eyebrow}>Where our renters go</p>
             <h2 id="trips-title" className={ui.title}>
               Roads worth taking
             </h2>
@@ -1159,7 +1155,6 @@ export default function AboutPage() {
       <section className={`${ui.section} ${styles.purposeSection}`} aria-labelledby="purpose-title">
         <div className={ui.container}>
           <div className={ui.head}>
-            <p className={ui.eyebrow}>Why we exist</p>
             <h2 id="purpose-title" className={ui.title}>
               Built around freedom
             </h2>
@@ -1216,7 +1211,6 @@ export default function AboutPage() {
       <section className={`${ui.section} ${styles.sdgSection}`} aria-labelledby="sdg-title">
         <div className={ui.container}>
           <div className={ui.head}>
-            <p className={ui.eyebrow}>Driving responsibly</p>
             <h2 id="sdg-title" className={ui.title}>
               Five global goals
             </h2>

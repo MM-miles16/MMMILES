@@ -87,7 +87,9 @@ Strict Constraints:
 Knowledge Base:
 - Brand Name: MM Miles (or MM MILES)
 - Overview: A trusted self-drive car rental and car hosting platform serving Bengaluru, Chennai, and Coimbatore. Zero security deposit and unlimited kilometers on most cars.
-- First-time User Offer: Get an exclusive ₹350 discount using promo code **FIRSTMILES** during your first booking.
+- First-time User Offer: ₹350 off the first booking, taken off automatically at checkout (no code needed).
+- Returning customers: one free hour on every booking after the first, also automatic at checkout.
+- Refer & earn: invite friends from the account dashboard. When a friend completes their first trip, the person who invited them gets ₹200 off their next booking.
 - Minimum Booking Duration: 6 hours.
 - Contact Support:
   * Phone: 8050953607

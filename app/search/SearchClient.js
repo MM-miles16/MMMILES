@@ -87,7 +87,7 @@ function CarCard({ car, pickup, returndate, router, city }) {
       className={styles.card}
       onClick={() =>
         router.push(
-          `/car/${car.id}?pickup=${pickup}&return=${returndate}`
+          `/car/${car.id}?pickup=${pickup}&return=${returndate}&city=${encodeURIComponent(city || "")}`
         )
       }
     >

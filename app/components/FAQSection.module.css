@@ -11,14 +11,14 @@
   font-weight: 700;
   color: #000;
   margin-bottom: 1px;
-  font-family: Frank Ruhl Libre;
+  font-family: var(--mm-font);
 }
 
 .faqHeader p {
   color: #666;
   font-size: 16px !important;
   font-weight: 500;
-  font-family: poppins;
+  font-family: var(--mm-font);
   margin-bottom: 26px;
  
 }
@@ -67,7 +67,7 @@
 .faqQuestion {
   font-size: 13px !important;
   font-weight: 400;
-  font-family: poppins !important;
+  font-family: var(--mm-font) !important;
 }
 
 /* Plus/Minus icon using CSS bars */
@@ -119,7 +119,7 @@
   color: #c7c0c0;
   line-height: 1.3;
   
-  font-family: poppins;
+  font-family: var(--mm-font);
 }
 
 .show {
@@ -184,4 +184,15 @@
   text-align: center;
 }
   
+}
+
+/* Phones: the shared type scale (styles/tokens.css) */
+@media (max-width: 760px) {
+  .faqQuestion {
+    font-size: var(--mm-fs-item) !important; /* older rules here are !important */
+  }
+
+  .faqAnswer {
+    font-size: var(--mm-fs-body) !important;
+  }
 }

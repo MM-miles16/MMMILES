@@ -2,7 +2,7 @@
 .testimonialSection {
   background-color: #fefbf6;
   padding: 20px var(--mm-gutter);
-  font-family: "Inter", sans-serif;
+  font-family: var(--mm-font);
   text-align: center;
 }
 
@@ -15,7 +15,7 @@
 .testimonialHeading {
   font-size: 40px;
   font-weight: 700;
-  font-family: Frank Ruhl Libre;
+  font-family: var(--mm-font);
   color: #b68b2d;
   margin-bottom: 10px;
   letter-spacing: 0.5px;
@@ -28,7 +28,7 @@
   max-width: 700px;
   margin: 0 auto;
   line-height: 1.6;
-  font-family: poppins;
+  font-family: var(--mm-font);
 }
 
 /* === Grid Layout === */
@@ -70,7 +70,7 @@
   line-height: 1.7;
   margin-bottom: 20px;
   min-height: 120px;
-  font-family: poppins;
+  font-family: var(--mm-font);
 }
 
 /* === Profile === */
@@ -96,13 +96,13 @@
   color: #111;
   font-size: 14px;
   font-weight: 500;
-  font-family: poppins;
+  font-family: var(--mm-font);
 }
 
 .profileRole {
   font-size: 12px;
   font-weight: 500;
-  font-family: poppins;
+  font-family: var(--mm-font);
   color: #777;
 }
 

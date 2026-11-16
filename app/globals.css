@@ -4,7 +4,7 @@ html {
 
 /* Add padding to body to account for the fixed header (height token in styles/tokens.css) */
 body {
-  padding-top: var(--mm-header-h, 60px);
+  padding-top: var(--mm-header-offset, var(--mm-header-h, 60px));
 }
 
 .seo-hidden {

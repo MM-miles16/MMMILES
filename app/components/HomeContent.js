@@ -4,9 +4,10 @@ import { CityProvider } from "../context/CityContext";
 import SearchBar from "../components/SearchBar";
 import FleetSection from "../components/FleetSection";
 
-export default function HomeContent() {
+// city: the page's city on city pages (e.g. "Chennai"), so the search starts there
+export default function HomeContent({ city }) {
   return (
-    <CityProvider>
+    <CityProvider initialCity={city}>
       <SearchBar />
       <FleetSection />
     </CityProvider>

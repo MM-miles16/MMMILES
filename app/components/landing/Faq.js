@@ -14,7 +14,6 @@ export default function Faq({ faqs }) {
     <section className={`${ui.section} ${styles.section}`} aria-labelledby="faq-title">
       <div className={ui.container}>
         <div className={`${ui.head} ${styles.head}`}>
-          <p className={ui.eyebrow}>FAQs</p>
           <h2 id="faq-title" className={ui.title}>
             Questions renters ask most
           </h2>

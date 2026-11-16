@@ -249,7 +249,7 @@
   font-size:22px;
 
   line-height:1.3;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
   color:#111;
 
   font-weight:500;
@@ -270,7 +270,7 @@
   max-width:1380px;
 
   font-size:58px;
-  font-family: var(--font-ibm-plex) !important;
+  font-family: var(--mm-font) !important;
 
   line-height:0.95;
 
@@ -287,7 +287,7 @@
 
 .hpanelSubText{
   font-size:24px;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
 
   line-height:1.2;
 
@@ -306,7 +306,7 @@
 .hpanelHeroBtn{
  padding: 11px 35px;
  margin-top: 25px;
-  font-family: poppins;
+  font-family: var(--mm-font);
   font-size:15px;
   border:none;
   border-radius:18px;
@@ -438,7 +438,7 @@
 
   .hpanelMainHeading{
     font-size:32px !important;
-    font-family: var(--font-ibm-plex);
+    font-family: var(--mm-font);
 
     line-height:1.39;
 
@@ -460,7 +460,7 @@
   .hpanelHeroBtn{
     padding: 11px 27px !important;
     margin-top: 195px;
-    font-family: poppins;
+    font-family: var(--mm-font);
     font-size:13px !important;
     border:none;
     border-radius:18px;
@@ -501,7 +501,7 @@
 
 .hpanelStatCard h2{
   font-size:38px;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
   background: linear-gradient(to right, #D8B480 0%, #BF9860 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -512,7 +512,7 @@
   font-size:16px;
   font-weight:500;
   margin-top: -8px;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
   color:#111;
 }
 
@@ -526,7 +526,7 @@
 
   .hpanelStatCard h2{
     font-size:25px !important;
-    font-family: var(--font-ibm-plex);
+    font-family: var(--mm-font);
     background: linear-gradient(to right, #D8B480 0%, #BF9860 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -537,7 +537,7 @@
     font-size:12px !important;
     font-weight:500;
     margin-top: -8px;
-    font-family: var(--font-ibm-plex);
+    font-family: var(--mm-font);
     color:#111;
   }
 
@@ -559,7 +559,7 @@
     font-size:40px !important;
     line-height:1.2;
     margin-bottom:20px;
-    font-family: var(--font-ibm-plex);
+    font-family: var(--mm-font);
     color:#000000;
     
   }
@@ -595,7 +595,7 @@
   font-size:32px;
   line-height:1.2;
   margin-bottom:15px;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
   color:#000000;
   
 }
@@ -606,7 +606,7 @@
   line-height:1.2;
   font-weight: 500;
   margin-bottom:25px;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
   color:#2d2d2d;
   
 }
@@ -668,7 +668,7 @@
     font-size:24px !important;
     line-height:1.2;
     margin-bottom:10px !important;
-    font-family: var(--font-ibm-plex);
+    font-family: var(--mm-font);
     color:#000000;
     
   }
@@ -679,7 +679,7 @@
     line-height:1.2;
     font-weight: 500;
     margin-bottom:35px !important;
-    font-family: var(--font-ibm-plex);
+    font-family: var(--mm-font);
     color:#2d2d2d;
     
   }
@@ -727,7 +727,7 @@
   font-size:32px;
   line-height:1.2;
   margin-bottom:15px;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
   color:#000000;
   
 }
@@ -738,7 +738,7 @@
   line-height:1.2;
   font-weight: 500;
   margin-bottom:35px;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
   color:#2d2d2d;
   
 }
@@ -831,7 +831,7 @@
     font-size:24px !important;
     line-height:1.4 !important;
     margin-bottom:8px !important;
-    font-family: var(--font-ibm-plex);
+    font-family: var(--mm-font);
     color:#000000;
     
   }
@@ -842,7 +842,7 @@
     line-height:1.4 !important;
     font-weight: 500;
     margin-bottom:15px !important;
-    font-family: var(--font-ibm-plex);
+    font-family: var(--mm-font);
     color:#2d2d2d;
     
   }
@@ -900,7 +900,7 @@
     
     margin:0 auto 20px !important;
     font-size:12px !important;
-    font-family: var(--font-ibm-plex);
+    font-family: var(--mm-font);
     line-height:1.7;
     font-weight:500;
   }
@@ -939,7 +939,7 @@
   .hpanelRegisterBtn{
     width:237px !important;
     height:42px !important;
-    font-family: poppins;
+    font-family: var(--mm-font);
     font-size:12px !important;
 
     border:none;
@@ -1013,7 +1013,7 @@
 
 .hpanelCtaContent h2{
   font-size:33px;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
 
   line-height:1.1;
 
@@ -1030,7 +1030,7 @@
 
 .hpanelCtaSubText{
   font-size:18px;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
 
   color:#242424;
 
@@ -1047,7 +1047,7 @@
   margin:0 auto 50px;
 
   font-size:18px;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
 
   line-height:1.7;
 
@@ -1092,7 +1092,7 @@
 .hpanelRegisterBtn{
   width:247px;
   height:52px;
-  font-family: poppins;
+  font-family: var(--mm-font);
   font-size:16px;
 
   border:none;
@@ -1120,7 +1120,7 @@
 @media(min-width:1440px){
   .hpanelCtaContent h2{
   font-size:38px !important;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
   margin-bottom:14px;
   letter-spacing:0px;
 }
@@ -1129,7 +1129,7 @@
 
 .hpanelCtaSubText{
   font-size:22px !important;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
   margin-bottom:42px;
 }
 
@@ -1138,7 +1138,7 @@
 .hpanelCtaDesc{
   max-width:900px;
   font-size:19px !important;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
   margin-bottom:32px !important;
 }
 
@@ -1225,7 +1225,7 @@
   font-size:32px;
   line-height:1.2;
   margin-bottom:15px;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
   color:#000000;
   
 }
@@ -1236,7 +1236,7 @@
   line-height:1.2;
   font-weight: 500;
   margin-bottom:0px;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
   color:#2d2d2d;
   
 }
@@ -1271,7 +1271,7 @@
 .hpanelFeedbackH3{
   font-size: 22px ;
   font-weight: bold;
-  font-family: poppins;
+  font-family: var(--mm-font);
   color:#3a3a3a;
   margin-bottom: 0px;
 }
@@ -1279,13 +1279,13 @@
 .hpanelFeedbackRole{
   font-size: 14px ;
   font-weight: 600;
-  font-family: poppins;
+  font-family: var(--mm-font);
   color:#757474;
 }
 
 .hpanelFeedbackPara{
   font-size: 12px ;
-  font-family: poppins;
+  font-family: var(--mm-font);
   color:#757474;
   margin-top: 9px;
   justify-content: center;
@@ -1399,7 +1399,7 @@
 
 .hpanelFeedbackHeadingp{
   margin-bottom:40px;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
   color:#2d2d2d;
   
 }
@@ -1438,7 +1438,7 @@
    .hpanelFeedbackH3{
   font-size: 24px ;
   font-weight: bold;
-  font-family: poppins;
+  font-family: var(--mm-font);
   color:#3a3a3a;
   margin-bottom: 3px;
 }
@@ -1446,13 +1446,13 @@
 .hpanelFeedbackRole{
   font-size: 16px ;
   font-weight: 600;
-  font-family: poppins;
+  font-family: var(--mm-font);
   color:#757474;
 }
 
 .hpanelFeedbackPara{
   font-size: 15px ;
-  font-family: poppins;
+  font-family: var(--mm-font);
   color:#757474;
   margin-top: 10px;
   justify-content: center;
@@ -1482,7 +1482,7 @@
     font-size:24px !important;
     line-height:1.2;
     margin-bottom:8px !important;
-    font-family: var(--font-ibm-plex);
+    font-family: var(--mm-font);
     color:#000000;
     
   }
@@ -1493,7 +1493,7 @@
     line-height:1.2;
     font-weight: 500;
     margin-bottom:-38px !important;
-    font-family: var(--font-ibm-plex);
+    font-family: var(--mm-font);
     color:#2d2d2d;
     
   }
@@ -1529,7 +1529,7 @@
 .hpanelFeedbackH3{
   font-size: 16px ;
   font-weight: bold;
-  font-family: poppins;
+  font-family: var(--mm-font);
   color:#3a3a3a;
   margin-bottom: -6px;
 }
@@ -1537,13 +1537,13 @@
 .hpanelFeedbackRole{
   font-size: 10px ;
   font-weight: 600;
-  font-family: poppins;
+  font-family: var(--mm-font);
   color:#757474;
 }
 
 .hpanelFeedbackPara{
   font-size: 10px ;
-  font-family: poppins;
+  font-family: var(--mm-font);
   color:#757474;
   margin-top: 5px;
   justify-content: center;
@@ -1735,7 +1735,7 @@
 
 .hpanelRequestTitle{
   font-size:26px;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
 
   font-weight:700;
 
@@ -1748,7 +1748,7 @@
 
 .hpanelRequestSubtitle{
   font-size:14px;
-  font-family: poppins;
+  font-family: var(--mm-font);
   line-height:1.6;
 
   color:#666;
@@ -1772,7 +1772,7 @@
   margin-bottom:5px;
 
   font-size:17px;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
   font-weight:600;
 
   color:#111;
@@ -1790,7 +1790,7 @@
   padding:0 18px;
 
   font-size:15px;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
   outline:none;
 
   background:#fff;
@@ -1812,7 +1812,7 @@
   display:block;
 
   margin-bottom:5px;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
   font-size:16px;
 
   font-weight:600;
@@ -1935,7 +1935,7 @@
 
 .hpanelRequestFooter h3{
   font-size:16px;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
   font-weight:600;
 
   color:#111;
@@ -1949,7 +1949,7 @@
   background:none;
 
   font-size:28px;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
   font-weight:700;
 
   color:#111;
@@ -2103,7 +2103,7 @@
   color:#fff;
 
   font-size:32px;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
   display:flex;
   align-items:center;
   justify-content:center;
@@ -2111,7 +2111,7 @@
 
 .hpanelSuccessCard h3{
   font-size:22px;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
   font-weight:700;
 
   color:#111;
@@ -2139,4 +2139,11 @@
     transform:scale(1);
   }
 
+}
+
+/* Phones: the shared type scale (styles/tokens.css) */
+@media (max-width: 760px) {
+  .hpanelFeedbackRole {
+    font-size: var(--mm-fs-label);
+  }
 }

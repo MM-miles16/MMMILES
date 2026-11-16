@@ -13,12 +13,8 @@ import {
 } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { useCity } from "../context/CityContext";
-import {
-  parseDateFromSessionStorage,
-  formatDateTimeForDisplay,
-  getToday,
-  formatDateForInput
-} from "../../lib/dateUtils";
+import { formatDateTimeForDisplay } from "../../lib/dateUtils";
+import { defaultPlaceFor, rememberSearch, startingSearch } from "@/lib/searchDefaults";
 import styles from "./SearchBar.module.css";
 import CitySelector from "./CitySelector";
 import CalendarModal from "./CalendarModal";
@@ -165,7 +161,7 @@ const loadGoogleMapsAPI = () => {
 
 export default function SearchBar() {
   const router = useRouter();
-  const { setSelectedCity, setPickupDateTime, setReturnDateTime } = useCity();
+  const { selectedCity, setSelectedCity, setPickupDateTime, setReturnDateTime, setSearchPlace } = useCity();
 
   // Form state
   const [location, setLocation] = useState(LOCATION_PLACEHOLDER);
@@ -199,6 +195,15 @@ export default function SearchBar() {
   // Debounce & abort controller refs
   const debounceRef = useRef(null);
   const abortRef = useRef(null);
+
+  // Other sections (the fleet) can ask for dates: open the calendar on "open-dates".
+  // CalendarModal calls onApply and then onClose, so remember an apply to tell the two apart.
+  const datesAppliedRef = useRef(false);
+  useEffect(() => {
+    const open = () => setIsModalOpen(true);
+    window.addEventListener("open-dates", open);
+    return () => window.removeEventListener("open-dates", open);
+  }, []);
 
   // Pre-load Google Maps API on component mount
   useEffect(() => {
@@ -237,45 +242,55 @@ export default function SearchBar() {
     setActiveQuick(option.key);
   };
 
+  // Start filled in, so the fleet shows trip prices and "Book" works right away: the search saved
+  // earlier in this visit, else Chennai · T Nagar · tomorrow 9 AM → day after 9 AM
+  // (a city page's own city wins — see lib/searchDefaults).
+  const [restored, setRestored] = useState(false);
   useEffect(() => {
-    const saved = sessionStorage.getItem("lastSearchParams");
-    if (saved) {
-      const params = new URLSearchParams(saved);
-      const city = params.get("city");
-      const lat = parseFloat(params.get("lat"));
-      const lon = parseFloat(params.get("lon"));
-      const address = params.get("address");
-      const pickup = params.get("pickupTime");
-      const drop = params.get("returnTime");
+    const start = startingSearch(selectedCity);
+    setLocation(start.city);
+    setSelectedCity(start.city);
 
-      if (city) {
-        setLocation(city);
-        setSelectedCity(city); // Sync CityContext when restoring from sessionStorage
-      }
-
-      if (address) {
-        // 🚫 Prevent manual search from firing again
-        skipNextSearchRef.current = true;
-        setManualInput(address);
-        setCurrentAddress(address);
-      }
-
-      if (lat && lon) {
-        setLatitude(lat);
-        setLongitude(lon);
-      }
-
-      if (pickup)
-        setPickupDate(parseDateFromSessionStorage(pickup));
-      if (drop)
-        setReturnDate(parseDateFromSessionStorage(drop));
+    if (start.place) {
+      // 🚫 Prevent manual search from firing again
+      skipNextSearchRef.current = Boolean(start.place.address);
+      setManualInput(start.place.address);
+      setCurrentAddress(start.place.address);
+      setLatitude(start.place.lat);
+      setLongitude(start.place.lon);
     }
+
+    setPickupDate(start.start);
+    setPickupHour(start.start.getHours());
+    setReturnDate(start.end);
+    setReturnHour(start.end.getHours());
+    // Light up the matching quick chip ("Tomorrow" for the default trip)
+    const quick = buildQuickDates(new Date()).find(
+      (q) => q.start.getTime() === start.start.getTime() && q.end.getTime() === start.end.getTime()
+    );
+    setActiveQuick(quick ? quick.key : null);
+    setRestored(true);
 
     // 🚫 Prevent any auto-search during restore
     setTimeout(() => {
       isRestoringRef.current = false;
     }, 500);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Keep the saved search in step with the bar, so the car page and checkout use the same
+  // city, spot and dates; the spot also goes to the context (the fleet's "Show all" link uses it)
+  useEffect(() => {
+    if (!restored || isDetecting || location === LOCATION_PLACEHOLDER || !pickupDate || !returnDate) return;
+    const place = latitude && longitude ? { address: currentAddress, lat: latitude, lon: longitude } : null;
+    rememberSearch({
+      city: location,
+      place,
+      start: atHour(pickupDate, pickupHour),
+      end: atHour(returnDate, returnHour),
+    });
+    setSearchPlace(place);
+  }, [restored, isDetecting, location, latitude, longitude, currentAddress, pickupDate, pickupHour, returnDate, returnHour, setSearchPlace]);
 
   // Close dropdown and suggestions when clicking outside
   useEffect(() => {
@@ -293,8 +308,17 @@ export default function SearchBar() {
       router.push(`/comingsoon?city=${encodeURIComponent(city)}`);
       return;
     }
+    if (city !== location) {
+      // A spot in the old city no longer applies; Chennai starts at T Nagar, Bengaluru at Koramangala
+      const place = defaultPlaceFor(city);
+      skipNextSearchRef.current = Boolean(place);
+      setManualInput(place?.address || "");
+      setCurrentAddress(place?.address || "");
+      setLatitude(place?.lat ?? null);
+      setLongitude(place?.lon ?? null);
+    }
     setLocation(city);
-    setSelectedCity(city); // Update context for TrendingSection
+    setSelectedCity(city); // Update context for the fleet
     setIsCitySelectorOpen(false);
   };
 
@@ -773,7 +797,7 @@ export default function SearchBar() {
 
   return (
     <>
-      <div className={styles.container}>
+      <div className={styles.container} data-mm>
         <div className={styles.box} role="search" aria-label="Car and Location Search Bar">
           {/* City Selector */}
           <div
@@ -988,8 +1012,13 @@ export default function SearchBar() {
       {isModalOpen && (
         <CalendarModal
           isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          onClose={() => {
+            setIsModalOpen(false);
+            if (!datesAppliedRef.current) window.dispatchEvent(new Event("dates-closed")); // closed without picking dates
+            datesAppliedRef.current = false;
+          }}
           onApply={(start, end) => {
+            datesAppliedRef.current = true;
             setPickupDate(start);
             setPickupHour(start.getHours());
             setReturnDate(end);

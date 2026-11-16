@@ -1,7 +1,12 @@
-/* Fleet section — redesign. Colours, radii and font come from styles/tokens.css */
+/* Our Fleet — a car marketplace grid. One toolbar row, right-aligned: "All-in prices" info
+   and the dates button. Then uniform cards: the photo on a soft stage, name, three specs (seats, gearbox,
+   fuel), the all-in price with the friends split, and a Book button.
+   Wide screens: 4 per row, laptops 3, tablets 2 (by the section's own width). Phones (app-style):
+   scrolling chips and a list of compact horizontal cards, each one tappable.
+   Light motion: cards lift and the car eases forward on hover.
+   Sizes follow the type knobs in styles/tokens.css (--mm-text-trim / --mm-text-plus, phone tokens). */
 
 .section {
-  --gap: 20px;
   background: var(--mm-bg);
   padding: clamp(32px, 5vw, 72px) 0 var(--mm-section-y);
   font-family: var(--mm-font);
@@ -14,169 +19,208 @@
   padding: 0 var(--mm-gutter);
 }
 
-/* Heading uses the shared landing styles (ui.head / ui.eyebrow / ui.title / ui.lead) */
+/* Heading uses the shared landing styles (ui.head / ui.title / ui.lead) */
 
-/* ── Filter pills ── */
-.pills {
+/* ── Toolbar: info and dates, right-aligned ── */
+.toolbar {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  margin: -8px 0 40px;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  margin: -4px 0 16px;
 }
 
-.pill {
+.toolbarEnd {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+}
+
+/* "All-in prices" with its explainer (hover on desktop, tap on phones) */
+.info {
+  position: relative;
+}
+
+.infoBtn,
+.dates {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 46px;
-  padding: 0 22px;
-  border: none;
+  height: 42px;
+  padding: 0 16px;
   border-radius: var(--mm-radius-pill);
-  background: var(--mm-surface);
-  color: var(--mm-ink-2);
   font-family: var(--mm-font);
   font-size: calc(15px - var(--mm-text-trim));
   font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
 }
 
-.pill:hover {
-  background: var(--mm-surface-strong);
+.infoBtn {
+  border: 1px solid #e8e8ee;
+  background: var(--mm-bg);
+  color: var(--mm-ink-2);
 }
 
-.pill:focus-visible,
+.infoBtn:hover {
+  border-color: #cfcfd8;
+}
+
+.infoBtn svg {
+  color: var(--mm-lavender-deep);
+}
+
+.tip {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 5;
+  width: min(300px, 80vw);
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--mm-midnight);
+  color: var(--mm-on-dark);
+  font-size: max(calc(11px + var(--mm-text-plus)), calc(13.5px - var(--mm-text-trim)));
+  font-weight: 500;
+  line-height: 1.5;
+  box-shadow: var(--mm-shadow-md);
+  opacity: 0;
+  visibility: hidden;
+  translate: 0 -4px;
+  transition:
+    opacity 0.18s,
+    translate 0.18s,
+    visibility 0.18s;
+}
+
+.info:hover .tip,
+.tipOpen {
+  opacity: 1;
+  visibility: visible;
+  translate: 0;
+}
+
+/* Dates: lavender call to action; shows the trip length once picked */
+.dates {
+  border: 1px solid transparent;
+  background: var(--mm-lavender-soft);
+  color: var(--mm-lavender-deep);
+}
+
+.dates:hover {
+  border-color: var(--mm-lavender);
+}
+
+.datesSet {
+  border-color: #e8e8ee;
+  background: var(--mm-bg);
+  color: var(--mm-ink);
+}
+
+.datesSet svg {
+  color: var(--mm-lavender-deep);
+}
+
 .card:focus-visible,
+.infoBtn:focus-visible,
+.dates:focus-visible,
+.moreBtn:focus-visible,
 .retry:focus-visible {
   outline: 2px solid var(--mm-ink);
   outline-offset: 3px;
 }
 
-.pillActive,
-.pillActive:hover {
-  background: var(--mm-midnight);
-  color: var(--mm-on-ink);
-  box-shadow: var(--mm-shadow-pill);
-}
-
-.pillCount {
-  font-size: max(11px, calc(12px - var(--mm-text-trim)));
-  opacity: 0.55;
-}
-
-/* ── Grid: 3 large on the first row, up to 4 smaller centred below ── */
+/* ── Grid ── */
 .grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--gap);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.itemLarge {
-  flex: 0 0 calc((100% - 2 * var(--gap)) / 3);
+/* One row: cards past the first row stay hidden (2, 3 or 4 per row by width); "Show all" opens
+   the search page. They stay in the page, so search engines and screen readers still see every car. */
+.grid > li:nth-child(n + 3) {
+  display: none;
 }
 
-.itemSmall {
-  flex: 0 0 calc((84% - 3 * var(--gap)) / 4);
-}
-
-.itemLarge .card {
-  aspect-ratio: 5 / 4;
-}
-
-.itemSmall .card {
-  aspect-ratio: 1 / 1;
-}
-
-/* Full-width pages: on wide grids the cards get wider rather than taller, so a row stays the
-   same height as on a 1240px layout */
-@container fleet (min-width: 1300px) {
-  .itemLarge .card {
-    aspect-ratio: 16 / 10;
+@container fleet (min-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .itemSmall .card {
-    aspect-ratio: 5 / 4;
+  .grid > li:nth-child(3) {
+    display: block;
+  }
+
+  .more[data-count="3"] {
+    display: none;
+  }
+}
+
+@container fleet (min-width: 1240px) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .grid > li:nth-child(4) {
+    display: block;
+  }
+
+  .more[data-count="4"] {
+    display: none;
   }
 }
 
 /* ── Card ── */
 .card {
-  position: relative;
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 18px 20px 20px;
-  border-radius: var(--mm-radius-lg);
-  background: linear-gradient(180deg, var(--mm-surface) 0%, var(--mm-surface-strong) 100%);
+  overflow: hidden;
+  border: 1px solid #ececf1;
+  border-radius: 22px;
+  background: var(--mm-bg);
   color: inherit;
   text-decoration: none;
-  overflow: hidden;
-  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s;
+  transition:
+    translate 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.35s,
+    border-color 0.35s;
 }
 
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--mm-shadow-md);
-}
-
-.tags {
+.stage {
   position: relative;
-  z-index: 2;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  aspect-ratio: 16 / 10;
+  background: linear-gradient(180deg, #f7f7fa 0%, #eeeef3 100%);
 }
 
-.tag {
-  padding: 6px 12px;
-  border-radius: var(--mm-radius-pill);
-  background: rgba(255, 255, 255, 0.9);
-  color: var(--mm-ink-2);
-  font-size: max(11px, calc(12px - var(--mm-text-trim)));
-  font-weight: 600;
-}
-
-.tagDark {
-  background: var(--mm-lavender);
-  color: var(--mm-ink);
-}
-
-.media {
-  position: relative;
-  flex: 1;
-  min-height: 0;
-  margin: 6px 0 10px;
-}
-
-/* Soft ground shadow under the cut-out car photo */
-.media::after {
+/* Soft ground shadow under the car */
+.stage::after {
   content: "";
   position: absolute;
-  left: 16%;
-  right: 16%;
-  bottom: 6%;
-  height: 12%;
-  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.22) 0%, transparent 70%);
+  right: 18%;
+  bottom: 8%;
+  left: 18%;
+  height: 10%;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.2) 0%, transparent 70%);
   filter: blur(4px);
 }
 
 .image {
   z-index: 1;
+  padding: 10% 6% 6%;
+  scale: 1.08;
   object-fit: contain;
-  /* Some car photos have a white background instead of transparency — blend it into the tile */
+  /* Some car photos have a white background instead of transparency; blend it into the stage */
   mix-blend-mode: multiply;
-  transform: scale(1.1);
-  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.card:hover .image {
-  transform: scale(1.16);
+  transition: scale 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .noImage {
@@ -188,64 +232,158 @@
   font-size: calc(40px - var(--mm-text-trim));
 }
 
-.meta {
-  position: relative;
+.type,
+.badge {
+  position: absolute;
+  top: 12px;
   z-index: 2;
+  padding: 5px 11px;
+  border-radius: var(--mm-radius-pill);
+  font-size: max(calc(11px + var(--mm-text-plus)), calc(12px - var(--mm-text-trim)));
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.type {
+  left: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--mm-ink-2);
+}
+
+.badge {
+  right: 12px;
+  background: var(--mm-lavender);
+  color: var(--mm-ink);
+}
+
+.body {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 12px;
+  flex: 1;
+  flex-direction: column;
+  padding: 16px 18px 18px;
 }
 
 .name {
   margin: 0;
+  color: var(--mm-ink);
   font-family: var(--mm-font);
   font-size: calc(18px - var(--mm-text-trim));
-  font-weight: 700;
-  line-height: 1.2;
+  font-weight: 600;
+  line-height: 1.25;
   letter-spacing: -0.01em;
-  color: var(--mm-ink);
+}
+
+.specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 10px 0 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.specs li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--mm-ink-2);
+  font-size: max(calc(11px + var(--mm-text-plus)), calc(13.5px - var(--mm-text-trim)));
+}
+
+.specs svg {
+  flex: none;
+  color: var(--mm-muted);
+}
+
+.foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid #f0f0f4;
 }
 
 .price {
-  margin: 4px 0 0;
-  font-size: calc(15px - var(--mm-text-trim));
-  font-weight: 700;
+  margin: 0;
   color: var(--mm-ink);
+  font-size: calc(20px - var(--mm-text-trim));
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .price span {
   margin-left: 2px;
-  font-size: max(11px, calc(13px - var(--mm-text-trim)));
-  font-weight: 500;
   color: var(--mm-muted);
+  font-size: max(calc(11px + var(--mm-text-plus)), calc(13px - var(--mm-text-trim)));
+  font-weight: 500;
 }
 
 /* "₹905 each for 4" — the friends-split line */
 .split {
   margin: 2px 0 0;
-  font-size: max(11px, calc(12.5px - var(--mm-text-trim)));
-  font-weight: 600;
   color: var(--mm-lavender-deep);
+  font-size: max(calc(11px + var(--mm-text-plus)), calc(13px - var(--mm-text-trim)));
+  font-weight: 600;
 }
 
-
-
-.itemSmall .card {
-  padding: 14px 16px 16px;
+.cta {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 12px;
+  background: var(--mm-midnight);
+  color: var(--mm-on-dark);
+  font-size: calc(15px - var(--mm-text-trim));
+  font-weight: 600;
+  transition: background 0.2s;
 }
 
-.itemSmall .name {
-  font-size: calc(16px - var(--mm-text-trim));
+@media (hover: hover) {
+  .card:hover {
+    border-color: transparent;
+    box-shadow: var(--mm-shadow-md);
+    translate: 0 -4px;
+  }
+
+  .card:hover .image {
+    scale: 1.13;
+  }
+
+  .card:hover .cta {
+    background: var(--mm-midnight-hover);
+  }
 }
 
+/* ── Show all + note ── */
+.more {
+  display: flex;
+  justify-content: center;
+  margin-top: 26px;
+}
 
-/* ── Footer of the section ── */
-.note {
-  margin: 20px 0 0;
-  text-align: center;
-  font-size: max(11px, calc(13px - var(--mm-text-trim)));
-  color: var(--mm-muted);
+.moreBtn {
+  display: inline-flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 26px;
+  border: 1px solid #e3e3ea;
+  border-radius: var(--mm-radius-pill);
+  background: var(--mm-bg);
+  color: var(--mm-ink);
+  font-family: var(--mm-font);
+  font-size: calc(15px - var(--mm-text-trim));
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.moreBtn:hover {
+  border-color: var(--mm-midnight);
 }
 
 /* ── Loading / error / empty ── */
@@ -255,10 +393,16 @@
   animation: shimmer 1.4s ease-in-out infinite;
 }
 
+.skelCard {
+  min-height: 340px;
+  border-radius: 22px;
+}
+
 @keyframes shimmer {
   from {
     background-position: 100% 0;
   }
+
   to {
     background-position: -100% 0;
   }
@@ -266,13 +410,13 @@
 
 .state {
   padding: 48px 0 8px;
-  text-align: center;
   color: var(--mm-ink-2);
+  text-align: center;
 }
 
 .retry {
-  margin-top: 12px;
   height: 44px;
+  margin-top: 12px;
   padding: 0 24px;
   border: none;
   border-radius: var(--mm-radius-pill);
@@ -283,95 +427,176 @@
   cursor: pointer;
 }
 
-/* ── Tablet: two columns, first car full width ── */
-@media (max-width: 1080px) {
-  .itemLarge,
-  .itemSmall {
-    flex-basis: calc((100% - var(--gap)) / 2);
+/* ── Phones: "All-in prices" shrinks to its icon ── */
+@media (max-width: 760px) {
+  .infoLabel {
+    display: none;
   }
 
-  .itemLarge .card,
-  .itemSmall .card {
-    aspect-ratio: 1 / 1;
-  }
-
-  .item:first-child {
-    flex-basis: 100%;
-  }
-
-  .item:first-child .card {
-    aspect-ratio: 16 / 9;
+  .infoBtn {
+    justify-content: center;
+    width: 42px;
+    padding: 0;
   }
 }
 
-/* ── Phone: scrolling pills, tighter cards ── */
+/* ── Phones: one compact toolbar row, a sideways-swipe row of cars ── */
 @media (max-width: 760px) {
-  .section {
-    --gap: 12px;
+  .toolbar {
+    gap: 8px;
+    margin: -6px 0 12px;
   }
 
-  .pills {
-    flex-wrap: nowrap;
-    justify-content: flex-start;
+  .infoBtn,
+  .dates {
+    height: 34px;
+    font-size: var(--mm-fs-item);
+  }
+
+  .infoBtn {
+    width: 34px;
+  }
+
+  .dates {
+    padding: 0 12px;
+    gap: 6px;
+  }
+
+  /* The explainer spans the controls row instead of hanging off the small info button */
+  .toolbarEnd {
+    position: relative;
+  }
+
+  .info {
+    position: static;
+  }
+
+  .tip {
+    right: 0;
+    left: 0;
+    width: auto;
+    font-size: var(--mm-fs-label);
+  }
+
+  /* One swipeable row with every car; the next card peeks in */
+  .grid {
+    display: flex;
+    gap: 10px;
     overflow-x: auto;
-    margin: 28px calc(-1 * var(--mm-gutter)) 28px;
-    padding: 4px var(--mm-gutter) 10px;
+    margin: 0 calc(-1 * var(--mm-gutter));
+    padding: 2px var(--mm-gutter) 6px;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--mm-gutter);
     scrollbar-width: none;
+    overscroll-behavior-x: contain;
   }
 
-  .pills::-webkit-scrollbar {
+  .grid::-webkit-scrollbar {
     display: none;
   }
 
-  .pill {
-    height: 40px;
-    padding: 0 18px;
-    font-size: calc(14px - var(--mm-text-trim));
+  .grid > li,
+  .grid > li:nth-child(n + 3) {
+    display: block;
+    flex: 0 0 86%;
+    scroll-snap-align: start;
   }
 
-  .card,
-  .itemSmall .card {
-    padding: 12px;
-    border-radius: var(--mm-radius-md);
-  }
-
-  /* Taller cards so two-line car names still leave room for the photo */
-  .itemLarge .card,
-  .itemSmall .card {
-    aspect-ratio: 4 / 5;
-  }
-
-  .item:first-child .card {
-    aspect-ratio: 4 / 3;
-  }
-
-  /* Half-width cards: keep only the car-type tag */
-  .item:not(:first-child) .tag + .tag {
+  .more {
     display: none;
   }
 
-
-  .tag {
-    padding: 4px 10px;
-    font-size: 11px;
+  .card {
+    flex-direction: row;
+    border-radius: 18px;
   }
 
-  .name,
-  .itemSmall .name {
-    font-size: calc(15px - var(--mm-text-trim));
+  .card:active {
+    background: var(--mm-mist);
+  }
+
+  .stage {
+    flex: 0 0 40%;
+    min-height: 124px;
+    aspect-ratio: auto;
+  }
+
+  .image {
+    padding: 22% 4% 8%;
+  }
+
+  .type {
+    top: 8px;
+    left: 8px;
+    padding: 3px 8px;
+    font-size: var(--mm-fs-label);
+  }
+
+  /* No room for two tags on the small photo */
+  .badge {
+    display: none;
+  }
+
+  .body {
+    min-width: 0;
+    padding: 12px 14px;
+  }
+
+  .name {
+    font-size: var(--mm-fs-title);
+  }
+
+  .specs {
+    gap: 4px 10px;
+    margin: 6px 0 10px;
+  }
+
+  .specs li {
+    gap: 4px;
+    font-size: var(--mm-fs-label);
+  }
+
+  .specs svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .foot {
+    align-items: center;
+    padding-top: 10px;
   }
 
   .price {
-    font-size: max(11px, calc(13px - var(--mm-text-trim)));
+    font-size: var(--mm-fs-title);
   }
 
+  .price span,
+  .split {
+    font-size: var(--mm-fs-label);
+  }
+
+  /* The whole card opens the car */
+  .cta {
+    display: none;
+  }
+
+  .skelCard {
+    min-height: 124px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .card,
-  .image,
-  .pill {
+  .image {
     transition: none;
+  }
+
+  .card:hover {
+    translate: none;
+  }
+
+  .card:hover .image {
+    scale: none;
   }
 
   .skeleton {

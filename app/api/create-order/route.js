@@ -8,6 +8,7 @@ function getAuthToken(request) {
          request.headers?.get?.("authorization")?.split?.(" ")?.[1] || "";
 }
 import { calculatePricing } from '../../../lib/pricing.js';
+import { combineDiscounts, offerFor, WELCOME_OFF } from '../../../lib/offers.js';
 
 // Razorpay SDK imports
 const Razorpay = require('razorpay');
@@ -102,6 +103,21 @@ export async function POST(request) {
         });
         const subtotal = initialPricing.costs.subtotalBeforeGST; // Used for coupon min_amount validation
 
+        // Trips this customer has already booked and paid for. Decides the automatic offer
+        // (₹350 off the first trip, a free hour after that) and feeds the coupon rules below.
+        let pastBookings = null;
+        try {
+            const bookingsRes = await fetch(
+                `${supabaseUrl}/rest/v1/bookings?user_id=eq.${user.sub}&select=id,applied_coupon&status=in.(confirmed,completed)`,
+                { headers: { 'apikey': supabaseKey, 'Authorization': token ? `Bearer ${token}` : '' } }
+            );
+            if (bookingsRes.ok) pastBookings = await bookingsRes.json();
+            else console.warn('create-order: could not read past bookings, status', bookingsRes.status);
+        } catch (historyErr) {
+            console.error('create-order: past bookings check failed:', historyErr);
+        }
+        const offer = offerFor(Array.isArray(pastBookings) ? pastBookings.length : null, initialPricing);
+
         // 4. Validate Coupon and Calculate Discount (Server-Side)
         let validDiscount = 0;
         let appliedCouponCode = null;
@@ -136,16 +152,12 @@ export async function POST(request) {
                         if (validUntil && now > validUntil) isValid = false;
                         if (initialPricing.total < minAmount) isValid = false;
                         if (coupon.usage_limit !== null && coupon.used_count >= coupon.usage_limit) isValid = false;
+                        if (coupon.assigned_user_id && coupon.assigned_user_id !== user.sub) isValid = false; // personal coupon of another account
 
                         // User-Specific Logic (Sequence API & Single Use)
                         if (isValid) {
                           try {
-                            const bookingsRes = await fetch(
-                               `${supabaseUrl}/rest/v1/bookings?user_id=eq.${user.sub}&select=id,applied_coupon&status=in.(confirmed,completed)`,
-                               { headers: { 'apikey': supabaseKey, 'Authorization': token ? `Bearer ${token}` : '' } }
-                            );
-                            if (bookingsRes.ok) {
-                              const pastBookings = await bookingsRes.json();
+                            if (Array.isArray(pastBookings)) {
                               const pastCouponsUsedCount = pastBookings.filter(b => b.applied_coupon !== null).length;
                               const pastUsedCodes = pastBookings.map(b => b.applied_coupon).filter(Boolean);
                               console.log('🎫 create-order user history:', { pastCouponsUsedCount, pastUsedCodes });
@@ -200,12 +212,23 @@ export async function POST(request) {
             }
         }
 
+        // 4b. Combine the automatic offer with the coupon (first trip: the bigger one wins)
+        const { offerAmount, couponAmount, couponHeld } = combineDiscounts(offer, validDiscount, subtotal);
+        if (!couponAmount) appliedCouponCode = null; // not used on this booking, so it stays available
+        const totalDiscount = offerAmount + couponAmount;
+        let couponNote = null;
+        if (couponCode && !appliedCouponCode) {
+            couponNote = couponHeld
+                ? `Your ₹${WELCOME_OFF} first-trip offer is already applied and saves at least as much as this code.`
+                : "This code can't be used on this booking.";
+        }
+
         // 5. Final Calculation with Validated Discount
         const pricing = calculatePricing({
             baseDailyRate,
             pickupTime: startDate,
             returnTime: endDate,
-            discount: validDiscount,
+            discount: totalDiscount,
         });
 
         // 6. Validate calculated prices (sanity checks)
@@ -225,8 +248,10 @@ export async function POST(request) {
                 hours: pricing.hours.toString(),
                 pickup_time: pickupTime,
                 return_time: returnTime,
-                discount: validDiscount.toString(),
+                discount: totalDiscount.toString(),
                 coupon_code: appliedCouponCode || "",
+                offer: offerAmount ? offer.kind : "",
+                offer_amount: offerAmount.toString(),
                 calculated_total: pricing.total.toString()
             }
         };
@@ -246,7 +271,11 @@ export async function POST(request) {
                 tier: pricing.tier,
                 rates: pricing.rates,
                 costs: pricing.costs,
-                discount: validDiscount,
+                discount: totalDiscount,
+                couponDiscount: couponAmount,
+                couponApplied: Boolean(appliedCouponCode),
+                couponNote,
+                offer: offerAmount ? { kind: offer.kind, label: offer.label, note: offer.note, amount: offerAmount } : null,
                 total: pricing.total,
             },
             vehicle: {

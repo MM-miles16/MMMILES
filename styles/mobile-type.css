@@ -1,0 +1,32 @@
+/* Phones: one type scale for every page (tokens in styles/tokens.css, taken from the homepage
+   "Why MM Miles" list).
+
+   Redesigned parts (homepage, header, footer, tab bar, search bar, fleet, designed widgets) set
+   their own sizes from the tokens and are marked [data-mm]; this layer brings every other page's
+   headings, paragraphs and lists onto the same scale. Mark a figure or other deliberately large
+   text with [data-mm-keep] to leave it alone.
+
+   !important (and the :root prefix) is deliberate: the older page stylesheets use many competing
+   selectors, several of them !important, and this only applies on phones. */
+
+@media (max-width: 760px) {
+  :root h1:not([data-mm] *, [data-mm-keep]) {
+    font-size: var(--mm-fs-h1) !important;
+    line-height: 1.15 !important;
+  }
+
+  :root h2:not([data-mm] *, [data-mm-keep]) {
+    font-size: var(--mm-fs-h2) !important;
+    line-height: 1.2 !important;
+  }
+
+  :root :is(h3, h4, h5, h6, summary):not([data-mm] *, [data-mm-keep]) {
+    font-size: var(--mm-fs-title) !important;
+    line-height: 1.35 !important;
+  }
+
+  :root :is(p, li, td, th, dd, blockquote, figcaption, address):not([data-mm] *, [data-mm-keep]) {
+    font-size: var(--mm-fs-body) !important;
+    line-height: 1.55 !important;
+  }
+}

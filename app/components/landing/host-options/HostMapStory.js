@@ -19,7 +19,6 @@ export default function HostMapStory() {
       <div className={ui.container}>
         <Link href="/host-registration" className={styles.panel}>
           <span className={styles.intro}>
-            <span className={ui.eyebrow}>For car owners</span>
             <h2 id="host-title-story" className={styles.title}>
               Own a car? Let it <span>earn for you</span>
             </h2>

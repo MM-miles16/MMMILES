@@ -57,7 +57,6 @@ export default function HostSpotlight() {
           </span>
 
           <span className={styles.content}>
-            <span className={ui.eyebrow}>For car owners</span>
             <h2 id="host-title-spotlight" className={styles.title}>
               Own a car? Let it <span>earn for you</span>
             </h2>

@@ -5,7 +5,7 @@
   align-items: center;
   min-height: 100vh;
   background: linear-gradient(to bottom right, #fffaf3, #f9f2e7);
-  font-family: "Poppins", sans-serif;
+  font-family: var(--mm-font);
 }
 
 .success-card {

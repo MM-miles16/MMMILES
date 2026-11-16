@@ -20,7 +20,6 @@ export default function HostDark() {
       <div className={ui.container}>
         <Link href="/host-registration" className={styles.panel}>
           <span className={styles.intro}>
-            <span className={`${ui.eyebrow} ${styles.eyebrow}`}>For car owners</span>
             <h2 id="host-title-dark" className={styles.title}>
               Own a car? Let it <span>earn for you</span>
             </h2>

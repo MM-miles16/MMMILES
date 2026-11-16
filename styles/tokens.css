@@ -52,11 +52,53 @@
   --mm-container: 1920px;
   --mm-gutter: 50px;
   --mm-header-h: 68px;
+  /* Space the fixed header takes on screen (body padding, sticky offsets): the header height,
+     scaled where the header is scaled (see the laptop rules below) */
+  --mm-header-offset: var(--mm-header-h);
   --mm-section-y: clamp(44px, 5.5vw, 80px);
 
-  /* Type trim: landing-page font sizes subtract this (never below 11px). 0 here; the homepage
-     sets it on its <main> via ui.homeType, so shared pieces stay unchanged on other pages. */
-  --mm-text-trim: 0px;
+  /* Type size knobs.
+     --mm-text-plus: desktops and laptops read 2px larger (set in the media query below); phones and
+     tablets stay at 0.
+     --mm-text-trim: redesigned font sizes subtract this (never below 11px + plus). Here it is just
+     "minus plus"; the homepage sets its own value on <main> (ui.homeType). */
+  --mm-text-plus: 0px;
+  --mm-text-trim: calc(-1 * var(--mm-text-plus));
+}
+
+/* Desktops and laptops (1000px+ with a mouse or trackpad, the same test as the homepage's laptop
+   scaling in ui.module.css): text 2px larger. Touch tablets, even large ones in landscape, and
+   phones keep their sizes. */
+@media (min-width: 1000px) and (hover: hover) and (pointer: fine) {
+  :root {
+    --mm-text-plus: 2px;
+  }
+}
+
+/* One header and footer for the whole site: laptops (1000–1599px with a mouse) see the homepage at
+   80–90% (landing/ui.module.css zooms <html> on pages with .homeType). Every other page shows the
+   header and footer at that same scale, so they look identical on every page; their 50px side
+   padding and the header's space at the top of the page are scaled to match. */
+@media (min-width: 1000px) and (max-width: 1439px) and (hover: hover) and (pointer: fine) {
+  html:not(:has([class*="homeType"])) {
+    --mm-header-offset: calc(var(--mm-header-h) * 0.8);
+  }
+
+  html:not(:has([class*="homeType"])) :is(#global-header, #global-footer) {
+    zoom: 0.8;
+    --mm-gutter: calc(50px / 0.8);
+  }
+}
+
+@media (min-width: 1440px) and (max-width: 1599px) and (hover: hover) and (pointer: fine) {
+  html:not(:has([class*="homeType"])) {
+    --mm-header-offset: calc(var(--mm-header-h) * 0.9);
+  }
+
+  html:not(:has([class*="homeType"])) :is(#global-header, #global-footer) {
+    zoom: 0.9;
+    --mm-gutter: calc(50px / 0.9);
+  }
 }
 
 /* Font variables from next/font are set on <body>, so the font token lives here */
@@ -70,5 +112,18 @@ body {
     --mm-header-h: 60px;
     --mm-radius-lg: 22px;
     --mm-radius-xl: 28px;
+
+    /* Phone type scale, taken from the homepage "Why MM Miles" list. Every page uses it on phones:
+       redesigned parts set sizes from these tokens (and the shared trim below), older pages are
+       brought onto it by styles/mobile-type.css. Paragraphs stay at 12px so pages pass Google's
+       "legible font sizes" check (60%+ of text at 12px or more). */
+    --mm-text-trim: 3px;
+    --mm-fs-display: 35px; /* big figures, like ₹0 */
+    --mm-fs-h1: 30px; /* page titles */
+    --mm-fs-h2: 24px; /* section titles */
+    --mm-fs-title: 14px; /* card titles */
+    --mm-fs-item: 12px; /* row and list titles (bold) */
+    --mm-fs-body: 12px; /* paragraphs and descriptions */
+    --mm-fs-label: 11px; /* tags, pills, captions, short notes */
   }
 }

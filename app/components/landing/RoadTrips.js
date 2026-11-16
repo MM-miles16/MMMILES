@@ -16,7 +16,6 @@ export default function RoadTrips() {
     <section className={`${ui.section} ${styles.section}`} aria-labelledby="trips-title">
       <div className={ui.container}>
         <div className={`${ui.head} ${styles.head}`}>
-          <p className={ui.eyebrow}>Where our renters go</p>
           <h2 id="trips-title" className={ui.title}>
             Roads worth taking
           </h2>

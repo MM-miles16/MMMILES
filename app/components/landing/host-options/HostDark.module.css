@@ -40,11 +40,6 @@
   grid-area: intro;
 }
 
-.eyebrow.eyebrow {
-  background: rgba(197, 181, 238, 0.16);
-  color: var(--mm-lavender);
-}
-
 .title {
   margin: 0;
   color: var(--mm-on-dark);
@@ -103,13 +98,13 @@
 }
 
 .tile b {
-  font-size: max(11px, calc(15.5px - var(--mm-text-trim)));
+  font-size: max(calc(11px + var(--mm-text-plus)), calc(15.5px - var(--mm-text-trim)));
   font-weight: 600;
 }
 
 .tile small {
   color: var(--mm-on-dark-muted);
-  font-size: max(11px, calc(13px - var(--mm-text-trim)));
+  font-size: max(calc(11px + var(--mm-text-plus)), calc(13px - var(--mm-text-trim)));
   line-height: 1.4;
 }
 
@@ -132,7 +127,7 @@
   border-radius: var(--mm-radius-sm);
   background: var(--mm-lavender);
   color: var(--mm-midnight);
-  font-size: max(11px, calc(16px - var(--mm-text-trim)));
+  font-size: max(calc(11px + var(--mm-text-plus)), calc(16px - var(--mm-text-trim)));
   font-weight: 600;
   transition: background 0.2s;
 }
@@ -148,7 +143,7 @@
   align-items: center;
   gap: 12px;
   color: var(--mm-on-dark-muted);
-  font-size: max(11px, calc(13px - var(--mm-text-trim)));
+  font-size: max(calc(11px + var(--mm-text-plus)), calc(13px - var(--mm-text-trim)));
   line-height: 1.4;
 }
 

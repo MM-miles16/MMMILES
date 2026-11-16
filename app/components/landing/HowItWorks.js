@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { searchPageUrl } from "@/lib/searchDefaults";
 import ui from "./ui.module.css";
 import styles from "./HowItWorks.module.css";
 
@@ -230,6 +232,7 @@ function CardRoad({ trailRef, carRef, reached, started, onStop }) {
 }
 
 export default function HowItWorks() {
+  const router = useRouter();
   const boxRef = useRef(null);
   const wideTrail = useRef(null);
   const wideCar = useRef(null);
@@ -360,7 +363,6 @@ export default function HowItWorks() {
     <section id="how-it-works" className={`${ui.section} ${styles.section}`} aria-labelledby="how-title">
       <div className={ui.container}>
         <div className={`${ui.head} ${styles.head}`}>
-          <p className={ui.eyebrow}>How it works</p>
           <h2 id="how-title" className={ui.title}>
             Your car in 5 easy steps
           </h2>
@@ -420,7 +422,17 @@ export default function HowItWorks() {
         </div>
 
         <div className={styles.cta}>
-          <a href="#search" className={`${ui.btn} ${ui.btnDark}`}>
+          {/* Opens the search page with the visitor's current city, area and dates (read at click
+              time, since the search bar can change them); a modified click falls back to /search */}
+          <a
+            href="/search"
+            className={`${ui.btn} ${ui.btnDark}`}
+            onClick={(e) => {
+              if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+              e.preventDefault();
+              router.push(searchPageUrl());
+            }}
+          >
             Start booking
           </a>
         </div>

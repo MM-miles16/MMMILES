@@ -72,13 +72,13 @@
 .chatHeader h3{
   margin:0;
   font-size:20px;
-  font-family: var(--font-ibm-plex);
+  font-family: var(--mm-font);
 }
 
 .chatHeader p{
   margin:0;
   font-size:12px;
-  font-family: poppins;
+  font-family: var(--mm-font);
 }
 
 .chatHeader button{
@@ -131,7 +131,7 @@
   box-shadow:
   0 8px 20px rgba(118,184,157,.12);
   color:#2b2b2a;
-  font-family:poppins;
+  font-family: var(--mm-font);
   font-size:14px;
   line-height:1.7;
 }
@@ -148,7 +148,7 @@
   margin-bottom:20px;
   box-shadow:
   0 8px 20px rgba(118,184,157,.12);
-  font-family:poppins;
+  font-family: var(--mm-font);
   font-size:14px;
   line-height:1.7;
 }
@@ -236,7 +236,7 @@
 
   cursor:pointer;
 
-  font-family:poppins;
+  font-family: var(--mm-font);
 
   font-size:13px;
 
@@ -383,4 +383,10 @@
     width: 28px;
     height: 30px;
   }
+}
+
+/* The header menu drawer is open: keep the floating bubble out of its way */
+:global(body.menu-open) .chatFloatingBtn,
+:global(body.sheet-open) .chatFloatingBtn {
+  display: none;
 }

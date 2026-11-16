@@ -4,6 +4,14 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import "./login.css";
 
+// Where to go after login: the ?redirect= page if it's on this site, otherwise the dashboard.
+// Only same-site paths are allowed, so a link like ?redirect=https://other-site can't send people
+// elsewhere after they log in. (URLSearchParams already decodes the value.)
+function safeRedirect() {
+  const target = new URLSearchParams(window.location.search).get("redirect");
+  return target && target.startsWith("/") && !target.startsWith("//") && !target.startsWith("/\\") ? target : "/dashboard";
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
@@ -20,7 +28,7 @@ export default function LoginPage() {
         if (res.ok) {
           const data = await res.json();
           if (data.authenticated) {
-            router.push("/dashboard");
+            router.push(safeRedirect());
           }
         }
       } catch (e) {
@@ -81,11 +89,8 @@ export default function LoginPage() {
         // 🔔 Notify Navbar instantly
         window.dispatchEvent(new Event("auth-change"));
 
-        // ✅ After successful login
-        const redirectParam = new URLSearchParams(window.location.search).get("redirect");
-        const redirectTo = redirectParam ? decodeURIComponent(redirectParam) : "/dashboard";
-
-        router.push(redirectTo);
+        // ✅ After successful login, go where the visitor was headed (e.g. their Profile tab)
+        router.push(safeRedirect());
       } else setMessage(data.error || "Invalid OTP");
     } catch (err) {
       console.error(err);

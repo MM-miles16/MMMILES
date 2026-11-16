@@ -19,7 +19,7 @@ const OPTIONS = [
 
 export default function HostDesignsPage() {
   return (
-    <main className={ui.homeType}>
+    <main className={ui.homeType} data-mm>
       {OPTIONS.map(([n, name, note, Section]) => (
         <div key={n} style={{ paddingTop: 28 }}>
           <div className={ui.container}>

@@ -3,14 +3,14 @@
   margin: auto;
   padding: 20px;
   line-height: 1.6;
-  font-family: poppins;
+  font-family: var(--mm-font);
 }
 
 .privacy-title {
   text-align: center;
   font-size: 40px !important;
   font-weight: 700;
-  font-family: Frank Ruhl Libre;
+  font-family: var(--mm-font);
   margin-bottom: 10px;
   margin-top: 20px;
   background: linear-gradient(to right, #D8B480 0%, #BF9860 100%);
@@ -22,7 +22,7 @@
   text-align: center;
   font-size: 24px;
   font-weight: 600;
-  font-family: poppins;
+  font-family: var(--mm-font);
   background: linear-gradient(to right, #D8B480 0%, #BF9860 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -36,7 +36,7 @@
 .privacy-section h2 {
   font-size: 15px;
   font-weight: 500;
-  font-family: poppins;
+  font-family: var(--mm-font);
   margin-bottom: 10px;
   color: #222;
 }
@@ -44,7 +44,7 @@
 .privacy-section ul {
   font-size: 14px;
   font-weight: 400;
-  font-family: poppins;
+  font-family: var(--mm-font);
   margin-left: 20px;
   list-style: disc;
 }
@@ -53,7 +53,7 @@
   margin-top: 30px;
   font-size: 15px;
   font-weight: 500;
-  font-family: poppins;
+  font-family: var(--mm-font);
   color: #b00;
 }
 

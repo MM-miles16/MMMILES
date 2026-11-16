@@ -11,6 +11,37 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY!
 );
 
+// "DL1420110012345" → "DL14XXXXXXX2345" (only first 4 and last 4 are kept)
+function maskLicence(value: string | null): string | null {
+  if (!value || value === "DIGILOCKER_VERIFIED") return null;
+  const v = value.replace(/\s+/g, "");
+  return v.length <= 8 ? v : `${v.slice(0, 4)}${"X".repeat(v.length - 8)}${v.slice(-4)}`;
+}
+
+// Last 4 digits of the Aadhaar number, for the read-only "XXXX XXXX 1234" on the renter's
+// Documents page. Read from DigiLocker's e-Aadhaar XML, whose uid is masked, e.g. "xxxxxxxx1234".
+// Only these 4 digits are kept; the rest of the document is discarded at once. Best effort: if
+// the request fails (or this DigiLocker app isn't allowed to read e-Aadhaar), the card shows
+// "Verified" without the digits.
+async function aadhaarLast4(accessToken: string): Promise<string | null> {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 6000);
+  try {
+    const res = await fetch("https://digilocker.meripehchaan.gov.in/public/oauth2/3/xml/eaadhaar", {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      signal: ctrl.signal,
+    });
+    if (!res.ok) return null;
+    const xml = await res.text();
+    const uid = xml.match(/\buid\s*=\s*"([^"]+)"/i)?.[1] || xml.match(/<uid>([^<]+)<\/uid>/i)?.[1] || "";
+    return uid.trim().match(/(\d{4})$/)?.[1] || null;
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 function removeAadhaarAndTokens(value: any): any {
   if (Array.isArray(value)) return value.map(removeAadhaarAndTokens);
   if (typeof value === "string") {
@@ -37,18 +68,22 @@ export async function GET(request: Request) {
 
     const protocol = requestUrl.protocol;
     const host = requestUrl.host;
-    frontendVerifyUrl = `${protocol}//${host}/host-registration-form/verify-profile`;
+    // Renters (dashboard Documents) or hosts (registration form): set by /api/auth/digilocker
+    const forRenter = /(?:^|;\s*)digilocker_purpose=renter/.test(request.headers.get("cookie") || "");
+    frontendVerifyUrl = forRenter
+      ? `${protocol}//${host}/dashboard?tab=documents`
+      : `${protocol}//${host}/host-registration-form/verify-profile`;
 
     // 1. Check for authorization errors from DigiLocker
     if (errorParam || errorDescription) {
       console.error("DigiLocker authorization error:", errorParam, errorDescription);
       return NextResponse.redirect(
-        `${frontendVerifyUrl}?status=failed&error=${encodeURIComponent(errorDescription || "Verification declined by user")}`
+        `${frontendVerifyUrl}${frontendVerifyUrl.includes("?") ? "&" : "?"}status=failed&error=${encodeURIComponent(errorDescription || "Verification declined by user")}`
       );
     }
 
     if (!code || !state) {
-      return NextResponse.redirect(`${frontendVerifyUrl}?status=failed&error=Missing code or state`);
+      return NextResponse.redirect(`${frontendVerifyUrl}${frontendVerifyUrl.includes("?") ? "&" : "?"}status=failed&error=Missing code or state`);
     }
 
     // 2. CSRF and PKCE Validation
@@ -61,12 +96,12 @@ export async function GET(request: Request) {
 
     if (!savedState || savedState !== state) {
       console.error("CSRF state token mismatch or expired");
-      return NextResponse.redirect(`${frontendVerifyUrl}?status=failed&error=Invalid request session`);
+      return NextResponse.redirect(`${frontendVerifyUrl}${frontendVerifyUrl.includes("?") ? "&" : "?"}status=failed&error=Invalid request session`);
     }
 
     if (!savedCodeVerifier) {
       console.error("Missing PKCE code verifier");
-      return NextResponse.redirect(`${frontendVerifyUrl}?status=failed&error=Invalid PKCE session`);
+      return NextResponse.redirect(`${frontendVerifyUrl}${frontendVerifyUrl.includes("?") ? "&" : "?"}status=failed&error=Invalid PKCE session`);
     }
 
     // 3. User Authentication: Identify the logged-in user
@@ -76,7 +111,7 @@ export async function GET(request: Request) {
 
     if (!decodedUser || !decodedUser.sub) {
       console.error("Unauthorized callback: No active user session token found");
-      return NextResponse.redirect(`${frontendVerifyUrl}?status=failed&error=Session expired. Please log in again.`);
+      return NextResponse.redirect(`${frontendVerifyUrl}${frontendVerifyUrl.includes("?") ? "&" : "?"}status=failed&error=Session expired. Please log in again.`);
     }
 
     const userId = decodedUser.sub;
@@ -91,7 +126,7 @@ export async function GET(request: Request) {
 
     if (!clientId || !clientSecret || !redirectUri) {
       console.error("DigiLocker config variables missing on server");
-      return NextResponse.redirect(`${frontendVerifyUrl}?status=failed&error=DigiLocker auth misconfigured`);
+      return NextResponse.redirect(`${frontendVerifyUrl}${frontendVerifyUrl.includes("?") ? "&" : "?"}status=failed&error=DigiLocker auth misconfigured`);
     }
 
     const tokenParams = new URLSearchParams({
@@ -114,7 +149,7 @@ export async function GET(request: Request) {
     if (!tokenResponse.ok) {
       const errorText = await tokenResponse.text();
       console.error("Token exchange failed with response:", errorText);
-      return NextResponse.redirect(`${frontendVerifyUrl}?status=failed&error=Token exchange failed`);
+      return NextResponse.redirect(`${frontendVerifyUrl}${frontendVerifyUrl.includes("?") ? "&" : "?"}status=failed&error=Token exchange failed`);
     }
 
     const tokenData = await tokenResponse.json();
@@ -122,7 +157,7 @@ export async function GET(request: Request) {
 
     if (!access_token) {
       console.error("No access token in token exchange response");
-      return NextResponse.redirect(`${frontendVerifyUrl}?status=failed&error=Empty access token returned`);
+      return NextResponse.redirect(`${frontendVerifyUrl}${frontendVerifyUrl.includes("?") ? "&" : "?"}status=failed&error=Empty access token returned`);
     }
 
     // 5. Decode the id_token to extract verified identity, PAN and DL claims.
@@ -189,11 +224,48 @@ export async function GET(request: Request) {
       }
     }
 
+    // Renters: keep only what the dashboard shows — licence verified (masked number) and Aadhaar
+    // verified (DigiLocker's eaadhaar flag or the issued Aadhaar document scope) with its last 4
+    // digits. The full Aadhaar number is never stored.
+    if (forRenter) {
+      const licenceVerified = typeof verifiedDl === "string" && verifiedDl.length > 0;
+      const aadhaarVerified = String(tokenData?.eaadhaar || "").toUpperCase() === "Y" || /uidai-ADHAR/i.test(scopeStr);
+      if (!licenceVerified && !aadhaarVerified) {
+        return NextResponse.redirect(
+          `${frontendVerifyUrl}&status=failed&error=${encodeURIComponent("DigiLocker didn't share your driving licence or Aadhaar. Please allow access and try again.")}`
+        );
+      }
+      const now = new Date().toISOString();
+      const last4 = aadhaarVerified ? await aadhaarLast4(access_token) : null;
+      const { error: kycError } = await supabase.from("customer_kyc").upsert(
+        {
+          user_id: userId,
+          dl_verified: licenceVerified,
+          dl_number_masked: maskLicence(verifiedDl),
+          aadhaar_verified: aadhaarVerified,
+          ...(last4 ? { aadhaar_last4: last4 } : {}), // keep earlier digits if this read failed
+          name_on_record: verifiedName,
+          verified_at: now,
+          updated_at: now,
+        },
+        { onConflict: "user_id" }
+      );
+      if (kycError) {
+        console.error("Failed to save renter verification:", kycError.message);
+        return NextResponse.redirect(`${frontendVerifyUrl}&status=failed&error=${encodeURIComponent("We couldn't save your verification. Please try again.")}`);
+      }
+      const done = NextResponse.redirect(`${frontendVerifyUrl}&status=success`);
+      done.cookies.delete("digilocker_oauth_state");
+      done.cookies.delete("digilocker_code_verifier");
+      done.cookies.delete("digilocker_purpose");
+      return done;
+    }
+
     const hasPan = typeof verifiedPan === "string" && verifiedPan.length > 0;
     const hasDl = typeof verifiedDl === "string" && verifiedDl.length > 0;
     if (!verifiedName || (!hasPan && !hasDl)) {
       return NextResponse.redirect(
-        `${frontendVerifyUrl}?status=failed&error=${encodeURIComponent("DigiLocker must provide your verified identity name and at least one of PAN or Driving Licence.")}`
+        `${frontendVerifyUrl}${frontendVerifyUrl.includes("?") ? "&" : "?"}status=failed&error=${encodeURIComponent("DigiLocker must provide your verified identity name and at least one of PAN or Driving Licence.")}`
       );
     }
 
@@ -215,21 +287,22 @@ export async function GET(request: Request) {
 
     if (dbError) {
       console.error("Failed to save KYC status to database:", dbError);
-      return NextResponse.redirect(`${frontendVerifyUrl}?status=failed&error=Database persistence error`);
+      return NextResponse.redirect(`${frontendVerifyUrl}${frontendVerifyUrl.includes("?") ? "&" : "?"}status=failed&error=Database persistence error`);
     }
 
     // Redirect the browser back to verify-profile page with status=success
-    const response = NextResponse.redirect(`${frontendVerifyUrl}?status=success`);
+    const response = NextResponse.redirect(`${frontendVerifyUrl}${frontendVerifyUrl.includes("?") ? "&" : "?"}status=success`);
     
     // Clear temporary CSRF state and PKCE cookies
     response.cookies.delete("digilocker_oauth_state");
     response.cookies.delete("digilocker_code_verifier");
+    response.cookies.delete("digilocker_purpose");
     return response;
 
   } catch (error: any) {
     console.error("DigiLocker callback endpoint exception:", error);
     return NextResponse.redirect(
-      `${frontendVerifyUrl}?status=failed&error=${encodeURIComponent(error.message || "Unknown callback error")}`
+      `${frontendVerifyUrl}${frontendVerifyUrl.includes("?") ? "&" : "?"}status=failed&error=${encodeURIComponent(error.message || "Unknown callback error")}`
     );
   }
 }

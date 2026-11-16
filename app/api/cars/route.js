@@ -1,5 +1,6 @@
 import { supabase } from "../../../lib/supabaseClient.js";
 import { canonicalCity } from "../../../lib/cities.js";
+import { asShowcase, isShowcaseCity, SHOWCASE_IDS } from "../../../lib/showcase.js";
 
 export async function GET(req) {
   try {
@@ -40,6 +41,39 @@ export async function GET(req) {
       pickupTimeRaw,
       returnTimeRaw
     });
+
+    // Bengaluru preview: while no Bengaluru car is live, show the preview cars from lib/showcase
+    // (filtered like the real list; they can't be booked — see the car page)
+    if (isShowcaseCity(city)) {
+      const { count, error: countError } = await supabase
+        .from("vehicles")
+        .select("id", { count: "exact", head: true })
+        .eq("city", city)
+        .eq("available_status", true);
+      if (!countError && !count) {
+        const { data: preview, error: previewError } = await supabase
+          .from("vehicles")
+          .select("*,vehicle_images(*),buffer_hours")
+          .in("id", SHOWCASE_IDS);
+        if (previewError) return Response.json({ error: previewError.message }, { status: 500 });
+        const matches = (v) =>
+          (!type || v.vehicle_type === type) &&
+          (!fuel || v.fuel_type === fuel) &&
+          (!transmission || v.transmission_type === transmission) &&
+          (!seats || v.seating_capacity === parseInt(seats)) &&
+          (!year || v.model_year === parseInt(year)) &&
+          (!brand || v.make === brand) &&
+          (!priceMin || v.base_daily_rate >= parseFloat(priceMin) * 24) &&
+          (!priceMax || v.base_daily_rate <= parseFloat(priceMax) * 24) &&
+          (gps !== "true" || v.has_gps) &&
+          (ac !== "true" || v.has_ac);
+        const cars = SHOWCASE_IDS.map((id) => (preview || []).find((v) => v.id === id))
+          .filter(Boolean)
+          .map(asShowcase)
+          .filter(matches);
+        return Response.json(cars, { headers: { "Cache-Control": "s-maxage=30, stale-while-revalidate=60" } });
+      }
+    }
 
     // start building query
     let query = supabase

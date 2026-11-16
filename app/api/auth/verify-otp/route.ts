@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import { createClient } from "@supabase/supabase-js";
+import { recordReferral } from "@/lib/referrals";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -157,6 +158,19 @@ export async function POST(req: Request) {
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60, // 7 days
     });
+
+    // Referral: a first login that arrived through mmmiles.com/?ref=CODE (never blocks login)
+    if (isFirstTimeLogin) {
+      const refCode = (req.headers.get("cookie") || "").match(/(?:^|;\s*)mm_ref=([A-Za-z0-9]{6,12})/)?.[1];
+      if (refCode) {
+        try {
+          await recordReferral(supabase, refCode, user.id);
+        } catch (refErr) {
+          console.error("Referral capture error:", refErr);
+        }
+        response.cookies.delete("mm_ref");
+      }
+    }
 
     // 6️⃣ Send Marketing Welcome Message for First-Time Users (Non-blocking)
     if (isFirstTimeLogin) {

@@ -1,6 +1,7 @@
 import "./../styles/reset.css";
 import "./../styles/tokens.css";
 import "./globals.css";
+import "./../styles/mobile-type.css";
 import LayoutWrapper from "./components/LayoutWrapper";
 import FooterDirectory from "./components/sitewide/FooterDirectory";
 import ChatSupport from "./components/ChatSupport";
@@ -157,14 +158,17 @@ export default function RootLayout({ children }) {
           position="top-center"
           toastOptions={{
             duration: 4000,
+            // Landing page look (was cream and gold with the old serif font)
             style: {
-              background: "#F9F4EC",
-              color: "#333",
-              borderRadius: "10px",
-              border: "1px solid #d4a762",
+              background: "#ffffff",
+              color: "var(--mm-ink)",
+              borderRadius: "14px",
+              border: "1px solid #ececf2",
+              boxShadow: "0 12px 32px -12px rgba(17, 16, 28, 0.25)",
+              padding: "10px 14px",
               fontSize: "14px",
               fontWeight: "500",
-              fontFamily: "Frank Ruhl Libre",
+              fontFamily: "var(--mm-font)",
             },
           }}
         />
